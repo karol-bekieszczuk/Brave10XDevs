@@ -1,0 +1,55 @@
+# Zezwól na bezpieczne listowanie plików i katalogów w PowerShell.
+prefix_rule(
+    pattern = ["Get-ChildItem"],
+    decision = "allow",
+    justification = "Get-ChildItem tylko odczytuje/listuje pliki i katalogi.",
+    match = [
+        "Get-ChildItem",
+        "Get-ChildItem .",
+        "Get-ChildItem C:\\Users",
+    ],
+)
+
+prefix_rule(
+    pattern = ["pwsh", "-Command", "Get-ChildItem"],
+    decision = "allow",
+    justification = "Get-ChildItem tylko odczytuje/listuje pliki i katalogi.",
+    match = [
+        "pwsh -Command Get-ChildItem",
+        "pwsh -Command Get-ChildItem .",
+    ],
+)
+
+# Zablokuj usuwanie plików/katalogów w PowerShell.
+prefix_rule(
+    pattern = ["Remove-Item"],
+    decision = "forbidden",
+    justification = "Usuwanie plików/katalogów jest zablokowane. Zamiast tego użyj Get-ChildItem do inspekcji.",
+    match = [
+        "Remove-Item .\\folder",
+        "Remove-Item .\\folder -Recurse -Force",
+    ],
+)
+
+prefix_rule(
+    pattern = ["pwsh", "-Command", "Remove-Item"],
+    decision = "forbidden",
+    justification = "Usuwanie plików/katalogów jest zablokowane. Zamiast tego użyj Get-ChildItem do inspekcji.",
+    match = [
+        "pwsh -Command Remove-Item .\\folder",
+        "pwsh -Command Remove-Item .\\folder -Recurse -Force",
+    ],
+)
+
+# Opcjonalnie: blokada klasycznych odpowiedników usuwania.
+prefix_rule(
+    pattern = ["rm"],
+    decision = "forbidden",
+    justification = "Usuwanie jest zablokowane.",
+)
+
+prefix_rule(
+    pattern = ["rmdir"],
+    decision = "forbidden",
+    justification = "Usuwanie katalogów jest zablokowane.",
+)
