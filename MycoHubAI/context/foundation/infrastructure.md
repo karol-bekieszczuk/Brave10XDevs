@@ -75,7 +75,7 @@ The team deployed the MVP to Cloudflare Workers because the starter already had 
 
 ## Operational Story
 
-- **Preview deploys**: Use Worker deployments from GitHub Actions or `npx wrangler deploy` during the MVP. If public preview URLs expose private test data or prompts, protect them with Cloudflare Access before sharing.
+- **Preview deploys**: Production deploys are owned by Cloudflare Workers Builds, connected to the GitHub repo. GitHub Actions remains validation-only. Branch protection must require GitHub CI before merge, because Cloudflare auto-deploys after the selected branch changes. Always protect the public Previews with Cloudflare Access before sharing, especially when public preview URLs expose private test data or prompts.
 - **Secrets**: Local Node tooling uses `.env`; local Worker-style development uses `.dev.vars`; production secrets live in Cloudflare Worker secrets. Keep `SUPABASE_URL`, `SUPABASE_KEY`, and OpenAI provider keys out of committed files and aligned with Astro's server env schema.
 - **Rollback**: Use `wrangler rollback <VERSION_ID>` after identifying a known-good Worker version. Treat database migrations, Supabase policy changes, prompt changes, and secret rotations as separate rollback procedures.
 - **Approval**: An agent may run read-only checks, builds, logs, and preview deploy commands. Production deploys, primary secret rotation, database destructive actions, and billing/account changes require human approval.
@@ -87,7 +87,7 @@ The team deployed the MVP to Cloudflare Workers because the starter already had 
 |---|---|---|---|---|
 | Unsupported Node API appears in a dependency | Devil's advocate | Medium | High | Keep runtime-facing code Web API compatible, run `npm run build`, and verify deployed Worker behavior before production release. |
 | External Supabase/OpenAI latency dominates requests | Pre-mortem | Medium | Medium | Pick a Supabase region deliberately, add request timeouts, and keep diagnosis UX tolerant of slow AI responses. |
-| Pages commands are used for a Workers app | Unknown unknowns | Medium | High | Document Workers-only deployment in `context/deployment/deploy-plan.md` and use `npx wrangler deploy`. |
+| Pages commands are used for a Workers app | Unknown unknowns | Medium | High | Document Workers-only deployment in `context/changes/deployment/deployment-plan.md` and use `npx wrangler deploy`. |
 | Secret values drift across local and production environments | Devil's advocate | Medium | High | Maintain `.env.example`, `.dev.vars` locally, and Cloudflare Worker secrets with the same required key names. |
 | Rollback restores code but not external state | Pre-mortem | Medium | High | Record migration, prompt, model, and secret changes in deployment notes; avoid bundling risky external-state changes with routine code deploys. |
 | Cloudflare MCP/agent tooling is over-trusted | Research finding | Low | Medium | Start with audited CLI commands; add MCP only for repeated read-only discovery or structured logs/state queries. |
