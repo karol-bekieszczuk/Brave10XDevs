@@ -76,7 +76,7 @@ The team deployed the MVP to Cloudflare Workers because the starter already had 
 ## Operational Story
 
 - **Preview deploys**: Production deploys are owned by Cloudflare Workers Builds, connected to the GitHub repo. GitHub Actions remains validation-only. Branch protection must require GitHub CI before merge, because Cloudflare auto-deploys after the selected branch changes. Always protect the public Previews with Cloudflare Access before sharing, especially when public preview URLs expose private test data or prompts.
-- **Secrets**: Local Node tooling uses `.env`; local Worker-style development uses `.dev.vars`; production secrets live in Cloudflare Worker secrets. Keep `SUPABASE_URL`, `SUPABASE_KEY`, and OpenAI provider keys out of committed files and aligned with Astro's server env schema.
+- **Secrets**: Local Node tooling uses `.env`; local Worker-style development uses `.dev.vars`; production secrets live in Cloudflare Worker secrets. The current deploy contract only requires `SUPABASE_URL` and `SUPABASE_KEY`; keep those names aligned across `.env.example`, `.dev.vars`, `astro.config.mjs`, `wrangler.jsonc`, and Cloudflare. AI provider secrets are deferred until the diagnosis route is implemented.
 - **Rollback**: Use `wrangler rollback <VERSION_ID>` after identifying a known-good Worker version. Treat database migrations, Supabase policy changes, prompt changes, and secret rotations as separate rollback procedures.
 - **Approval**: An agent may run read-only checks, builds, logs, and preview deploy commands. Production deploys, primary secret rotation, database destructive actions, and billing/account changes require human approval.
 - **Logs**: Read runtime logs with `npx wrangler tail`; read CI logs through GitHub Actions. Use read-only Cloudflare dashboard/MCP access only after scoped credentials are configured.
@@ -88,17 +88,20 @@ The team deployed the MVP to Cloudflare Workers because the starter already had 
 | Unsupported Node API appears in a dependency | Devil's advocate | Medium | High | Keep runtime-facing code Web API compatible, run `npm run build`, and verify deployed Worker behavior before production release. |
 | External Supabase/OpenAI latency dominates requests | Pre-mortem | Medium | Medium | Pick a Supabase region deliberately, add request timeouts, and keep diagnosis UX tolerant of slow AI responses. |
 | Pages commands are used for a Workers app | Unknown unknowns | Medium | High | Document Workers-only deployment in `context/changes/deployment/deployment-plan.md` and use `npx wrangler deploy`. |
-| Secret values drift across local and production environments | Devil's advocate | Medium | High | Maintain `.env.example`, `.dev.vars` locally, and Cloudflare Worker secrets with the same required key names. |
+| Secret values drift across local and production environments | Devil's advocate | Medium | High | Maintain `.env.example`, `.dev.vars` locally, and Cloudflare Worker secrets with the same required key names; current required keys are `SUPABASE_URL` and `SUPABASE_KEY`. |
+| Secret rotation silently creates a new production Worker version | Devil's advocate | Medium | High | Treat secret rotation as a production deployment. Prefer `npx wrangler versions secret put <KEY>` followed by an intentional `npx wrangler versions deploy` instead of an immediate `npx wrangler secret put <KEY>` on production secrets. |
 | Rollback restores code but not external state | Pre-mortem | Medium | High | Record migration, prompt, model, and secret changes in deployment notes; avoid bundling risky external-state changes with routine code deploys. |
 | Cloudflare MCP/agent tooling is over-trusted | Research finding | Low | Medium | Start with audited CLI commands; add MCP only for repeated read-only discovery or structured logs/state queries. |
 
 ## Getting Started
 
 1. Rename the Worker from the starter default in `wrangler.jsonc` to `myco-hub-ai` before the first real deploy.
-2. Add production Worker secrets for Supabase and OpenAI provider credentials with `npx wrangler secret put <NAME>`.
+2. Add production Worker secrets for `SUPABASE_URL` and `SUPABASE_KEY`. For production rotations, prefer `npx wrangler versions secret put <KEY>` followed by an intentional `npx wrangler versions deploy`; plain `npx wrangler secret put <KEY>` creates and deploys a new Worker version immediately.
 3. Build the project with `npm run build`.
 4. Deploy the Worker with `npx wrangler deploy`.
 5. Verify runtime behavior with `npx wrangler tail` and a smoke test of sign-in, grow-log CRUD, and one diagnosis request.
+
+When the AI diagnosis route lands, add the chosen provider secret in the same change across `.env.example`, `astro.config.mjs`, `wrangler.jsonc` `secrets.required`, and Cloudflare Worker secrets. If OpenAI is the chosen provider, use `OPENAI_API_KEY` unless the implementation documents a different name.
 
 ## Evidence Links
 
