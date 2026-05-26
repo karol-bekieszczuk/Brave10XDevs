@@ -26,6 +26,6 @@ Supabase values are server-only secrets declared in @astro.config.mjs and read t
 
 ## 10x Workflow References
 
-For 10x skill behavior, read the invoked skill's `SKILL.md` instead of relying on duplicated lesson text here. Foundation contracts live in @context/foundation/; deployment planning output lives in @context/deployment/deploy-plan.md.
+For 10x skill behavior, read the invoked skill's `SKILL.md` instead of relying on duplicated lesson text here. Foundation contracts live in @context/foundation/;
 
 <!-- END @przeprogramowani/10x-cli -->
