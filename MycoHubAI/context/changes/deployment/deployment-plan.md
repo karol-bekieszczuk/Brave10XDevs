@@ -208,7 +208,7 @@ SUPABASE_URL="https://<PROJECT_REF>.supabase.co"
 SUPABASE_KEY="<SUPABASE_KEY>"
 ```
 
-Configure Supabase Auth URL settings before testing production login:
+Configure Supabase Auth URL settings before testing production login. The starter-provided sign-up/sign-in flow is acceptable access plumbing for this MVP; configuring Supabase Auth does not expand the product scope into full multi-user account management, sharing, collaboration, or user administration.
 
 1. Open Supabase dashboard.
 2. Go to Authentication -> URL Configuration.
@@ -332,6 +332,6 @@ Worker rollback restores Worker code only. It does not undo Supabase schema or p
 
 - Keep Worker-facing code Web API compatible.
 - Avoid dependencies requiring filesystem access, native modules, unsupported Node APIs, or long-lived process state.
-- Keep grow-log data private to the single-user MVP surface.
+- Keep grow-log data private to the single-user MVP surface. Starter Supabase auth may identify the current user, but do not add multi-user product features unless the PRD changes.
 - Keep diagnosis work limited to agar and grain stages.
 - Future AI integration must add its own server-only env schema, timeout policy, provider failure behavior, and no saved chat history unless the PRD changes.

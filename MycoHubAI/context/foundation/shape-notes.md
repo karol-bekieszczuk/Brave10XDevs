@@ -25,7 +25,7 @@ checkpoint:
     - topic: non-obvious insight
       decision: context-bound answers from a selected grow log plus a stage-limited knowledge base
     - topic: access model
-      decision: single-user first; no full accounts in MVP
+      decision: single-user first; starter Supabase signup/signin may remain as access plumbing, but no full account product surface in MVP
     - topic: MVP flow
       decision: log then diagnose
     - topic: diagnosis accuracy measurement
@@ -47,7 +47,7 @@ checkpoint:
     - topic: work mode
       decision: after-hours
     - topic: non-goals
-      decision: no photos and no full accounts were explicitly selected; seed notes also rule out species support, local export, social integrations, and grow-log sharing
+      decision: no photos and no full account management were explicitly selected; starter auth plumbing is acceptable; seed notes also rule out species support, local export, social integrations, and grow-log sharing
   frs_drafted: 5
   quality_check_status: accepted
 ---
@@ -118,8 +118,8 @@ They reach for MycoHubAI when they have a grow-log entry and a concrete troubles
 
 ### Access
 
-- FR-005: User can use the MVP in a single-user-first mode without full multi-user accounts. Priority: must-have
-  > Socratic: Counter-argument considered: account storage was part of the original seed idea, but auth may slow the first proof of value. Resolution: demoted full accounts out of MVP; prove grow-log diagnosis first with a single-user access model.
+- FR-005: User can use the MVP in a single-user-first mode. Starter-provided Supabase sign-up/sign-in may remain as access plumbing, but full multi-user account management is not part of the product scope. Priority: must-have
+  > Socratic: Counter-argument considered: account storage was part of the original seed idea, but auth may slow the first proof of value. Resolution: keep the starter auth flow only as lightweight access plumbing; prove grow-log diagnosis first without adding multi-user product features.
 
 ## Non-Functional Requirements
 
@@ -140,9 +140,9 @@ The user encounters this rule in the chat flow after selecting a grow log and as
 
 ## Access Control
 
-Single-user-first MVP; no full account system is included in the first version.
+Single-user-first MVP. The current starter may expose Supabase sign-up/sign-in for access, but that is implementation plumbing rather than a product commitment to full accounts.
 
-The user can manage only their own grow logs within the MVP surface. Full multi-user account storage is explicitly outside MVP scope.
+The user can manage only their own grow logs within the MVP surface. Full multi-user account management, user administration, collaboration, sharing, and cross-user data flows are explicitly outside MVP scope.
 
 ## Non-Goals
 
@@ -151,7 +151,7 @@ The user can manage only their own grow logs within the MVP surface. Full multi-
 - No local export or download of grow logs.
 - No social media integrations.
 - No sharing grow logs between users.
-- No full multi-user account system in MVP.
+- No full multi-user account management or user-facing account product surface in MVP, beyond starter-provided Supabase access plumbing.
 - No saved chat history; only grow logs are persisted.
 
 ## Open Questions
@@ -160,7 +160,7 @@ None.
 
 ## Quality cross-check
 
-- Access Control: present; single-user-first MVP with full accounts out of scope.
+- Access Control: present; single-user-first MVP with starter auth plumbing accepted and full account product features out of scope.
 - Business Logic: present; one-sentence staged-log diagnosis rule captured first.
 - Project artifacts: present; this shape-notes file carries a valid checkpoint.
 - Timeline-cost acknowledgment: present by scope; MVP budget is 3 weeks, so no longer-timeline acknowledgment is needed.
