@@ -21,10 +21,10 @@ The app has starter Supabase sign-in, signup, confirm-email, sign-out, and a mid
 | Owner identity | Supabase user ID | Stable and stronger than email for blocking old or unrelated accounts. |
 | Rejected login behavior | Sign out and show generic error | Clears unauthorized sessions without revealing which user is allowed. |
 | Signup removal | Delete signup page and API route | Fully removes app-level public registration instead of hiding only UI. |
-| Route protection | Everything except sign-in and static assets | Matches the requirement that no one else should access the application. |
+| Route protection | Explicit public allowlist only | Keeps sign-in and required assets public while every other app/API route requires the owner. |
 | Config style | Required `AUTHORIZED_USER_ID` secret/env | Fails clearly when owner access is not configured. |
 | Missing config UX | Sign-in shows configuration error | Makes setup failures visible without allowing access. |
-| Supabase signup | Code removal plus dashboard disable | Blocks registration at both app and provider layers. |
+| Supabase signup | Code removal plus all signup switches disabled | Blocks registration at app, local provider, and hosted provider layers. |
 | Verification | Lint/build plus local and production smoke tests | Covers code, stale sessions, and Cloudflare runtime secret drift. |
 
 ## Scope
@@ -33,10 +33,10 @@ The app has starter Supabase sign-in, signup, confirm-email, sign-out, and a mid
 
 - Add required `AUTHORIZED_USER_ID` server secret.
 - Enforce owner-user ID in sign-in API and middleware.
-- Default-deny app routes except sign-in, sign-in POST, sign-out, and static assets.
+- Default-deny app and API routes except `/auth/signin`, `POST /api/auth/signin`, `POST /api/auth/signout`, `/_astro/*`, `/favicon.png`, and `/template.png`.
 - Delete signup and confirm-email routes plus unused signup UI.
 - Remove signup links and copy from landing, topbar, and sign-in page.
-- Disable local Supabase signup and document hosted Supabase signup disablement.
+- Set every local Supabase `enable_signup` entry to `false` and document hosted Supabase signup disablement.
 - Update env examples, Wrangler required secrets, CI build env, README, and deployment runbook.
 
 **Out of scope:**

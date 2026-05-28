@@ -88,7 +88,7 @@ Define the owner secret and enforce it at the server boundary for sign-in and st
 
 **Intent**: Protect the whole app surface by default while preserving sign-in and static assets for bootstrapping.
 
-**Contract**: Replace the current `PROTECTED_ROUTES`-only behavior with an allowlist for `/auth/signin`, `/api/auth/signin`, `/api/auth/signout`, static/public assets, Astro build assets, and other framework-required asset paths. Every other app route requires a present user matching `AUTHORIZED_USER_ID`. Unauthorized sessions are signed out before redirecting to `/auth/signin?error=Access%20denied`; unauthenticated sessions redirect to `/auth/signin`.
+**Contract**: Replace the current `PROTECTED_ROUTES`-only behavior with an explicit public allowlist: `/auth/signin`, `POST /api/auth/signin`, `POST /api/auth/signout`, `/_astro/*`, `/favicon.png`, and `/template.png`. Every other app route and API route requires a present user matching `AUTHORIZED_USER_ID`. Unauthorized sessions are signed out before redirecting to `/auth/signin?error=Access%20denied`; unauthenticated sessions redirect to `/auth/signin`.
 
 ### Success Criteria:
 
@@ -173,7 +173,7 @@ Remove public registration from the app code and local Supabase development conf
 
 **Intent**: Align local development with production access policy by disabling local auth signup.
 
-**Contract**: Auth email signup is disabled. Any other provider-level signup settings should remain unchanged unless they expose registration for this app.
+**Contract**: Every `enable_signup` setting in `supabase/config.toml` is set to `false`, including `[auth].enable_signup`, `[auth.email].enable_signup`, and `[auth.sms].enable_signup`. Do not leave any local Supabase signup provider surface enabled for this app.
 
 ### Success Criteria:
 
@@ -181,6 +181,7 @@ Remove public registration from the app code and local Supabase development conf
 
 - No signup route files remain: `src/pages/auth/signup.astro`, `src/pages/api/auth/signup.ts`, and `src/pages/auth/confirm-email.astro` are absent.
 - No source link or form action references `/auth/signup` or `/api/auth/signup`: `rg "/auth/signup|/api/auth/signup|confirm-email" src` returns no app references.
+- All local Supabase signup switches are disabled: `rg "enable_signup = true" supabase/config.toml` returns no results and `rg "enable_signup = false" supabase/config.toml` confirms the `[auth]`, `[auth.email]`, and `[auth.sms]` entries.
 - Lint passes: `npm run lint`
 - Build passes: `npm run build`
 
@@ -327,14 +328,15 @@ Before deploying the code, identify the intended owner account's Supabase `auth.
 
 - [ ] 2.1 No signup route files remain: `src/pages/auth/signup.astro`, `src/pages/api/auth/signup.ts`, and `src/pages/auth/confirm-email.astro` are absent.
 - [ ] 2.2 No source link or form action references `/auth/signup` or `/api/auth/signup`: `rg "/auth/signup|/api/auth/signup|confirm-email" src` returns no app references.
-- [ ] 2.3 Lint passes: `npm run lint`
-- [ ] 2.4 Build passes: `npm run build`
+- [ ] 2.3 All local Supabase signup switches are disabled: `rg "enable_signup = true" supabase/config.toml` returns no results and `rg "enable_signup = false" supabase/config.toml` confirms the `[auth]`, `[auth.email]`, and `[auth.sms]` entries.
+- [ ] 2.4 Lint passes: `npm run lint`
+- [ ] 2.5 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 2.5 Navigating to `/auth/signup` no longer shows a registration form.
-- [ ] 2.6 Direct POST attempts to `/api/auth/signup` cannot create a user through the app.
-- [ ] 2.7 The landing page, topbar, and sign-in page expose sign-in only.
+- [ ] 2.6 Navigating to `/auth/signup` no longer shows a registration form.
+- [ ] 2.7 Direct POST attempts to `/api/auth/signup` cannot create a user through the app.
+- [ ] 2.8 The landing page, topbar, and sign-in page expose sign-in only.
 
 ### Phase 3: Configuration, Documentation, And Deployment Verification
 
