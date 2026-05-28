@@ -1,7 +1,7 @@
 ---
 change_id: single-user-access-gate
 title: Single-user access gate
-status: planned
+status: implementing
 created: 2026-05-28
 updated: 2026-05-28
 archived_at: null

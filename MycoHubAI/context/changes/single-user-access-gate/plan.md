@@ -313,14 +313,14 @@ Before deploying the code, identify the intended owner account's Supabase `auth.
 
 #### Automated
 
-- [ ] 1.1 Lint passes: `npm run lint`
-- [ ] 1.2 Build passes with `AUTHORIZED_USER_ID`, `SUPABASE_URL`, and `SUPABASE_KEY` configured: `npm run build`
+- [x] 1.1 Lint passes: `npm run lint`
+- [x] 1.2 Build passes with `AUTHORIZED_USER_ID`, `SUPABASE_URL`, and `SUPABASE_KEY` configured: `npm run build`
 
 #### Manual
 
-- [ ] 1.3 `/auth/signin` remains reachable while signed out.
-- [ ] 1.4 A valid Supabase account with a non-matching user ID is signed out and shown a generic access-denied error.
-- [ ] 1.5 A stale non-owner session cannot reach `/`, `/dashboard`, or any non-asset app route.
+- [x] 1.3 `/auth/signin` remains reachable while signed out.
+- [x] 1.4 A valid Supabase account with a non-matching user ID is signed out and shown a generic access-denied error.
+- [x] 1.5 A stale non-owner session cannot reach `/`, `/dashboard`, or any non-asset app route.
 
 ### Phase 2: Registration Surface Removal
 

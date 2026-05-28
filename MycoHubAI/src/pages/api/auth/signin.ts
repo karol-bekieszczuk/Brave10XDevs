@@ -1,4 +1,10 @@
 import type { APIRoute } from "astro";
+import {
+  ACCESS_CONFIG_ERROR,
+  ACCESS_DENIED_ERROR,
+  getAccessControlConfig,
+  isAuthorizedUser,
+} from "@/lib/access-control";
 import { createClient } from "@/lib/supabase";
 
 export const POST: APIRoute = async (context) => {
@@ -10,10 +16,21 @@ export const POST: APIRoute = async (context) => {
   if (!supabase) {
     return context.redirect(`/auth/signin?error=${encodeURIComponent("Supabase is not configured")}`);
   }
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+  const accessConfig = getAccessControlConfig();
+  if (!accessConfig.isConfigured) {
+    return context.redirect(`/auth/signin?error=${encodeURIComponent(ACCESS_CONFIG_ERROR)}`);
+  }
+
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
     return context.redirect(`/auth/signin?error=${encodeURIComponent(error.message)}`);
+  }
+
+  if (!isAuthorizedUser(data.user)) {
+    await supabase.auth.signOut();
+    return context.redirect(`/auth/signin?error=${encodeURIComponent(ACCESS_DENIED_ERROR)}`);
   }
 
   return context.redirect("/");
