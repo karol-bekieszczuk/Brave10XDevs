@@ -313,30 +313,30 @@ Before deploying the code, identify the intended owner account's Supabase `auth.
 
 #### Automated
 
-- [x] 1.1 Lint passes: `npm run lint`
-- [x] 1.2 Build passes with `AUTHORIZED_USER_ID`, `SUPABASE_URL`, and `SUPABASE_KEY` configured: `npm run build`
+- [x] 1.1 Lint passes: `npm run lint` — b85d093
+- [x] 1.2 Build passes with `AUTHORIZED_USER_ID`, `SUPABASE_URL`, and `SUPABASE_KEY` configured: `npm run build` — b85d093
 
 #### Manual
 
-- [x] 1.3 `/auth/signin` remains reachable while signed out.
-- [x] 1.4 A valid Supabase account with a non-matching user ID is signed out and shown a generic access-denied error.
-- [x] 1.5 A stale non-owner session cannot reach `/`, `/dashboard`, or any non-asset app route.
+- [x] 1.3 `/auth/signin` remains reachable while signed out. — b85d093
+- [x] 1.4 A valid Supabase account with a non-matching user ID is signed out and shown a generic access-denied error. — b85d093
+- [x] 1.5 A stale non-owner session cannot reach `/`, `/dashboard`, or any non-asset app route. — b85d093
 
 ### Phase 2: Registration Surface Removal
 
 #### Automated
 
-- [ ] 2.1 No signup route files remain: `src/pages/auth/signup.astro`, `src/pages/api/auth/signup.ts`, and `src/pages/auth/confirm-email.astro` are absent.
-- [ ] 2.2 No source link or form action references `/auth/signup` or `/api/auth/signup`: `rg "/auth/signup|/api/auth/signup|confirm-email" src` returns no app references.
-- [ ] 2.3 All local Supabase signup switches are disabled: `rg "enable_signup = true" supabase/config.toml` returns no results and `rg "enable_signup = false" supabase/config.toml` confirms the `[auth]`, `[auth.email]`, and `[auth.sms]` entries.
-- [ ] 2.4 Lint passes: `npm run lint`
-- [ ] 2.5 Build passes: `npm run build`
+- [x] 2.1 No signup route files remain: `src/pages/auth/signup.astro`, `src/pages/api/auth/signup.ts`, and `src/pages/auth/confirm-email.astro` are absent.
+- [x] 2.2 No source link or form action references `/auth/signup` or `/api/auth/signup`: `rg "/auth/signup|/api/auth/signup|confirm-email" src` returns no app references.
+- [x] 2.3 All local Supabase signup switches are disabled: `rg "enable_signup = true" supabase/config.toml` returns no results and `rg "enable_signup = false" supabase/config.toml` confirms the `[auth]`, `[auth.email]`, and `[auth.sms]` entries.
+- [x] 2.4 Lint passes: `npm run lint`
+- [x] 2.5 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 2.6 Navigating to `/auth/signup` no longer shows a registration form.
-- [ ] 2.7 Direct POST attempts to `/api/auth/signup` cannot create a user through the app.
-- [ ] 2.8 The landing page, topbar, and sign-in page expose sign-in only.
+- [x] 2.6 Navigating to `/auth/signup` no longer shows a registration form.
+- [x] 2.7 Direct POST attempts to `/api/auth/signup` cannot create a user through the app.
+- [x] 2.8 The landing page, topbar, and sign-in page expose sign-in only.
 
 ### Phase 3: Configuration, Documentation, And Deployment Verification
 
