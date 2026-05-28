@@ -342,13 +342,13 @@ Before deploying the code, identify the intended owner account's Supabase `auth.
 
 #### Automated
 
-- [x] 3.1 Secret references are aligned across `.env.example`, `astro.config.mjs`, `wrangler.jsonc`, `.github/workflows/ci.yml`, and README.
-- [x] 3.2 Lint passes: `npm run lint`
-- [x] 3.3 Build passes: `npm run build`
+- [x] 3.1 Secret references are aligned across `.env.example`, `astro.config.mjs`, `wrangler.jsonc`, `.github/workflows/ci.yml`, and README. — e705f76
+- [x] 3.2 Lint passes: `npm run lint` — e705f76
+- [x] 3.3 Build passes: `npm run build` — e705f76
 
 #### Manual
 
-- [x] 3.4 Hosted Supabase dashboard has public signup disabled.
-- [x] 3.5 Cloudflare Worker runtime secrets include `AUTHORIZED_USER_ID`, `SUPABASE_URL`, and `SUPABASE_KEY`.
-- [x] 3.6 GitHub repository secrets include `AUTHORIZED_USER_ID`, `SUPABASE_URL`, and `SUPABASE_KEY` for validation builds.
-- [x] 3.7 After deployment, production smoke test confirms owner login works, non-owner login is denied with generic error, and stale non-owner sessions cannot access app routes.
+- [x] 3.4 Hosted Supabase dashboard has public signup disabled. — e705f76
+- [x] 3.5 Cloudflare Worker runtime secrets include `AUTHORIZED_USER_ID`, `SUPABASE_URL`, and `SUPABASE_KEY`. — e705f76
+- [x] 3.6 GitHub repository secrets include `AUTHORIZED_USER_ID`, `SUPABASE_URL`, and `SUPABASE_KEY` for validation builds. — e705f76
+- [x] 3.7 After deployment, production smoke test confirms owner login works, non-owner login is denied with generic error, and stale non-owner sessions cannot access app routes. — e705f76
