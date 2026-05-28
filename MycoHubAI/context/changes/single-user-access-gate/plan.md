@@ -326,29 +326,29 @@ Before deploying the code, identify the intended owner account's Supabase `auth.
 
 #### Automated
 
-- [x] 2.1 No signup route files remain: `src/pages/auth/signup.astro`, `src/pages/api/auth/signup.ts`, and `src/pages/auth/confirm-email.astro` are absent.
-- [x] 2.2 No source link or form action references `/auth/signup` or `/api/auth/signup`: `rg "/auth/signup|/api/auth/signup|confirm-email" src` returns no app references.
-- [x] 2.3 All local Supabase signup switches are disabled: `rg "enable_signup = true" supabase/config.toml` returns no results and `rg "enable_signup = false" supabase/config.toml` confirms the `[auth]`, `[auth.email]`, and `[auth.sms]` entries.
-- [x] 2.4 Lint passes: `npm run lint`
-- [x] 2.5 Build passes: `npm run build`
+- [x] 2.1 No signup route files remain: `src/pages/auth/signup.astro`, `src/pages/api/auth/signup.ts`, and `src/pages/auth/confirm-email.astro` are absent. — ce66239
+- [x] 2.2 No source link or form action references `/auth/signup` or `/api/auth/signup`: `rg "/auth/signup|/api/auth/signup|confirm-email" src` returns no app references. — ce66239
+- [x] 2.3 All local Supabase signup switches are disabled: `rg "enable_signup = true" supabase/config.toml` returns no results and `rg "enable_signup = false" supabase/config.toml` confirms the `[auth]`, `[auth.email]`, and `[auth.sms]` entries. — ce66239
+- [x] 2.4 Lint passes: `npm run lint` — ce66239
+- [x] 2.5 Build passes: `npm run build` — ce66239
 
 #### Manual
 
-- [x] 2.6 Navigating to `/auth/signup` no longer shows a registration form.
-- [x] 2.7 Direct POST attempts to `/api/auth/signup` cannot create a user through the app.
-- [x] 2.8 The landing page, topbar, and sign-in page expose sign-in only.
+- [x] 2.6 Navigating to `/auth/signup` no longer shows a registration form. — ce66239
+- [x] 2.7 Direct POST attempts to `/api/auth/signup` cannot create a user through the app. — ce66239
+- [x] 2.8 The landing page, topbar, and sign-in page expose sign-in only. — ce66239
 
 ### Phase 3: Configuration, Documentation, And Deployment Verification
 
 #### Automated
 
-- [ ] 3.1 Secret references are aligned across `.env.example`, `astro.config.mjs`, `wrangler.jsonc`, `.github/workflows/ci.yml`, and README.
-- [ ] 3.2 Lint passes: `npm run lint`
-- [ ] 3.3 Build passes: `npm run build`
+- [x] 3.1 Secret references are aligned across `.env.example`, `astro.config.mjs`, `wrangler.jsonc`, `.github/workflows/ci.yml`, and README.
+- [x] 3.2 Lint passes: `npm run lint`
+- [x] 3.3 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 3.4 Hosted Supabase dashboard has public signup disabled.
-- [ ] 3.5 Cloudflare Worker runtime secrets include `AUTHORIZED_USER_ID`, `SUPABASE_URL`, and `SUPABASE_KEY`.
-- [ ] 3.6 GitHub repository secrets include `AUTHORIZED_USER_ID`, `SUPABASE_URL`, and `SUPABASE_KEY` for validation builds.
-- [ ] 3.7 After deployment, production smoke test confirms owner login works, non-owner login is denied with generic error, and stale non-owner sessions cannot access app routes.
+- [x] 3.4 Hosted Supabase dashboard has public signup disabled.
+- [x] 3.5 Cloudflare Worker runtime secrets include `AUTHORIZED_USER_ID`, `SUPABASE_URL`, and `SUPABASE_KEY`.
+- [x] 3.6 GitHub repository secrets include `AUTHORIZED_USER_ID`, `SUPABASE_URL`, and `SUPABASE_KEY` for validation builds.
+- [x] 3.7 After deployment, production smoke test confirms owner login works, non-owner login is denied with generic error, and stale non-owner sessions cannot access app routes.

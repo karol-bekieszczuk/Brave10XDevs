@@ -1,47 +1,39 @@
-# 10x Astro Starter
+# MycoHubAI
 
-![](./public/template.png)
-
-A modern, opinionated starter template for building fast, accessible web applications.
+Private single-user grow-log workspace for agar and grain troubleshooting.
 
 ## Tech Stack
 
-- [Astro](https://astro.build/) v6 - Modern web framework with server-first rendering
-- [React](https://react.dev/) v19 - UI library for interactive components
-- [TypeScript](https://www.typescriptlang.org/) v5 - Type-safe JavaScript
-- [Tailwind CSS](https://tailwindcss.com/) v4 - Utility-first CSS framework
-- [Supabase](https://supabase.com/) - Authentication and backend-as-a-service
-- [Cloudflare Workers](https://workers.cloudflare.com/) - Edge deployment runtime
+- [Astro](https://astro.build/) v6 - server-first web framework
+- [React](https://react.dev/) v19 - interactive islands
+- [TypeScript](https://www.typescriptlang.org/) v5 - type-safe JavaScript
+- [Tailwind CSS](https://tailwindcss.com/) v4 - utility-first CSS
+- [Supabase](https://supabase.com/) - authentication
+- [Cloudflare Workers](https://workers.cloudflare.com/) - edge runtime
 
 ## Prerequisites
 
-- Node.js v22.14.0 (as specified in `.nvmrc`)
-- npm (comes with Node.js)
+- Node.js v22.14.0, as specified in `.nvmrc`
+- npm
 
 ## Getting Started
 
-1. Clone the repository:
-
-```bash
-git clone https://github.com/przeprogramowani/10x-astro-starter.git
-cd 10x-astro-starter
-```
-
-2. Install dependencies:
+1. Install dependencies:
 
 ```bash
 npm install
 ```
 
-3. Set up Supabase and configure environment variables — see [Supabase Configuration](#supabase-configuration) below.
+2. Configure Supabase and the owner user ID. See [Supabase Configuration](#supabase-configuration).
 
-4. Create a `.dev.vars` file for local Cloudflare dev secrets:
+3. Create `.env` for Astro/Node tooling and `.dev.vars` for Cloudflare-style local runtime:
 
 ```bash
+cp .env.example .env
 cp .env.example .dev.vars
 ```
 
-5. Run the development server:
+4. Run the development server:
 
 ```bash
 npm run dev
@@ -49,126 +41,86 @@ npm run dev
 
 ## Available Scripts
 
-- `npm run dev` - Start development server (Cloudflare workerd runtime)
+- `npm run dev` - Start development server
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint with type-checked rules
+- `npm run lint` - Run ESLint
 - `npm run lint:fix` - Auto-fix ESLint issues
 - `npm run format` - Run Prettier
 
-## Project Structure
-
-```md
-.
-├── src/
-│ ├── layouts/ # Astro layouts
-│ ├── pages/ # Astro pages
-│ │ └── api/ # API endpoints
-│ ├── components/ # UI components (Astro & React)
-│ └── assets/ # Static assets
-├── public/ # Public assets
-├── wrangler.jsonc # Cloudflare Workers config
-```
-
 ## Supabase Configuration
 
-This project uses [Supabase](https://supabase.com/) for authentication. Environment variables are declared via Astro's `astro:env` schema and are treated as **server-only secrets** — they are never exposed to the client.
+This project uses Supabase Auth as the credential provider, but MycoHubAI authorizes exactly one configured owner account. Environment variables are declared through Astro's server-only env schema and are never exposed to client code.
 
-### First-time setup (local, no cloud project needed)
+Required local values in both `.env` and `.dev.vars`:
 
-Requires [Docker](https://www.docker.com/) and ~7 GB RAM.
+| Variable | Description |
+| --- | --- |
+| `SUPABASE_URL` | Supabase project URL |
+| `SUPABASE_KEY` | Supabase anon/public key used by SSR auth |
+| `AUTHORIZED_USER_ID` | Allowed owner ID from Supabase Auth `auth.users.id` |
 
-1. Create your `.env` file:
-
-```bash
-cp .env.example .env
-```
-
-2. Initialize the local Supabase project (creates a `supabase/` config folder):
+Local example:
 
 ```bash
-npx supabase init
-```
-
-3. Start the local stack (downloads Docker images on first run):
-
-```bash
-npx supabase start
-```
-
-4. Copy the credentials printed by the CLI into your `.env` and `.dev.vars`:
-
-```
 SUPABASE_URL=http://127.0.0.1:54321
 SUPABASE_KEY=<anon key from CLI output>
+AUTHORIZED_USER_ID=<owner auth.users.id>
 ```
 
-5. To stop the stack when done:
+Hosted Supabase example:
 
 ```bash
-npx supabase stop
-```
-
-The local Studio UI is available at `http://localhost:54323`.
-
-No database tables or migrations are required — this project uses Supabase Auth's built-in `auth.users` table only.
-
-### Using a cloud Supabase project instead
-
-If you prefer to use a hosted Supabase project, add these variables to your `.env` and `.dev.vars` files:
-
-| Variable       | Description                                                |
-| -------------- | ---------------------------------------------------------- |
-| `SUPABASE_URL` | Project URL from Supabase dashboard → Settings → API       |
-| `SUPABASE_KEY` | `anon` public key from Supabase dashboard → Settings → API |
-
-```
 SUPABASE_URL=https://<project-ref>.supabase.co
 SUPABASE_KEY=<anon-key>
+AUTHORIZED_USER_ID=<owner auth.users.id>
 ```
 
-### Email confirmation in local development
+To find `AUTHORIZED_USER_ID`, open Supabase dashboard -> Authentication -> Users, select the intended owner account, and copy its user ID. Use the user ID, not the email address.
 
-By default Supabase requires email confirmation before a user can sign in. To skip this during local development:
+### Disable Public Signup
 
-1. Open the Supabase dashboard for your project
-2. Go to **Authentication → Email → Confirm email**
-3. Toggle it **off**
+Public signup is not part of this MVP. The app has no signup page or signup API route.
 
-Users can then sign in immediately after sign-up without clicking a confirmation link.
+For hosted Supabase:
 
-### Auth routes
+1. Open the Supabase dashboard for the project.
+2. Go to Authentication -> Providers -> Email.
+3. Disable public email signup.
+4. Keep the intended owner account and use its `auth.users.id` as `AUTHORIZED_USER_ID`.
 
-| Route                 | Description                                                             |
-| --------------------- | ----------------------------------------------------------------------- |
-| `/auth/signin`        | Email/password sign-in form                                             |
-| `/auth/signup`        | Email/password sign-up form                                             |
-| `/auth/confirm-email` | Post-signup "check your inbox" page                                     |
-| `/dashboard`          | Example protected page (redirects to `/auth/signin` if unauthenticated) |
+For local Supabase, `supabase/config.toml` disables `[auth]`, `[auth.email]`, and `[auth.sms]` signup.
 
-Route protection is handled in `src/middleware.ts`. Add paths to the `PROTECTED_ROUTES` array there to require authentication.
+### Auth Routes
+
+| Route | Description |
+| --- | --- |
+| `/auth/signin` | Email/password sign-in form |
+| `/api/auth/signout` | Sign-out endpoint |
+| `/dashboard` | Protected owner-only page |
+
+Route protection is handled in `src/middleware.ts`. The middleware default-denies app and API routes unless the active Supabase `user.id` equals `AUTHORIZED_USER_ID`. Static assets, sign-in, and sign-out are explicitly allowed.
 
 ## Deployment
 
-This project deploys to [Cloudflare Workers](https://workers.cloudflare.com/).
+This project deploys to Cloudflare Workers. Production deploy ownership is Cloudflare Workers Builds / Git integration; GitHub Actions is validation-only.
 
-1. Build the project:
+Before production smoke testing, configure:
 
-```bash
-npm run build
-```
+- Cloudflare Worker runtime secrets: `SUPABASE_URL`, `SUPABASE_KEY`, `AUTHORIZED_USER_ID`
+- Cloudflare Workers Builds build variables/secrets: `SUPABASE_URL`, `SUPABASE_KEY`, `AUTHORIZED_USER_ID`
+- GitHub repository secrets for CI: `SUPABASE_URL`, `SUPABASE_KEY`, `AUTHORIZED_USER_ID`
+- Hosted Supabase public signup disabled
 
-2. Deploy with Wrangler:
+Manual fallback deploy command:
 
 ```bash
 npx wrangler deploy
 ```
 
-Set `SUPABASE_URL` and `SUPABASE_KEY` as secrets in your Cloudflare dashboard or via `npx wrangler secret put`.
-
 ## CI
 
-GitHub Actions runs lint + build on every push and PR to `master`. Configure `SUPABASE_URL` and `SUPABASE_KEY` as repository secrets in GitHub for the build step.
+GitHub Actions runs lint and build on every push and pull request to `master`. Configure `SUPABASE_URL`, `SUPABASE_KEY`, and `AUTHORIZED_USER_ID` as repository secrets so the validation build can satisfy Astro's required server env schema.
 
 ## License
 

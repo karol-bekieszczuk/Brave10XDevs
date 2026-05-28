@@ -18,15 +18,16 @@ Keep the same Supabase names everywhere:
 
 - `SUPABASE_URL`
 - `SUPABASE_KEY`
+- `AUTHORIZED_USER_ID`
 
 Local development uses either `.dev.vars` for Worker-style local runtime checks or `.env` for Node/Astro tooling. If `.dev.vars` exists, Wrangler prefers it for local development, so keep it aligned with `.env.example`.
 
-Cloudflare needs Supabase values in two places:
+Cloudflare needs Supabase and owner-access values in two places:
 
 - Worker runtime secrets: available to deployed Worker code.
 - Workers Builds build secrets or variables: available while Cloudflare runs `npm run build`.
 
-GitHub Actions only needs `SUPABASE_URL` and `SUPABASE_KEY` if the validation workflow continues to run `npm run build`. GitHub Actions does not need `CLOUDFLARE_ACCOUNT_ID` or `CLOUDFLARE_API_TOKEN` because GitHub Actions is not responsible for deployment.
+GitHub Actions only needs `SUPABASE_URL`, `SUPABASE_KEY`, and `AUTHORIZED_USER_ID` if the validation workflow continues to run `npm run build`. GitHub Actions does not need `CLOUDFLARE_ACCOUNT_ID` or `CLOUDFLARE_API_TOKEN` because GitHub Actions is not responsible for deployment.
 
 ## Prerequisites
 
@@ -124,6 +125,7 @@ If Cloudflare asks for build variables or build secrets, add:
 
 - `SUPABASE_URL`
 - `SUPABASE_KEY`
+- `AUTHORIZED_USER_ID`
 
 These build-time values are required because Astro validates server env during `npm run build`. Build variables are not a substitute for Worker runtime secrets.
 
@@ -137,6 +139,7 @@ Set runtime secrets for the deployed Worker in Cloudflare:
 4. Add encrypted runtime secrets:
    - `SUPABASE_URL`
    - `SUPABASE_KEY`
+   - `AUTHORIZED_USER_ID`
 
 CLI equivalent for local/manual setup:
 
@@ -145,6 +148,7 @@ npx wrangler login
 npx wrangler whoami
 npx wrangler secret put SUPABASE_URL
 npx wrangler secret put SUPABASE_KEY
+npx wrangler secret put AUTHORIZED_USER_ID
 npx wrangler secret list
 ```
 
@@ -192,6 +196,7 @@ Get the required values from the Supabase dashboard:
 2. Go to Project Settings -> API.
 3. Copy the Project URL into `SUPABASE_URL`.
 4. Copy the key that the SSR server code should use into `SUPABASE_KEY`.
+5. Copy the intended owner account's Supabase Auth user ID into `AUTHORIZED_USER_ID`.
 
 Keep `SUPABASE_KEY` aligned across:
 
@@ -201,14 +206,17 @@ Keep `SUPABASE_KEY` aligned across:
 - Cloudflare Workers Builds build secret or variable
 - Cloudflare Worker runtime secret
 
+Keep `AUTHORIZED_USER_ID` aligned across the same places. This must be the Supabase `auth.users.id` value for the single owner account, not the email address.
+
 Local files should look like this, with real values:
 
 ```bash
 SUPABASE_URL="https://<PROJECT_REF>.supabase.co"
 SUPABASE_KEY="<SUPABASE_KEY>"
+AUTHORIZED_USER_ID="<OWNER_AUTH_USERS_ID>"
 ```
 
-Configure Supabase Auth URL settings before testing production login. The starter-provided sign-up/sign-in flow is acceptable access plumbing for this MVP; configuring Supabase Auth does not expand the product scope into full multi-user account management, sharing, collaboration, or user administration.
+Configure Supabase Auth URL settings before testing production login. Sign-in remains access plumbing for this single-owner MVP; public signup, full multi-user account management, sharing, collaboration, and user administration remain outside scope.
 
 1. Open Supabase dashboard.
 2. Go to Authentication -> URL Configuration.
@@ -217,6 +225,7 @@ Configure Supabase Auth URL settings before testing production login. The starte
 5. Keep local development redirects as separate entries, for example:
    - `http://localhost:4321/**`
    - `http://127.0.0.1:4321/**`
+6. Disable public signup in Authentication -> Providers -> Email before production smoke testing.
 
 Use the deployed Worker URL after the first successful deploy. Until a custom domain is attached, this will usually be the `*.workers.dev` URL for `myco-hub-ai`.
 
@@ -275,8 +284,9 @@ Check Cloudflare dashboard before relying on auto deploy:
 - Production branch is `master`.
 - Build command is `npm run build`.
 - Deploy command is `npx wrangler deploy`.
-- Runtime secrets include `SUPABASE_URL` and `SUPABASE_KEY`.
-- Build secrets or variables include `SUPABASE_URL` and `SUPABASE_KEY`.
+- Runtime secrets include `SUPABASE_URL`, `SUPABASE_KEY`, and `AUTHORIZED_USER_ID`.
+- Build secrets or variables include `SUPABASE_URL`, `SUPABASE_KEY`, and `AUTHORIZED_USER_ID`.
+- Hosted Supabase public signup is disabled.
 
 After merge, Cloudflare Workers Builds should trigger on the push to `master` and deploy the Worker. GitHub Actions should only report validation status.
 
@@ -323,7 +333,7 @@ Worker rollback restores Worker code only. It does not undo Supabase schema or p
 - No deploy after merge to `master`: check Workers & Pages -> `myco-hub-ai` -> Settings -> Build -> Branch control and confirm production branch is `master`.
 - Cloudflare build cannot find the app: confirm root directory is `/`.
 - Cloudflare build succeeds but deploy fails: confirm deploy command is `npx wrangler deploy`, `wrangler.jsonc` name is `myco-hub-ai`, and Worker runtime secrets exist.
-- Build fails with missing Supabase env: add `SUPABASE_URL` and `SUPABASE_KEY` to Cloudflare build secrets or variables and Worker runtime secrets.
+- Build fails with missing Supabase or owner env: add `SUPABASE_URL`, `SUPABASE_KEY`, and `AUTHORIZED_USER_ID` to Cloudflare build secrets or variables and Worker runtime secrets.
 - Supabase auth redirects to localhost: update Supabase Authentication -> URL Configuration with the Worker production URL.
 - GitHub Actions deploys unexpectedly: remove `cloudflare/wrangler-action`, `npx wrangler deploy`, `CLOUDFLARE_ACCOUNT_ID`, and `CLOUDFLARE_API_TOKEN` from workflows and repository secrets.
 - Preview/private-data risk: do not enable non-production branch builds against production Supabase data unless Cloudflare Access or a separate environment is configured.
