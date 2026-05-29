@@ -1,7 +1,7 @@
 ---
 change_id: grow-log-data-contract
 title: Grow-log data contract
-status: implementing
+status: implemented
 created: 2026-05-29
 updated: 2026-05-29
 archived_at: null

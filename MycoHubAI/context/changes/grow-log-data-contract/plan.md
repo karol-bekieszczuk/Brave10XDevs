@@ -173,56 +173,6 @@ Add the small TypeScript surface that future grow-log CRUD code can import witho
 
 ---
 
-## Phase 3: Planning Artifact Alignment
-
-### Overview
-
-Keep the planning artifacts accurate after the contract lands so future 10x workflow steps can consume this foundation without ambiguity.
-
-### Changes Required:
-
-#### 1. Change identity
-
-**File**: `context/changes/grow-log-data-contract/change.md`
-
-**Intent**: Mark the change as planned and keep the note aligned with the final contract decisions.
-
-**Contract**: `status` is `planned` before implementation begins. Notes continue to describe a minimum private staged text-log contract and do not imply CRUD, diagnosis, image analysis, sharing, or multi-user account management.
-
-#### 2. Plan and brief
-
-**File**: `context/changes/grow-log-data-contract/plan.md`
-
-**Intent**: Make the implementation sequence, scope boundary, and verification expectations explicit for `/10x-implement`.
-
-**Contract**: The plan records the decisions made during planning: minimal staging contract with `title`, hard delete, RLS with `owner_id = auth.uid()`, manual TypeScript contract rather than generated Supabase types, DB check plus TS union for stage, no contract registry in this change, and no CRUD runtime.
-
-**File**: `context/changes/grow-log-data-contract/plan-brief.md`
-
-**Intent**: Provide a short reader-friendly summary of the same plan for quick review.
-
-**Contract**: The brief links back to the full plan and lists key decisions, scope, phases, risks, and success criteria.
-
-### Success Criteria:
-
-#### Automated Verification:
-
-- `context/changes/grow-log-data-contract/change.md` has `status: planned`.
-- `context/changes/grow-log-data-contract/plan.md` exists.
-- `context/changes/grow-log-data-contract/plan-brief.md` exists.
-- The plan contains exactly one `## Progress` section.
-- Progress checkboxes exist only under `## Progress`.
-
-#### Manual Verification:
-
-- The full plan is written in English and is actionable by `/10x-implement grow-log-data-contract phase 1`.
-- The brief is short enough to review before the full plan.
-- Scope explicitly excludes CRUD, diagnosis runtime, registry creation, soft delete, image analysis, sharing, and multi-user product features.
-
-**Implementation Note**: After completing this phase and all automated verification passes, pause here for manual confirmation from the human that the manual testing was successful before closing the change.
-
----
-
 ## Testing Strategy
 
 ### Unit Tests:
@@ -282,40 +232,24 @@ This is the first application data migration in the repo. Local and production S
 
 #### Manual
 
-- [x] 1.8 In local Supabase, the migration applies cleanly with the project-pinned Supabase CLI.
-- [x] 1.9 As the owner user, selecting, inserting, updating, and deleting own grow logs works in SQL/API checks.
-- [x] 1.10 As another authenticated user, selecting, updating, or deleting the owner's rows is denied by RLS.
-- [x] 1.11 Insert attempts with `owner_id` different from `auth.uid()` are denied by RLS.
-- [x] 1.12 Insert attempts with an unsupported stage are rejected by the database.
+- [x] 1.8 In local Supabase, the migration applies cleanly with the project-pinned Supabase CLI. — c5d393e
+- [x] 1.9 As the owner user, selecting, inserting, updating, and deleting own grow logs works in SQL/API checks. — c5d393e
+- [x] 1.10 As another authenticated user, selecting, updating, or deleting the owner's rows is denied by RLS. — c5d393e
+- [x] 1.11 Insert attempts with `owner_id` different from `auth.uid()` are denied by RLS. — c5d393e
+- [x] 1.12 Insert attempts with an unsupported stage are rejected by the database. — c5d393e
 
 ### Phase 2: Application Type Contract
 
 #### Automated
 
-- [x] 2.1 Grow-log type module exports the supported stages and row/input types.
-- [x] 2.2 `GrowLogStage` resolves to only `agar` or `grain`.
-- [x] 2.3 Type contract does not include `deletedAt`, species, image, diagnosis, or saved-chat fields.
-- [x] 2.4 Linting passes: `npm run lint`.
-- [x] 2.5 Build passes: `npm run build`.
+- [x] 2.1 Grow-log type module exports the supported stages and row/input types. — c5d393e
+- [x] 2.2 `GrowLogStage` resolves to only `agar` or `grain`. — c5d393e
+- [x] 2.3 Type contract does not include `deletedAt`, species, image, diagnosis, or saved-chat fields. — c5d393e
+- [x] 2.4 Linting passes: `npm run lint`. — c5d393e
+- [x] 2.5 Build passes: `npm run build`. — c5d393e
 
 #### Manual
 
-- [x] 2.6 A future implementer can identify the exact stage values and row shape from `src/lib/grow-logs/types.ts`.
-- [x] 2.7 The type contract matches the migration fields and hard-delete decision.
-- [x] 2.8 No CRUD runtime behavior was added accidentally.
-
-### Phase 3: Planning Artifact Alignment
-
-#### Automated
-
-- [ ] 3.1 `context/changes/grow-log-data-contract/change.md` has `status: planned`.
-- [ ] 3.2 `context/changes/grow-log-data-contract/plan.md` exists.
-- [ ] 3.3 `context/changes/grow-log-data-contract/plan-brief.md` exists.
-- [ ] 3.4 The plan contains exactly one `## Progress` section.
-- [ ] 3.5 Progress checkboxes exist only under `## Progress`.
-
-#### Manual
-
-- [ ] 3.6 The full plan is written in English and is actionable by `/10x-implement grow-log-data-contract phase 1`.
-- [ ] 3.7 The brief is short enough to review before the full plan.
-- [ ] 3.8 Scope explicitly excludes CRUD, diagnosis runtime, registry creation, soft delete, image analysis, sharing, and multi-user product features.
+- [x] 2.6 A future implementer can identify the exact stage values and row shape from `src/lib/grow-logs/types.ts`. — c5d393e
+- [x] 2.7 The type contract matches the migration fields and hard-delete decision. — c5d393e
+- [x] 2.8 No CRUD runtime behavior was added accidentally. — c5d393e

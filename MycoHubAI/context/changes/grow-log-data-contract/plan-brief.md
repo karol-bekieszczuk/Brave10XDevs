@@ -55,10 +55,9 @@ Use a database-first foundation: one migration creates the table, constraints, t
 | --- | --- | --- |
 | 1. Database Contract | `grow_logs` migration with constraints, indexes, timestamps, and RLS | RLS mistakes could weaken privacy or block valid owner access. |
 | 2. Application Type Contract | Shared stage/row/input TypeScript contract | Manual types can drift from SQL if not reviewed together. |
-| 3. Planning Artifact Alignment | English plan/brief and planned change status | Scope could accidentally imply CRUD or registry work. |
 
 **Prerequisites:** Local Supabase CLI workflow must be available for migration/RLS verification.
-**Estimated effort:** ~1 implementation session across 3 small phases, plus manual local Supabase checks.
+**Estimated effort:** ~1 implementation session across 2 small phases, plus manual local Supabase checks.
 
 ## Open Risks & Assumptions
 
