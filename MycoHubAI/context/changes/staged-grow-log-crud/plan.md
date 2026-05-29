@@ -330,47 +330,47 @@ No new database migration is planned. This change must consume the existing `pub
 
 #### Manual
 
-- [ ] 1.9 The data-access layer remains limited to the existing F-02 fields and does not introduce diagnosis, image, species, export, sharing, or soft-delete fields.
-- [ ] 1.10 The test setup is small and does not add browser/E2E infrastructure.
+- [x] 1.9 The data-access layer remains limited to the existing F-02 fields and does not introduce diagnosis, image, species, export, sharing, or soft-delete fields.
+- [x] 1.10 The test setup is small and does not add browser/E2E infrastructure.
 
 ### Phase 2: Grow-log Routes, Forms, and Dashboard Entry Point
 
 #### Automated
 
-- [x] 2.1 `/grow-logs`, `/grow-logs/new`, `/grow-logs/[id]`, and `/grow-logs/[id]/edit` pages exist and build.
-- [x] 2.2 Create, update, and delete API routes export uppercase `POST` handlers.
-- [x] 2.3 API routes validate `stage`, `title`, and `body` server-side before repository writes.
-- [x] 2.4 API routes set or filter owner access using `context.locals.user.id` and the repository owner contract.
-- [x] 2.5 Delete remains hard delete and does not introduce `deleted_at` or recovery UI.
-- [x] 2.6 No route or UI adds diagnosis, image, species, sharing, export, or multi-user account fields.
-- [x] 2.7 Unit tests pass: `npm run test:unit`.
-- [x] 2.8 Linting passes: `npm run lint`.
-- [x] 2.9 Build passes: `npm run build`.
+- [x] 2.1 `/grow-logs`, `/grow-logs/new`, `/grow-logs/[id]`, and `/grow-logs/[id]/edit` pages exist and build. — 14e9b1f
+- [x] 2.2 Create, update, and delete API routes export uppercase `POST` handlers. — 14e9b1f
+- [x] 2.3 API routes validate `stage`, `title`, and `body` server-side before repository writes. — 14e9b1f
+- [x] 2.4 API routes set or filter owner access using `context.locals.user.id` and the repository owner contract. — 14e9b1f
+- [x] 2.5 Delete remains hard delete and does not introduce `deleted_at` or recovery UI. — 14e9b1f
+- [x] 2.6 No route or UI adds diagnosis, image, species, sharing, export, or multi-user account fields. — 14e9b1f
+- [x] 2.7 Unit tests pass: `npm run test:unit`. — 14e9b1f
+- [x] 2.8 Linting passes: `npm run lint`. — 14e9b1f
+- [x] 2.9 Build passes: `npm run build`. — 14e9b1f
 
 #### Manual
 
-- [ ] 2.10 Owner can open `/dashboard` and navigate to `/grow-logs`.
-- [ ] 2.11 Owner can create an `agar` grow log and lands on its detail page.
-- [ ] 2.12 Owner can create a `grain` grow log and see it in the list.
-- [ ] 2.13 Owner can edit a grow log's stage, title, and body from `/grow-logs/[id]/edit`.
-- [ ] 2.14 Owner can delete a grow log only after an explicit confirmation and returns to `/grow-logs`.
-- [ ] 2.15 Blank title/body and unsupported stage submissions show a user-facing error and do not create or update rows.
-- [ ] 2.16 A missing or non-owned log ID does not expose row contents.
+- [x] 2.10 Owner can open `/dashboard` and navigate to `/grow-logs`.
+- [x] 2.11 Owner can create an `agar` grow log and lands on its detail page.
+- [x] 2.12 Owner can create a `grain` grow log and see it in the list.
+- [x] 2.13 Owner can edit a grow log's stage, title, and body from `/grow-logs/[id]/edit`.
+- [x] 2.14 Owner can delete a grow log only after an explicit confirmation and returns to `/grow-logs`.
+- [x] 2.15 Blank title/body and unsupported stage submissions show a user-facing error and do not create or update rows.
+- [x] 2.16 A missing or non-owned log ID does not expose row contents.
 
 ### Phase 3: End-to-End Verification and Scope Audit
 
 #### Automated
 
-- [ ] 3.1 Unit tests pass: `npm run test:unit`.
-- [ ] 3.2 CI includes `npm run test:unit` before lint/build.
-- [ ] 3.3 Linting passes: `npm run lint`.
-- [ ] 3.4 Build passes: `npm run build`.
-- [ ] 3.5 Search confirms no forbidden scope fields or surfaces were added for grow logs: no `species`, image/photo upload, sharing, export, saved chat history, or `deleted_at` in the S-01 implementation.
-- [ ] 3.6 Search confirms no `/grow-logs` path was added to middleware public routes.
+- [x] 3.1 Unit tests pass: `npm run test:unit`.
+- [x] 3.2 CI includes `npm run test:unit` before lint/build.
+- [x] 3.3 Linting passes: `npm run lint`.
+- [x] 3.4 Build passes: `npm run build`.
+- [x] 3.5 Search confirms no forbidden scope fields or surfaces were added for grow logs: no `species`, image/photo upload, sharing, export, saved chat history, or `deleted_at` in the S-01 implementation.
+- [x] 3.6 Search confirms no `/grow-logs` path was added to middleware public routes.
 
 #### Manual
 
-- [ ] 3.7 Full local smoke test covers list, create, detail, edit, delete, validation failure, and missing/non-owned ID behavior.
-- [ ] 3.8 Supabase local data inspection confirms rows are physically deleted after delete.
-- [ ] 3.9 The resulting CRUD flow provides a real single-log detail page suitable for later selected-log diagnosis.
-- [ ] 3.10 Production smoke testing is explicitly left for after deployment; do not claim production verification before a deploy exists.
+- [x] 3.7 Full local smoke test covers list, create, detail, edit, delete, validation failure, and missing/non-owned ID behavior.
+- [x] 3.8 Supabase local data inspection confirms rows are physically deleted after delete.
+- [x] 3.9 The resulting CRUD flow provides a real single-log detail page suitable for later selected-log diagnosis.
+- [x] 3.10 Production smoke testing is explicitly left for after deployment; do not claim production verification before a deploy exists.
