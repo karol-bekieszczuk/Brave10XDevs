@@ -8,7 +8,7 @@ MycoHubAI needs a clear diagnosis quality contract before implementing selected-
 
 ## Starting Point
 
-The roadmap marks `diagnosis-quality-rubric` as F-02, a foundation that unlocks `selected-log-diagnosis`. The runtime app currently has auth and a protected dashboard shell, but no diagnosis API, grow-log schema, AI provider, prompts, or evaluator.
+The roadmap marks `diagnosis-quality-rubric` as F-03, a foundation that unlocks `selected-log-diagnosis`. The runtime app currently has auth and a protected dashboard shell, but no diagnosis API, grow-log schema, AI provider, prompts, or evaluator.
 
 ## Desired End State
 
@@ -24,7 +24,7 @@ The repo has a readable rubric at `docs/reference/diagnosis-quality-rubric.md` a
 | Missing context | Follow-up when critical stage context is absent | Prevents guessing when the selected log lacks information needed for a responsible diagnosis. |
 | Mixed scope | Answer only the agar/grain portion | Keeps the response useful while preserving the MVP boundary. |
 | Scoring scale | 0/1/2 per criterion plus case threshold | Captures absent, partial, and complete quality without heavyweight weighted scoring. |
-| Runtime scope | Docs and structured cases only | Completes F-02 without prematurely implementing S-02. |
+| Runtime scope | Docs and structured cases only | Completes F-03 without prematurely implementing S-02. |
 
 ## Scope
 
@@ -49,7 +49,7 @@ This is a reference-artifact change. The Markdown rubric owns the human-readable
 
 | Phase | What it delivers | Key risk |
 | --- | --- | --- |
-| 1. Change Scaffolding And Reference Location | Active change identity and `docs/reference/` location | Accidentally treating F-02 as runtime diagnosis work. |
+| 1. Change Scaffolding And Reference Location | Active change identity and `docs/reference/` location | Accidentally treating F-03 as runtime diagnosis work. |
 | 2. Diagnosis Quality Rubric | Human-readable scoring and behavior contract | Rubric could be too vague to guide implementation. |
 | 3. Evaluation Case Set | 10 structured prepared cases | Cases could overfit wording or miss key scope failures. |
 | 4. Handoff And Verification | Discoverability and final foundation checks | Future agents may miss the rubric unless it is registered clearly. |
@@ -60,7 +60,7 @@ This is a reference-artifact change. The Markdown rubric owns the human-readable
 ## Open Risks & Assumptions
 
 - Case quality depends on domain judgment; the first set should be treated as MVP evaluation coverage, not a comprehensive cultivation knowledge base.
-- No automated evaluator exists yet, so F-02 proves structure and reviewability rather than live AI correctness.
+- No automated evaluator exists yet, so F-03 proves structure and reviewability rather than live AI correctness.
 - The future S-02 implementation must intentionally consume these artifacts; this change only creates the contract.
 
 ## Success Criteria (Summary)
