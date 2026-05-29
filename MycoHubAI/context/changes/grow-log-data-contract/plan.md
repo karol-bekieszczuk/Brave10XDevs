@@ -272,37 +272,37 @@ This is the first application data migration in the repo. Local and production S
 
 #### Automated
 
-- [ ] 1.1 Migration file exists under `supabase/migrations/` and contains the `public.grow_logs` table definition.
-- [ ] 1.2 Stage constraint allows only `agar` and `grain`.
-- [ ] 1.3 RLS is enabled on `public.grow_logs`.
-- [ ] 1.4 Policies cover owner-scoped `select`, `insert`, `update`, and `delete`.
-- [ ] 1.5 No `deleted_at` column or diagnosis-specific fields are present in the migration.
-- [ ] 1.6 Linting passes: `npm run lint`.
-- [ ] 1.7 Build passes: `npm run build`.
+- [x] 1.1 Migration file exists under `supabase/migrations/` and contains the `public.grow_logs` table definition.
+- [x] 1.2 Stage constraint allows only `agar` and `grain`.
+- [x] 1.3 RLS is enabled on `public.grow_logs`.
+- [x] 1.4 Policies cover owner-scoped `select`, `insert`, `update`, and `delete`.
+- [x] 1.5 No `deleted_at` column or diagnosis-specific fields are present in the migration.
+- [x] 1.6 Linting passes: `npm run lint`.
+- [x] 1.7 Build passes: `npm run build`.
 
 #### Manual
 
-- [ ] 1.8 In local Supabase, the migration applies cleanly with the project-pinned Supabase CLI.
-- [ ] 1.9 As the owner user, selecting, inserting, updating, and deleting own grow logs works in SQL/API checks.
-- [ ] 1.10 As another authenticated user, selecting, updating, or deleting the owner's rows is denied by RLS.
-- [ ] 1.11 Insert attempts with `owner_id` different from `auth.uid()` are denied by RLS.
-- [ ] 1.12 Insert attempts with an unsupported stage are rejected by the database.
+- [x] 1.8 In local Supabase, the migration applies cleanly with the project-pinned Supabase CLI.
+- [x] 1.9 As the owner user, selecting, inserting, updating, and deleting own grow logs works in SQL/API checks.
+- [x] 1.10 As another authenticated user, selecting, updating, or deleting the owner's rows is denied by RLS.
+- [x] 1.11 Insert attempts with `owner_id` different from `auth.uid()` are denied by RLS.
+- [x] 1.12 Insert attempts with an unsupported stage are rejected by the database.
 
 ### Phase 2: Application Type Contract
 
 #### Automated
 
-- [ ] 2.1 Grow-log type module exports the supported stages and row/input types.
-- [ ] 2.2 `GrowLogStage` resolves to only `agar` or `grain`.
-- [ ] 2.3 Type contract does not include `deletedAt`, species, image, diagnosis, or saved-chat fields.
-- [ ] 2.4 Linting passes: `npm run lint`.
-- [ ] 2.5 Build passes: `npm run build`.
+- [x] 2.1 Grow-log type module exports the supported stages and row/input types.
+- [x] 2.2 `GrowLogStage` resolves to only `agar` or `grain`.
+- [x] 2.3 Type contract does not include `deletedAt`, species, image, diagnosis, or saved-chat fields.
+- [x] 2.4 Linting passes: `npm run lint`.
+- [x] 2.5 Build passes: `npm run build`.
 
 #### Manual
 
-- [ ] 2.6 A future implementer can identify the exact stage values and row shape from `src/lib/grow-logs/types.ts`.
-- [ ] 2.7 The type contract matches the migration fields and hard-delete decision.
-- [ ] 2.8 No CRUD runtime behavior was added accidentally.
+- [x] 2.6 A future implementer can identify the exact stage values and row shape from `src/lib/grow-logs/types.ts`.
+- [x] 2.7 The type contract matches the migration fields and hard-delete decision.
+- [x] 2.8 No CRUD runtime behavior was added accidentally.
 
 ### Phase 3: Planning Artifact Alignment
 

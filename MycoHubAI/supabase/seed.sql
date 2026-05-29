@@ -1,0 +1,1 @@
+-- Intentionally empty. Keeps local Supabase reset/apply workflows compatible with config.toml.
