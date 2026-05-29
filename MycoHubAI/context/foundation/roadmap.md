@@ -82,7 +82,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** -
 - **Unknowns:** -
 - **Risk:** If this foundation drifts beyond staged text logs, the speed goal is lost before the first user-visible flow.
-- **Status:** ready
+- **Status:** done
 
 ### F-03: Diagnosis quality rubric
 
