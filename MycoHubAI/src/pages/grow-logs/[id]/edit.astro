@@ -1,0 +1,76 @@
+---
+import GrowLogForm from "@/components/grow-logs/GrowLogForm.astro";
+import Layout from "@/layouts/Layout.astro";
+import { getOwnerGrowLog } from "@/lib/grow-logs/repository";
+import type { GrowLogStage } from "@/lib/grow-logs/types";
+import { isGrowLogStage } from "@/lib/grow-logs/types";
+import { createClient } from "@/lib/supabase";
+
+const { user } = Astro.locals;
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+const log = user && supabase ? await getOwnerGrowLog(supabase, Astro.params.id ?? "", user.id) : null;
+const isUnavailable = !user || !supabase;
+
+if (!log && !isUnavailable) {
+  Astro.response.status = 404;
+}
+
+const stageParam = Astro.url.searchParams.get("stage");
+const stage: GrowLogStage = isGrowLogStage(stageParam) ? stageParam : (log?.stage ?? "agar");
+const title = Astro.url.searchParams.get("title") ?? log?.title ?? "";
+const body = Astro.url.searchParams.get("body") ?? log?.body ?? "";
+const error = Astro.url.searchParams.get("error");
+---
+
+<Layout title={log ? `Edit ${log.title}` : "Grow log not found"}>
+  <div class="bg-cosmic min-h-screen px-4 py-10 text-white">
+    <div class="mx-auto max-w-3xl">
+      {
+        !log ? (
+          <div class="rounded-[2rem] border border-white/10 bg-slate-950/35 p-8 text-center shadow-2xl shadow-cyan-950/20 backdrop-blur">
+            <p class="text-sm tracking-[0.35em] text-cyan-200/80 uppercase">
+              {isUnavailable ? "Unavailable" : "Not found"}
+            </p>
+            <h1 class="mt-3 text-3xl font-semibold text-white">
+              {isUnavailable
+                ? "This request could not load the private grow-log client."
+                : "That grow log cannot be edited here."}
+            </h1>
+            <p class="mt-3 text-blue-100/75">
+              {isUnavailable
+                ? "Refresh the session and try again."
+                : "Use your private list to select a valid owner-scoped entry."}
+            </p>
+            <a
+              href="/grow-logs"
+              class="mt-6 inline-flex items-center rounded-full bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200"
+            >
+              Back to grow logs
+            </a>
+          </div>
+        ) : (
+          <div class="rounded-[2rem] border border-white/10 bg-slate-950/35 p-6 shadow-2xl shadow-cyan-950/20 backdrop-blur">
+            <p class="text-sm tracking-[0.35em] text-cyan-200/80 uppercase">Edit entry</p>
+            <h1 class="mt-3 text-4xl font-semibold tracking-tight text-white">{log.title}</h1>
+            <p class="mt-3 text-base leading-7 text-blue-100/75">
+              Keep the entry inside the staged text-log contract. No diagnosis, photo, species, or sharing fields belong
+              here.
+            </p>
+
+            <div class="mt-8">
+              <GrowLogForm
+                action={`/api/grow-logs/${log.id}/update`}
+                cancelHref={`/grow-logs/${log.id}`}
+                error={error}
+                stage={stage}
+                title={title}
+                body={body}
+                submitLabel="Save changes"
+              />
+            </div>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,82 @@
+---
+import type { GrowLogStage } from "@/lib/grow-logs/types";
+import { GROW_LOG_STAGES } from "@/lib/grow-logs/types";
+
+interface Props {
+  action: string;
+  body?: string;
+  cancelHref: string;
+  error?: string | null;
+  stage?: GrowLogStage;
+  submitLabel: string;
+  title?: string;
+}
+
+const { action, body = "", cancelHref, error = null, stage = "agar", submitLabel, title = "" } = Astro.props;
+---
+
+<form
+  action={action}
+  method="POST"
+  class="space-y-5 rounded-3xl border border-white/10 bg-white/8 p-6 backdrop-blur-xl"
+>
+  {
+    error && (
+      <div class="rounded-2xl border border-amber-400/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">{error}</div>
+    )
+  }
+
+  <label class="block space-y-2">
+    <span class="text-sm font-medium text-blue-100">Stage</span>
+    <select
+      name="stage"
+      class="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white transition outline-none focus:border-cyan-300/60"
+    >
+      {
+        GROW_LOG_STAGES.map((stageOption) => (
+          <option value={stageOption} selected={stageOption === stage} class="bg-slate-950 text-white">
+            {stageOption[0].toUpperCase() + stageOption.slice(1)}
+          </option>
+        ))
+      }
+    </select>
+  </label>
+
+  <label class="block space-y-2">
+    <span class="text-sm font-medium text-blue-100">Title</span>
+    <input
+      type="text"
+      name="title"
+      value={title}
+      class="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white transition outline-none placeholder:text-blue-200/35 focus:border-cyan-300/60"
+      placeholder="Plate transfer notes"
+      required
+    />
+  </label>
+
+  <label class="block space-y-2">
+    <span class="text-sm font-medium text-blue-100">Body</span>
+    <textarea
+      name="body"
+      rows={10}
+      class="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white transition outline-none placeholder:text-blue-200/35 focus:border-cyan-300/60"
+      placeholder="Describe what you inoculated, saw, or changed."
+      required>{body}</textarea
+    >
+  </label>
+
+  <div class="flex flex-col gap-3 sm:flex-row">
+    <button
+      type="submit"
+      class="inline-flex items-center justify-center rounded-full bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200"
+    >
+      {submitLabel}
+    </button>
+    <a
+      href={cancelHref}
+      class="inline-flex items-center justify-center rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-white/80 transition hover:border-white/30 hover:text-white"
+    >
+      Cancel
+    </a>
+  </div>
+</form>

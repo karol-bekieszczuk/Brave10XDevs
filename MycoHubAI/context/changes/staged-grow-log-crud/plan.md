@@ -319,14 +319,14 @@ No new database migration is planned. This change must consume the existing `pub
 
 #### Automated
 
-- [x] 1.1 Unit test command exists in `package.json` and is documented by the plan as the repository's grow-log unit test entry point.
-- [x] 1.2 CI runs `npm run test:unit` before lint/build.
-- [x] 1.3 Validation accepts only `agar` and `grain` stages and rejects blank `title` or `body`.
-- [x] 1.4 Row mapping preserves `id`, `ownerId`, `stage`, `title`, `body`, `createdAt`, and `updatedAt`.
-- [x] 1.5 Repository contracts set or filter `owner_id` using the authenticated user ID.
-- [x] 1.6 Unit tests pass: `npm run test:unit`.
-- [x] 1.7 Linting passes: `npm run lint`.
-- [x] 1.8 Build passes: `npm run build`.
+- [x] 1.1 Unit test command exists in `package.json` and is documented by the plan as the repository's grow-log unit test entry point. — 256f431
+- [x] 1.2 CI runs `npm run test:unit` before lint/build. — 256f431
+- [x] 1.3 Validation accepts only `agar` and `grain` stages and rejects blank `title` or `body`. — 256f431
+- [x] 1.4 Row mapping preserves `id`, `ownerId`, `stage`, `title`, `body`, `createdAt`, and `updatedAt`. — 256f431
+- [x] 1.5 Repository contracts set or filter `owner_id` using the authenticated user ID. — 256f431
+- [x] 1.6 Unit tests pass: `npm run test:unit`. — 256f431
+- [x] 1.7 Linting passes: `npm run lint`. — 256f431
+- [x] 1.8 Build passes: `npm run build`. — 256f431
 
 #### Manual
 
@@ -337,15 +337,15 @@ No new database migration is planned. This change must consume the existing `pub
 
 #### Automated
 
-- [ ] 2.1 `/grow-logs`, `/grow-logs/new`, `/grow-logs/[id]`, and `/grow-logs/[id]/edit` pages exist and build.
-- [ ] 2.2 Create, update, and delete API routes export uppercase `POST` handlers.
-- [ ] 2.3 API routes validate `stage`, `title`, and `body` server-side before repository writes.
-- [ ] 2.4 API routes set or filter owner access using `context.locals.user.id` and the repository owner contract.
-- [ ] 2.5 Delete remains hard delete and does not introduce `deleted_at` or recovery UI.
-- [ ] 2.6 No route or UI adds diagnosis, image, species, sharing, export, or multi-user account fields.
-- [ ] 2.7 Unit tests pass: `npm run test:unit`.
-- [ ] 2.8 Linting passes: `npm run lint`.
-- [ ] 2.9 Build passes: `npm run build`.
+- [x] 2.1 `/grow-logs`, `/grow-logs/new`, `/grow-logs/[id]`, and `/grow-logs/[id]/edit` pages exist and build.
+- [x] 2.2 Create, update, and delete API routes export uppercase `POST` handlers.
+- [x] 2.3 API routes validate `stage`, `title`, and `body` server-side before repository writes.
+- [x] 2.4 API routes set or filter owner access using `context.locals.user.id` and the repository owner contract.
+- [x] 2.5 Delete remains hard delete and does not introduce `deleted_at` or recovery UI.
+- [x] 2.6 No route or UI adds diagnosis, image, species, sharing, export, or multi-user account fields.
+- [x] 2.7 Unit tests pass: `npm run test:unit`.
+- [x] 2.8 Linting passes: `npm run lint`.
+- [x] 2.9 Build passes: `npm run build`.
 
 #### Manual
 
