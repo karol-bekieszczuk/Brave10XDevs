@@ -361,16 +361,16 @@ No new database migration is planned. This change must consume the existing `pub
 
 #### Automated
 
-- [x] 3.1 Unit tests pass: `npm run test:unit`.
-- [x] 3.2 CI includes `npm run test:unit` before lint/build.
-- [x] 3.3 Linting passes: `npm run lint`.
-- [x] 3.4 Build passes: `npm run build`.
-- [x] 3.5 Search confirms no forbidden scope fields or surfaces were added for grow logs: no `species`, image/photo upload, sharing, export, saved chat history, or `deleted_at` in the S-01 implementation.
-- [x] 3.6 Search confirms no `/grow-logs` path was added to middleware public routes.
+- [x] 3.1 Unit tests pass: `npm run test:unit`. — 80c7b3f
+- [x] 3.2 CI includes `npm run test:unit` before lint/build. — 80c7b3f
+- [x] 3.3 Linting passes: `npm run lint`. — 80c7b3f
+- [x] 3.4 Build passes: `npm run build`. — 80c7b3f
+- [x] 3.5 Search confirms no forbidden scope fields or surfaces were added for grow logs: no `species`, image/photo upload, sharing, export, saved chat history, or `deleted_at` in the S-01 implementation. — 80c7b3f
+- [x] 3.6 Search confirms no `/grow-logs` path was added to middleware public routes. — 80c7b3f
 
 #### Manual
 
-- [x] 3.7 Full local smoke test covers list, create, detail, edit, delete, validation failure, and missing/non-owned ID behavior.
-- [x] 3.8 Supabase local data inspection confirms rows are physically deleted after delete.
-- [x] 3.9 The resulting CRUD flow provides a real single-log detail page suitable for later selected-log diagnosis.
-- [x] 3.10 Production smoke testing is explicitly left for after deployment; do not claim production verification before a deploy exists.
+- [x] 3.7 Full local smoke test covers list, create, detail, edit, delete, validation failure, and missing/non-owned ID behavior. — 80c7b3f
+- [x] 3.8 Supabase local data inspection confirms rows are physically deleted after delete. — 80c7b3f
+- [x] 3.9 The resulting CRUD flow provides a real single-log detail page suitable for later selected-log diagnosis. — 80c7b3f
+- [x] 3.10 Production smoke testing is explicitly left for after deployment; do not claim production verification before a deploy exists. — 80c7b3f
