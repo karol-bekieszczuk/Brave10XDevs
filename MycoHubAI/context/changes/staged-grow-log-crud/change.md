@@ -1,9 +1,9 @@
 ---
 change_id: staged-grow-log-crud
 title: Staged grow-log CRUD
-status: plan_reviewed
+status: implementing
 created: 2026-05-29
-updated: 2026-05-29
+updated: 2026-05-30
 archived_at: null
 ---
 

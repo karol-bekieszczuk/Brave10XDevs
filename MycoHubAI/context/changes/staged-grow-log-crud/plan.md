@@ -319,14 +319,14 @@ No new database migration is planned. This change must consume the existing `pub
 
 #### Automated
 
-- [ ] 1.1 Unit test command exists in `package.json` and is documented by the plan as the repository's grow-log unit test entry point.
-- [ ] 1.2 CI runs `npm run test:unit` before lint/build.
-- [ ] 1.3 Validation accepts only `agar` and `grain` stages and rejects blank `title` or `body`.
-- [ ] 1.4 Row mapping preserves `id`, `ownerId`, `stage`, `title`, `body`, `createdAt`, and `updatedAt`.
-- [ ] 1.5 Repository contracts set or filter `owner_id` using the authenticated user ID.
-- [ ] 1.6 Unit tests pass: `npm run test:unit`.
-- [ ] 1.7 Linting passes: `npm run lint`.
-- [ ] 1.8 Build passes: `npm run build`.
+- [x] 1.1 Unit test command exists in `package.json` and is documented by the plan as the repository's grow-log unit test entry point.
+- [x] 1.2 CI runs `npm run test:unit` before lint/build.
+- [x] 1.3 Validation accepts only `agar` and `grain` stages and rejects blank `title` or `body`.
+- [x] 1.4 Row mapping preserves `id`, `ownerId`, `stage`, `title`, `body`, `createdAt`, and `updatedAt`.
+- [x] 1.5 Repository contracts set or filter `owner_id` using the authenticated user ID.
+- [x] 1.6 Unit tests pass: `npm run test:unit`.
+- [x] 1.7 Linting passes: `npm run lint`.
+- [x] 1.8 Build passes: `npm run build`.
 
 #### Manual
 
