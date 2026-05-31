@@ -17,8 +17,6 @@ if (!log && !isUnavailable) {
 
 const stageParam = Astro.url.searchParams.get("stage");
 const stage: GrowLogStage = isGrowLogStage(stageParam) ? stageParam : (log?.stage ?? "agar");
-const title = Astro.url.searchParams.get("title") ?? log?.title ?? "";
-const body = Astro.url.searchParams.get("body") ?? log?.body ?? "";
 const error = Astro.url.searchParams.get("error");
 ---
 
@@ -63,8 +61,8 @@ const error = Astro.url.searchParams.get("error");
                 cancelHref={`/grow-logs/${log.id}`}
                 error={error}
                 stage={stage}
-                title={title}
-                body={body}
+                title={log.title}
+                body={log.body}
                 submitLabel="Save changes"
               />
             </div>

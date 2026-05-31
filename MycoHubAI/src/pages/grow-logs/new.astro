@@ -6,8 +6,6 @@ import { isGrowLogStage } from "@/lib/grow-logs/types";
 
 const stageParam = Astro.url.searchParams.get("stage");
 const stage: GrowLogStage = isGrowLogStage(stageParam) ? stageParam : "agar";
-const title = Astro.url.searchParams.get("title") ?? "";
-const body = Astro.url.searchParams.get("body") ?? "";
 const error = Astro.url.searchParams.get("error");
 ---
 
@@ -29,8 +27,8 @@ const error = Astro.url.searchParams.get("error");
             cancelHref="/grow-logs"
             error={error}
             stage={stage}
-            title={title}
-            body={body}
+            title=""
+            body=""
             submitLabel="Create grow log"
           />
         </div>
