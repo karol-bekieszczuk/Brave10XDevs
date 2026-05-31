@@ -1,9 +1,9 @@
 ---
 change_id: single-user-access-gate
 title: Single-user access gate
-status: implemented
+status: impl_reviewed
 created: 2026-05-28
-updated: 2026-05-28
+updated: 2026-05-31
 archived_at: null
 ---
 
