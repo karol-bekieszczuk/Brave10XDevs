@@ -6,7 +6,7 @@ Define the quality and safety contract for MycoHubAI diagnosis before the select
 
 ## Current State Analysis
 
-`diagnosis-quality-rubric` is roadmap foundation F-02 and unlocks the later `selected-log-diagnosis` slice. The app currently has Supabase owner-gated auth and a protected dashboard shell, but no grow-log model, diagnosis API, AI provider, prompts, evaluator, or diagnosis UI. The PRD already defines the core product contract: answers must depend on one selected agar or grain grow log, include possible causes/actions/confidence bands with explanatory uncertainty when enough context exists, ask a follow-up question when context is insufficient, and stay inside the agar/grain MVP scope.
+`diagnosis-quality-rubric` is roadmap foundation F-03 and unlocks the later `selected-log-diagnosis` slice. The app currently has Supabase owner-gated auth and a protected dashboard shell, but no grow-log model, diagnosis API, AI provider, prompts, evaluator, or diagnosis UI. The PRD already defines the core product contract: answers must depend on one selected agar or grain grow log, include possible causes/actions/confidence bands with explanatory uncertainty when enough context exists, ask a follow-up question when context is insufficient, and stay inside the agar/grain MVP scope.
 
 ## Desired End State
 
@@ -14,7 +14,7 @@ The repository contains a stable diagnosis quality contract in `context/changes/
 
 ### Key Discoveries:
 
-- `context/foundation/roadmap.md:73` defines F-02 as the diagnosis quality rubric foundation that unlocks S-02.
+- `context/foundation/roadmap.md:73` defines F-03 as the diagnosis quality rubric foundation that unlocks S-02.
 - `context/foundation/roadmap.md:83` names the main risk: diagnosis can appear complete while missing uncertainty, scope refusal, or prepared-case correctness.
 - `context/foundation/prd.md:34` sets the primary target of 75% correct diagnoses on prepared agar/grain troubleshooting test cases.
 - `context/foundation/prd.md:57` requires answers to depend on the selected log and stage, ask follow-up questions when context is missing, refuse out-of-scope questions, and include causes/actions/confidence when enough context exists.
@@ -35,7 +35,7 @@ The repository contains a stable diagnosis quality contract in `context/changes/
 
 ## Implementation Approach
 
-Create reference artifacts that can be reviewed by a human now and consumed by implementation agents later. The Markdown rubric owns the scoring model and behavioral contract; the JSON case file owns the 10 prepared cases in a machine-readable shape. Keep the work documentation-only and explicitly avoid runtime code so F-02 stays a foundation for S-02 rather than an early implementation of S-02.
+Create reference artifacts that can be reviewed by a human now and consumed by implementation agents later. The Markdown rubric owns the scoring model and behavioral contract; the JSON case file owns the 10 prepared cases in a machine-readable shape. Keep the work documentation-only and explicitly avoid runtime code so F-03 stays a foundation for S-02 rather than an early implementation of S-02.
 
 ## Phase 1: Change Scaffolding And Reference Location
 
@@ -49,7 +49,7 @@ Create the active change folder and prepare the reference-document location that
 
 **File**: `context/changes/diagnosis-quality-rubric/change.md`
 
-**Intent**: Establish this as the active planning identity for F-02 so later planning, implementation, review, and archive steps share one stable change ID.
+**Intent**: Establish this as the active planning identity for F-03 so later planning, implementation, review, and archive steps share one stable change ID.
 
 **Contract**: Frontmatter uses `change_id: diagnosis-quality-rubric`, `status: planned`, `created: 2026-05-28`, `updated: 2026-05-28`, and `archived_at: null`. Notes describe a quality/safety rubric foundation, not runtime diagnosis implementation.
 
@@ -72,7 +72,7 @@ Create the active change folder and prepare the reference-document location that
 
 #### Manual Verification:
 
-- `change.md` correctly describes F-02 as a rubric/documentation foundation and not as selected-log diagnosis runtime work.
+- `change.md` correctly describes F-03 as a rubric/documentation foundation and not as selected-log diagnosis runtime work.
 - No files are created under `context/archive/`.
 
 **Implementation Note**: After completing this phase and all automated verification passes, pause here for manual confirmation from the human that the manual testing was successful before proceeding to the next phase. Phase blocks use plain bullets; the corresponding `- [ ]` checkboxes for these items live in the `## Progress` section at the bottom of the plan.
@@ -152,7 +152,7 @@ The rubric or case file documents this compact case schema: `id` is a stable str
 
 **File**: `context/changes/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json`
 
-**Intent**: Ensure the first case set covers the main MVP risks without turning F-02 into a large domain-research project.
+**Intent**: Ensure the first case set covers the main MVP risks without turning F-03 into a large domain-research project.
 
 **Contract**: The 10 cases include agar diagnosis cases, grain diagnosis cases, missing-context cases, fully out-of-scope cases, and mixed-scope cases where only the agar/grain portion should be answered. At least one case checks selected-log dependency by making the question alone insufficient.
 
@@ -255,7 +255,7 @@ No database, Supabase, Cloudflare, or environment migration is required. Do not 
 
 ## References
 
-- Roadmap F-02: `context/foundation/roadmap.md:73`
+- Roadmap F-03: `context/foundation/roadmap.md:73`
 - Roadmap risk: `context/foundation/roadmap.md:83`
 - PRD success target: `context/foundation/prd.md:34`
 - PRD selected-log diagnosis acceptance criteria: `context/foundation/prd.md:57`
@@ -273,21 +273,21 @@ No database, Supabase, Cloudflare, or environment migration is required. Do not 
 
 - [x] 1.1 Change folder exists: `Test-Path context\changes\diagnosis-quality-rubric` - cbe6b5f
 - [x] 1.2 Change identity exists: `Test-Path context\changes\diagnosis-quality-rubric\change.md` - cbe6b5f
-- [x] 1.3 Reference directory exists: `Test-Path context\changes\diagnosis-quality-rubric` - cbe6b5f
+- [x] 1.3 Reference directory exists: `Test-Path context\changes\diagnosis-quality-rubric\reference` - cbe6b5f
 - [x] 1.4 Lint still passes: `npm run lint` - cbe6b5f
 
 #### Manual
 
-- [x] 1.5 `change.md` correctly describes F-02 as a rubric/documentation foundation and not as selected-log diagnosis runtime work. - cbe6b5f
+- [x] 1.5 `change.md` correctly describes F-03 as a rubric/documentation foundation and not as selected-log diagnosis runtime work. - cbe6b5f
 - [x] 1.6 No files are created under `context/archive/`. - cbe6b5f
 
 ### Phase 2: Diagnosis Quality Rubric
 
 #### Automated
 
-- [x] 2.1 Rubric document exists: `Test-Path context\changes\diagnosis-quality-rubric\diagnosis-quality-rubric.md` - 966513f
-- [x] 2.2 Rubric contains scoring scale text: `rg "0/1/2|case threshold|critical failure" context\changes\diagnosis-quality-rubric\diagnosis-quality-rubric.md` - 966513f
-- [x] 2.3 Rubric contains scope handling text: `rg "mixed-scope|out-of-scope|agar|grain|follow-up" context\changes\diagnosis-quality-rubric\diagnosis-quality-rubric.md` - 966513f
+- [x] 2.1 Rubric document exists: `Test-Path context\changes\diagnosis-quality-rubric\reference\diagnosis-quality-rubric.md` - 966513f
+- [x] 2.2 Rubric contains scoring scale text: `rg "0/1/2|case threshold|critical failure" context\changes\diagnosis-quality-rubric\reference\diagnosis-quality-rubric.md` - 966513f
+- [x] 2.3 Rubric contains scope handling text: `rg "mixed-scope|out-of-scope|agar|grain|follow-up" context\changes\diagnosis-quality-rubric\reference\diagnosis-quality-rubric.md` - 966513f
 - [x] 2.4 Lint still passes: `npm run lint` - 966513f
 
 #### Manual
@@ -300,7 +300,7 @@ No database, Supabase, Cloudflare, or environment migration is required. Do not 
 
 #### Automated
 
-- [x] 3.1 Evaluation case file exists: `Test-Path context\changes\diagnosis-quality-rubric\diagnosis-evaluation-cases.json` - bd58d76
+- [x] 3.1 Evaluation case file exists: `Test-Path context\changes\diagnosis-quality-rubric\reference\diagnosis-evaluation-cases.json` - bd58d76
 - [x] 3.2 Evaluation case file is valid JSON: `node -e "JSON.parse(require('fs').readFileSync('context/changes/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json','utf8')); console.log('ok')"` - bd58d76
 - [x] 3.3 Evaluation case file contains 10 cases: `node -e "const c=JSON.parse(require('fs').readFileSync('context/changes/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json','utf8')); if(!Array.isArray(c.cases)||c.cases.length!==10) process.exit(1); console.log(c.cases.length)"` - bd58d76
 - [x] 3.4 Lint still passes: `npm run lint` - bd58d76
@@ -315,8 +315,8 @@ No database, Supabase, Cloudflare, or environment migration is required. Do not 
 
 #### Automated
 
-- [x] 4.1 Contract surfaces registry exists: `Test-Path context\changes\diagnosis-quality-rubric\contract-surfaces.md` - 5defe64
-- [x] 4.2 Contract surfaces registry references the diagnosis artifacts: `rg "diagnosis-quality-rubric|diagnosis-evaluation-cases" context\changes\diagnosis-quality-rubric\contract-surfaces.md` - 5defe64
+- [x] 4.1 Contract surfaces registry exists: `Test-Path context\changes\diagnosis-quality-rubric\reference\contract-surfaces.md` - 5defe64
+- [x] 4.2 Contract surfaces registry references the diagnosis artifacts: `rg "diagnosis-quality-rubric|diagnosis-evaluation-cases" context\changes\diagnosis-quality-rubric\reference\contract-surfaces.md` - 5defe64
 - [x] 4.3 No diagnosis runtime code was added under `src`: `if (rg -q "diagnosis-quality-rubric|diagnosis-evaluation-cases" src) { exit 1 } else { exit 0 }` - 5defe64
 - [x] 4.4 Lint still passes: `npm run lint` - 5defe64
 - [x] 4.5 Build still passes: `npm run build` - 5defe64

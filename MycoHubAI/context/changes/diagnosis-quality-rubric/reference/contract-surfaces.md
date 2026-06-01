@@ -2,6 +2,8 @@
 
 This registry lists the load-bearing reference artifacts for future selected-log diagnosis work. Read these before planning, implementing, or reviewing diagnosis behavior.
 
+If this change is archived before selected-log diagnosis consumes these artifacts, resolve the same files under `context/archive/diagnosis-quality-rubric/reference/` instead of the active `context/changes/` path.
+
 ## Diagnosis Quality Rubric
 
 Canonical path: `context/changes/diagnosis-quality-rubric/reference/diagnosis-quality-rubric.md`
