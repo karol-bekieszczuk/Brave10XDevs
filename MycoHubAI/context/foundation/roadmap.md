@@ -3,7 +3,7 @@ project: MycoHubAI
 version: 1
 status: draft
 created: 2026-05-27
-updated: 2026-05-29
+updated: 2026-06-01
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -31,8 +31,8 @@ The MVP must stay single-user-first, text-only, and constrained to agar and grai
 |---|---|---|---|---|---|
 | F-01 | single-user-access-gate | (foundation) only one authorized user can access the MVP and public registration is removed | - | FR-005, Access Control | done |
 | F-02 | grow-log-data-contract | (foundation) grow-log persistence has the minimum staged text-log contract needed by the MVP | - | FR-001, FR-005, Access Control | ready |
-| F-03 | diagnosis-quality-rubric | (foundation) diagnosis quality and safety checks are explicit enough to verify scoped uncertain answers | - | Success Criteria, NFRs, FR-003, FR-004 | ready |
-| S-01 | staged-grow-log-crud | user can create, view, edit, and delete their own text grow logs with an agar/grain stage | F-02 | FR-001, FR-005 | proposed |
+| F-03 | diagnosis-quality-rubric | (foundation) diagnosis quality and safety checks are explicit enough to verify scoped uncertain answers | - | Success Criteria, NFRs, FR-003, FR-004 | done |
+| S-01 | staged-grow-log-crud | user can create, view, edit, and delete their own text grow logs with an agar/grain stage | F-02 | FR-001, FR-005 | done |
 | S-02 | selected-log-diagnosis | user can ask about one selected agar or grain grow log and receive scoped causes, actions, uncertainty, or a follow-up question | S-01, F-03 | US-01, FR-002, FR-003, FR-004 | proposed |
 
 ## Streams
@@ -95,7 +95,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** -
 - **Unknowns:** -
 - **Risk:** Without a compact rubric, the diagnosis slice can appear complete while missing uncertainty, scope refusal, or prepared-case correctness.
-- **Status:** ready
+- **Status:** done
 
 ## Slices
 
@@ -109,7 +109,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** -
 - **Unknowns:** -
 - **Risk:** This is sequenced before diagnosis because selected-log diagnosis cannot be real until there is a staged log to select.
-- **Status:** proposed
+- **Status:** done
 
 ### S-02: Selected-log diagnosis
 

@@ -115,9 +115,9 @@ Write the human-readable diagnosis quality contract that future selected-log dia
 
 #### Automated Verification:
 
-- Rubric document exists: `Test-Path context\changes\diagnosis-quality-rubric\diagnosis-quality-rubric.md`
-- Rubric contains scoring scale text: `rg "0/1/2|case threshold|critical failure" context\changes\diagnosis-quality-rubric\diagnosis-quality-rubric.md`
-- Rubric contains scope handling text: `rg "mixed-scope|out-of-scope|agar|grain|follow-up" context\changes\diagnosis-quality-rubric\diagnosis-quality-rubric.md`
+- Rubric document exists: `Test-Path context\changes\diagnosis-quality-rubric\reference\diagnosis-quality-rubric.md`
+- Rubric contains scoring scale text: `rg "0/1/2|case threshold|critical failure" context\changes\diagnosis-quality-rubric\reference\diagnosis-quality-rubric.md`
+- Rubric contains scope handling text: `rg "mixed-scope|out-of-scope|agar|grain|follow-up" context\changes\diagnosis-quality-rubric\reference\diagnosis-quality-rubric.md`
 - Lint still passes: `npm run lint`
 
 #### Manual Verification:
@@ -168,7 +168,7 @@ The rubric or case file documents this compact case schema: `id` is a stable str
 
 #### Automated Verification:
 
-- Evaluation case file exists: `Test-Path context\changes\diagnosis-quality-rubric\diagnosis-evaluation-cases.json`
+- Evaluation case file exists: `Test-Path context\changes\diagnosis-quality-rubric\reference\diagnosis-evaluation-cases.json`
 - Evaluation case file is valid JSON: `node -e "JSON.parse(require('fs').readFileSync('context/changes/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json','utf8')); console.log('ok')"`
 - Evaluation case file contains 10 cases: `node -e "const c=JSON.parse(require('fs').readFileSync('context/changes/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json','utf8')); if(!Array.isArray(c.cases)||c.cases.length!==10) process.exit(1); console.log(c.cases.length)"`
 - Lint still passes: `npm run lint`
@@ -211,8 +211,8 @@ Make the new quality contract discoverable and verify that it remains a foundati
 
 #### Automated Verification:
 
-- Contract surfaces registry exists: `Test-Path context\changes\diagnosis-quality-rubric\contract-surfaces.md`
-- Contract surfaces registry references the diagnosis artifacts: `rg "diagnosis-quality-rubric|diagnosis-evaluation-cases" context\changes\diagnosis-quality-rubric\contract-surfaces.md`
+- Contract surfaces registry exists: `Test-Path context\changes\diagnosis-quality-rubric\reference\contract-surfaces.md`
+- Contract surfaces registry references the diagnosis artifacts: `rg "diagnosis-quality-rubric|diagnosis-evaluation-cases" context\changes\diagnosis-quality-rubric\reference\contract-surfaces.md`
 - No diagnosis runtime code was added under `src`: `if (rg -q "diagnosis-quality-rubric|diagnosis-evaluation-cases" src) { exit 1 } else { exit 0 }`
 - Lint still passes: `npm run lint`
 - Build still passes: `npm run build`
@@ -300,29 +300,29 @@ No database, Supabase, Cloudflare, or environment migration is required. Do not 
 
 #### Automated
 
-- [x] 3.1 Evaluation case file exists: `Test-Path context\changes\diagnosis-quality-rubric\diagnosis-evaluation-cases.json`
-- [x] 3.2 Evaluation case file is valid JSON: `node -e "JSON.parse(require('fs').readFileSync('context/changes/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json','utf8')); console.log('ok')"`
-- [x] 3.3 Evaluation case file contains 10 cases: `node -e "const c=JSON.parse(require('fs').readFileSync('context/changes/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json','utf8')); if(!Array.isArray(c.cases)||c.cases.length!==10) process.exit(1); console.log(c.cases.length)"`
-- [x] 3.4 Lint still passes: `npm run lint`
+- [x] 3.1 Evaluation case file exists: `Test-Path context\changes\diagnosis-quality-rubric\diagnosis-evaluation-cases.json` - bd58d76
+- [x] 3.2 Evaluation case file is valid JSON: `node -e "JSON.parse(require('fs').readFileSync('context/changes/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json','utf8')); console.log('ok')"` - bd58d76
+- [x] 3.3 Evaluation case file contains 10 cases: `node -e "const c=JSON.parse(require('fs').readFileSync('context/changes/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json','utf8')); if(!Array.isArray(c.cases)||c.cases.length!==10) process.exit(1); console.log(c.cases.length)"` - bd58d76
+- [x] 3.4 Lint still passes: `npm run lint` - bd58d76
 
 #### Manual
 
-- [x] 3.5 The case set has credible coverage across agar, grain, missing context, out-of-scope, and mixed-scope prompts.
-- [x] 3.6 Cases do not require image analysis, saved chat history, species-specific advice, or multi-log comparison.
-- [x] 3.7 Expected signals are specific enough to guide future implementation without overfitting to exact wording.
+- [x] 3.5 The case set has credible coverage across agar, grain, missing context, out-of-scope, and mixed-scope prompts. - bd58d76
+- [x] 3.6 Cases do not require image analysis, saved chat history, species-specific advice, or multi-log comparison. - bd58d76
+- [x] 3.7 Expected signals are specific enough to guide future implementation without overfitting to exact wording. - bd58d76
 
 ### Phase 4: Handoff And Verification
 
 #### Automated
 
-- [ ] 4.1 Contract surfaces registry exists: `Test-Path context\changes\diagnosis-quality-rubric\contract-surfaces.md`
-- [ ] 4.2 Contract surfaces registry references the diagnosis artifacts: `rg "diagnosis-quality-rubric|diagnosis-evaluation-cases" context\changes\diagnosis-quality-rubric\contract-surfaces.md`
-- [ ] 4.3 No diagnosis runtime code was added under `src`: `if (rg -q "diagnosis-quality-rubric|diagnosis-evaluation-cases" src) { exit 1 } else { exit 0 }`
-- [ ] 4.4 Lint still passes: `npm run lint`
-- [ ] 4.5 Build still passes: `npm run build`
+- [x] 4.1 Contract surfaces registry exists: `Test-Path context\changes\diagnosis-quality-rubric\contract-surfaces.md`
+- [x] 4.2 Contract surfaces registry references the diagnosis artifacts: `rg "diagnosis-quality-rubric|diagnosis-evaluation-cases" context\changes\diagnosis-quality-rubric\contract-surfaces.md`
+- [x] 4.3 No diagnosis runtime code was added under `src`: `if (rg -q "diagnosis-quality-rubric|diagnosis-evaluation-cases" src) { exit 1 } else { exit 0 }`
+- [x] 4.4 Lint still passes: `npm run lint`
+- [x] 4.5 Build still passes: `npm run build`
 
 #### Manual
 
-- [ ] 4.6 A future implementer can find the rubric and cases from `context/changes/diagnosis-quality-rubric/reference/contract-surfaces.md`.
-- [ ] 4.7 The change remains documentation/reference-only and does not add diagnosis API, AI provider, grow-log persistence, or saved chat history.
-- [ ] 4.8 The final artifacts give enough detail to begin planning or implementing `selected-log-diagnosis`.
+- [x] 4.6 A future implementer can find the rubric and cases from `context/changes/diagnosis-quality-rubric/reference/contract-surfaces.md`.
+- [x] 4.7 The change remains documentation/reference-only and does not add diagnosis API, AI provider, grow-log persistence, or saved chat history.
+- [x] 4.8 The final artifacts give enough detail to begin planning or implementing `selected-log-diagnosis`.
