@@ -315,14 +315,14 @@ No database, Supabase, Cloudflare, or environment migration is required. Do not 
 
 #### Automated
 
-- [x] 4.1 Contract surfaces registry exists: `Test-Path context\changes\diagnosis-quality-rubric\contract-surfaces.md`
-- [x] 4.2 Contract surfaces registry references the diagnosis artifacts: `rg "diagnosis-quality-rubric|diagnosis-evaluation-cases" context\changes\diagnosis-quality-rubric\contract-surfaces.md`
-- [x] 4.3 No diagnosis runtime code was added under `src`: `if (rg -q "diagnosis-quality-rubric|diagnosis-evaluation-cases" src) { exit 1 } else { exit 0 }`
-- [x] 4.4 Lint still passes: `npm run lint`
-- [x] 4.5 Build still passes: `npm run build`
+- [x] 4.1 Contract surfaces registry exists: `Test-Path context\changes\diagnosis-quality-rubric\contract-surfaces.md` - 5defe64
+- [x] 4.2 Contract surfaces registry references the diagnosis artifacts: `rg "diagnosis-quality-rubric|diagnosis-evaluation-cases" context\changes\diagnosis-quality-rubric\contract-surfaces.md` - 5defe64
+- [x] 4.3 No diagnosis runtime code was added under `src`: `if (rg -q "diagnosis-quality-rubric|diagnosis-evaluation-cases" src) { exit 1 } else { exit 0 }` - 5defe64
+- [x] 4.4 Lint still passes: `npm run lint` - 5defe64
+- [x] 4.5 Build still passes: `npm run build` - 5defe64
 
 #### Manual
 
-- [x] 4.6 A future implementer can find the rubric and cases from `context/changes/diagnosis-quality-rubric/reference/contract-surfaces.md`.
-- [x] 4.7 The change remains documentation/reference-only and does not add diagnosis API, AI provider, grow-log persistence, or saved chat history.
-- [x] 4.8 The final artifacts give enough detail to begin planning or implementing `selected-log-diagnosis`.
+- [x] 4.6 A future implementer can find the rubric and cases from `context/changes/diagnosis-quality-rubric/reference/contract-surfaces.md`. - 5defe64
+- [x] 4.7 The change remains documentation/reference-only and does not add diagnosis API, AI provider, grow-log persistence, or saved chat history. - 5defe64
+- [x] 4.8 The final artifacts give enough detail to begin planning or implementing `selected-log-diagnosis`. - 5defe64
