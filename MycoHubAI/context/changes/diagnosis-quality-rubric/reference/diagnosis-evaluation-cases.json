@@ -1,0 +1,197 @@
+{
+  "schema": {
+    "id": "Stable case identifier.",
+    "stage": "Either agar or grain.",
+    "grow_log": "Selected grow-log text available to the diagnosis flow.",
+    "question": "User troubleshooting question asked against the selected grow log.",
+    "expected_outcome": "High-level behavior a correct answer should produce.",
+    "expected_signals": "Specific signals a reviewer or evaluator should look for.",
+    "critical_missing_context": "Critical details that should trigger a follow-up instead of a diagnosis.",
+    "scope_class": "One of in_scope, missing_context, mixed_scope, or out_of_scope.",
+    "counts_toward_prd_accuracy": "Whether the case contributes to the PRD 75% prepared-case diagnosis accuracy denominator.",
+    "notes": "Reviewer guidance that avoids overfitting to exact answer wording."
+  },
+  "cases": [
+    {
+      "id": "agar-001-green-spots-after-transfer",
+      "stage": "agar",
+      "grow_log": "Day 3 after transfer to a new agar plate. White growth is spreading from the wedge, but two separate green spots appeared away from the wedge. No photo is available. Plate was opened briefly during transfer.",
+      "question": "Is this plate contaminated, and what should I do next?",
+      "expected_outcome": "Answer as a scoped agar diagnosis: likely contamination is possible because colored growth appears away from the transfer, recommend isolating or discarding the plate rather than using it, and explain uncertainty.",
+      "expected_signals": [
+        "Uses green spots away from the wedge as selected-log evidence",
+        "Names likely contamination as a possibility, not a certainty",
+        "Suggests avoiding transfer from visibly affected areas",
+        "Includes a confidence band with explanatory uncertainty"
+      ],
+      "critical_missing_context": [],
+      "scope_class": "in_scope",
+      "counts_toward_prd_accuracy": true,
+      "notes": "The answer should not require image analysis. It should reason from the text log only."
+    },
+    {
+      "id": "agar-002-slow-clean-growth",
+      "stage": "agar",
+      "grow_log": "Day 5 after inoculation. Plate has a small white circular colony near the center. No colored patches are noted. The plate has visible condensation on the lid, and growth seems slower than expected.",
+      "question": "Why is this agar growing slowly?",
+      "expected_outcome": "Answer as a scoped agar diagnosis: slow but clean-looking growth may be normal or related to conditions; suggest monitoring, checking incubation conditions, and avoiding overconfidence.",
+      "expected_signals": [
+        "Uses the absence of colored patches and the small white colony",
+        "Does not treat condensation alone as proof of contamination",
+        "Suggests monitoring and reviewing conditions",
+        "Includes uncertainty because the log does not prove a single cause"
+      ],
+      "critical_missing_context": [],
+      "scope_class": "in_scope",
+      "counts_toward_prd_accuracy": true,
+      "notes": "This case checks that plausible prose does not escalate a mild agar log into a certain contamination diagnosis."
+    },
+    {
+      "id": "agar-003-question-alone-insufficient",
+      "stage": "agar",
+      "grow_log": "Agar plate started this week. No details recorded about appearance, timing, transfer source, growth pattern, or contamination signs.",
+      "question": "What is wrong with my plate?",
+      "expected_outcome": "Ask a focused follow-up because the selected log lacks critical agar context. Do not diagnose from the question alone.",
+      "expected_signals": [
+        "States that the current log is missing critical agar details",
+        "Asks for visual appearance, timing, and growth pattern",
+        "Avoids claiming a cause",
+        "Shows selected-log dependency by explaining what is absent from the selected log"
+      ],
+      "critical_missing_context": [
+        "agar appearance",
+        "timing",
+        "growth pattern",
+        "visible contamination signs"
+      ],
+      "scope_class": "missing_context",
+      "counts_toward_prd_accuracy": false,
+      "notes": "This is a guardrail case for follow-up behavior, not part of the diagnosis-accuracy denominator."
+    },
+    {
+      "id": "agar-004-mixed-agar-and-fruiting",
+      "stage": "agar",
+      "grow_log": "Agar transfer was made 4 days ago. White growth is present at the wedge, and one fuzzy patch is growing at the plate edge. No grain or fruiting logs are selected.",
+      "question": "Can you diagnose this plate and tell me how to improve my fruiting yield later?",
+      "expected_outcome": "Answer only the agar troubleshooting portion and decline the fruiting yield request as outside MVP scope.",
+      "expected_signals": [
+        "Addresses the plate-edge fuzzy patch as an agar concern with uncertainty",
+        "Declines fruiting yield advice",
+        "Redirects the unsupported part back to agar/grain troubleshooting",
+        "Does not use fruiting yield assumptions as evidence"
+      ],
+      "critical_missing_context": [],
+      "scope_class": "mixed_scope",
+      "counts_toward_prd_accuracy": false,
+      "notes": "A useful answer may still mention that only the agar part can be handled."
+    },
+    {
+      "id": "agar-005-fully-out-of-scope-photo-id",
+      "stage": "agar",
+      "grow_log": "Selected agar log says the plate has white growth and some condensation. No image is stored or available in the product.",
+      "question": "Identify the contamination from a photo and tell me the exact species.",
+      "expected_outcome": "Refuse the unsupported photo and species request, then redirect to text-based agar/grain troubleshooting.",
+      "expected_signals": [
+        "Does not pretend to inspect a photo",
+        "Declines species identification",
+        "States the MVP supports text-based agar/grain troubleshooting",
+        "Offers to help if the user describes text observations from the selected log"
+      ],
+      "critical_missing_context": [],
+      "scope_class": "out_of_scope",
+      "counts_toward_prd_accuracy": false,
+      "notes": "This case verifies scope refusal and redirect behavior."
+    },
+    {
+      "id": "grain-001-wet-uncolonized-grains",
+      "stage": "grain",
+      "grow_log": "Day 8 after inoculation. Many kernels look wet and pressed together. Only small white patches are visible. There is a little pooling at the bottom of the jar. No shake has been done.",
+      "question": "Why is this jar not colonizing well?",
+      "expected_outcome": "Answer as a scoped grain diagnosis: excess moisture or stalled colonization is possible, recommend monitoring and avoiding expansion from a questionable jar, and explain uncertainty.",
+      "expected_signals": [
+        "Uses wet kernels, pooling, and limited white growth as selected-log evidence",
+        "Mentions moisture-related stall as a possible cause",
+        "Suggests conservative next steps appropriate to grain stage",
+        "Includes a confidence band with explanatory uncertainty"
+      ],
+      "critical_missing_context": [],
+      "scope_class": "in_scope",
+      "counts_toward_prd_accuracy": true,
+      "notes": "The answer must not ask the user to evaluate the jar by smell."
+    },
+    {
+      "id": "grain-002-recovery-after-shake",
+      "stage": "grain",
+      "grow_log": "Day 12 after inoculation. Jar was about 35% colonized before a shake two days ago. White growth is now recovering in several areas. No colored patches or pooling are noted.",
+      "question": "Did I ruin this jar by shaking it?",
+      "expected_outcome": "Answer as a scoped grain diagnosis: recovery after shake can be normal, suggest continued observation, and avoid certainty because the log is still limited.",
+      "expected_signals": [
+        "Uses the shake timing and recovery growth",
+        "Does not label the jar failed without evidence",
+        "Suggests monitoring for continued recovery and visible changes",
+        "Includes uncertainty and avoids guarantees"
+      ],
+      "critical_missing_context": [],
+      "scope_class": "in_scope",
+      "counts_toward_prd_accuracy": true,
+      "notes": "This case checks that the answer can be reassuring without guaranteeing success."
+    },
+    {
+      "id": "grain-003-dry-stalled-growth",
+      "stage": "grain",
+      "grow_log": "Day 14 after inoculation. White growth covered about 20% of the jar by day 7 and has barely changed since. Kernels look dry and separated. No visible colored growth or pooling is recorded.",
+      "question": "What are the likely reasons this grain stalled?",
+      "expected_outcome": "Answer as a scoped grain diagnosis: stalled colonization may relate to conditions, grain moisture, or weak inoculation; suggest observation and conservative decisions with uncertainty.",
+      "expected_signals": [
+        "Uses stalled timeline and dry separated kernels",
+        "Gives multiple possible causes rather than one certain cause",
+        "Suggests stage-appropriate next actions",
+        "Includes confidence band and why confidence is limited"
+      ],
+      "critical_missing_context": [],
+      "scope_class": "in_scope",
+      "counts_toward_prd_accuracy": true,
+      "notes": "This is a prepared diagnosis case for the PRD accuracy denominator."
+    },
+    {
+      "id": "grain-004-missing-visual-details",
+      "stage": "grain",
+      "grow_log": "Grain jar started recently. The log only says it might be contaminated, with no timing, appearance, moisture, growth pattern, or shake history.",
+      "question": "Should I throw this jar away?",
+      "expected_outcome": "Ask for missing grain-stage context before recommending disposal or continued use.",
+      "expected_signals": [
+        "Identifies missing timing, visual signs, moisture, growth pattern, and shake history",
+        "Asks a focused follow-up",
+        "Avoids a confident throw-away or keep recommendation",
+        "Does not ask for smell-based checking"
+      ],
+      "critical_missing_context": [
+        "timing",
+        "visual contamination signs",
+        "moisture or pooling",
+        "growth pattern",
+        "shake history"
+      ],
+      "scope_class": "missing_context",
+      "counts_toward_prd_accuracy": false,
+      "notes": "This guardrail case prevents the system from inventing facts when the selected log is too thin."
+    },
+    {
+      "id": "grain-005-mixed-grain-and-sharing",
+      "stage": "grain",
+      "grow_log": "Day 10 grain jar. White growth covers about half the jar. A few kernels near the bottom look wetter than the rest. No colored growth is recorded.",
+      "question": "Can you diagnose this grain jar and share the log with another grower for me?",
+      "expected_outcome": "Answer only the grain troubleshooting portion and decline sharing as outside the private single-user MVP surface.",
+      "expected_signals": [
+        "Uses half-colonized jar and wetter bottom kernels as selected-log evidence",
+        "Frames any diagnosis as uncertain",
+        "Declines sharing or social workflow",
+        "Redirects to private agar/grain troubleshooting"
+      ],
+      "critical_missing_context": [],
+      "scope_class": "mixed_scope",
+      "counts_toward_prd_accuracy": false,
+      "notes": "This verifies mixed-scope handling and privacy guardrails."
+    }
+  ]
+}

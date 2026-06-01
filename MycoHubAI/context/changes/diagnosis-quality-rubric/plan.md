@@ -285,31 +285,31 @@ No database, Supabase, Cloudflare, or environment migration is required. Do not 
 
 #### Automated
 
-- [x] 2.1 Rubric document exists: `Test-Path context\changes\diagnosis-quality-rubric\diagnosis-quality-rubric.md`
-- [x] 2.2 Rubric contains scoring scale text: `rg "0/1/2|case threshold|critical failure" context\changes\diagnosis-quality-rubric\diagnosis-quality-rubric.md`
-- [x] 2.3 Rubric contains scope handling text: `rg "mixed-scope|out-of-scope|agar|grain|follow-up" context\changes\diagnosis-quality-rubric\diagnosis-quality-rubric.md`
-- [x] 2.4 Lint still passes: `npm run lint`
+- [x] 2.1 Rubric document exists: `Test-Path context\changes\diagnosis-quality-rubric\diagnosis-quality-rubric.md` - 966513f
+- [x] 2.2 Rubric contains scoring scale text: `rg "0/1/2|case threshold|critical failure" context\changes\diagnosis-quality-rubric\diagnosis-quality-rubric.md` - 966513f
+- [x] 2.3 Rubric contains scope handling text: `rg "mixed-scope|out-of-scope|agar|grain|follow-up" context\changes\diagnosis-quality-rubric\diagnosis-quality-rubric.md` - 966513f
+- [x] 2.4 Lint still passes: `npm run lint` - 966513f
 
 #### Manual
 
-- [x] 2.5 Rubric is understandable without reading the planning conversation.
-- [x] 2.6 Rubric preserves the PRD guardrails: uncertainty, no guaranteed diagnosis, agar/grain scope, and selected-log dependency.
-- [x] 2.7 Rubric does not add species-specific advice, image analysis, saved chat history, or multi-user product scope.
+- [x] 2.5 Rubric is understandable without reading the planning conversation. - 966513f
+- [x] 2.6 Rubric preserves the PRD guardrails: uncertainty, no guaranteed diagnosis, agar/grain scope, and selected-log dependency. - 966513f
+- [x] 2.7 Rubric does not add species-specific advice, image analysis, saved chat history, or multi-user product scope. - 966513f
 
 ### Phase 3: Evaluation Case Set
 
 #### Automated
 
-- [ ] 3.1 Evaluation case file exists: `Test-Path context\changes\diagnosis-quality-rubric\diagnosis-evaluation-cases.json`
-- [ ] 3.2 Evaluation case file is valid JSON: `node -e "JSON.parse(require('fs').readFileSync('context/changes/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json','utf8')); console.log('ok')"`
-- [ ] 3.3 Evaluation case file contains 10 cases: `node -e "const c=JSON.parse(require('fs').readFileSync('context/changes/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json','utf8')); if(!Array.isArray(c.cases)||c.cases.length!==10) process.exit(1); console.log(c.cases.length)"`
-- [ ] 3.4 Lint still passes: `npm run lint`
+- [x] 3.1 Evaluation case file exists: `Test-Path context\changes\diagnosis-quality-rubric\diagnosis-evaluation-cases.json`
+- [x] 3.2 Evaluation case file is valid JSON: `node -e "JSON.parse(require('fs').readFileSync('context/changes/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json','utf8')); console.log('ok')"`
+- [x] 3.3 Evaluation case file contains 10 cases: `node -e "const c=JSON.parse(require('fs').readFileSync('context/changes/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json','utf8')); if(!Array.isArray(c.cases)||c.cases.length!==10) process.exit(1); console.log(c.cases.length)"`
+- [x] 3.4 Lint still passes: `npm run lint`
 
 #### Manual
 
-- [ ] 3.5 The case set has credible coverage across agar, grain, missing context, out-of-scope, and mixed-scope prompts.
-- [ ] 3.6 Cases do not require image analysis, saved chat history, species-specific advice, or multi-log comparison.
-- [ ] 3.7 Expected signals are specific enough to guide future implementation without overfitting to exact wording.
+- [x] 3.5 The case set has credible coverage across agar, grain, missing context, out-of-scope, and mixed-scope prompts.
+- [x] 3.6 Cases do not require image analysis, saved chat history, species-specific advice, or multi-log comparison.
+- [x] 3.7 Expected signals are specific enough to guide future implementation without overfitting to exact wording.
 
 ### Phase 4: Handoff And Verification
 

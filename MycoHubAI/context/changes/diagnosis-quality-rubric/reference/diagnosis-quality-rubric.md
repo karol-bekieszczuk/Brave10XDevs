@@ -134,6 +134,12 @@ A mixed-scope or out-of-scope case passes when:
 - Any supported agar/grain portion is handled using the same uncertainty and selected-log rules.
 - No critical failure is present.
 
+## Evaluation Cases And PRD Accuracy
+
+The prepared evaluation cases live at `context/changes/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json`. Future selected-log diagnosis work should score those cases with this rubric's `0/1/2 per criterion` model and the case threshold defined above, unless a case-specific threshold is explicitly introduced later.
+
+The PRD target of 75% correct diagnoses is computed only from cases where `counts_toward_prd_accuracy` is `true`. Guardrail cases for missing context, mixed scope, and out-of-scope behavior still must pass their scope and safety expectations, but they do not silently change the diagnosis-accuracy denominator.
+
 ## Missing-Context Rule
 
 Missing context triggers a follow-up when information critical to the selected stage is absent. Critical context is information without which the answer would require guessing about the diagnosis path.
