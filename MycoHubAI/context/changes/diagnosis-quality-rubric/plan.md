@@ -271,30 +271,30 @@ No database, Supabase, Cloudflare, or environment migration is required. Do not 
 
 #### Automated
 
-- [x] 1.1 Change folder exists: `Test-Path context\changes\diagnosis-quality-rubric`
-- [x] 1.2 Change identity exists: `Test-Path context\changes\diagnosis-quality-rubric\change.md`
-- [x] 1.3 Reference directory exists: `Test-Path context\changes\diagnosis-quality-rubric`
-- [x] 1.4 Lint still passes: `npm run lint`
+- [x] 1.1 Change folder exists: `Test-Path context\changes\diagnosis-quality-rubric` - cbe6b5f
+- [x] 1.2 Change identity exists: `Test-Path context\changes\diagnosis-quality-rubric\change.md` - cbe6b5f
+- [x] 1.3 Reference directory exists: `Test-Path context\changes\diagnosis-quality-rubric` - cbe6b5f
+- [x] 1.4 Lint still passes: `npm run lint` - cbe6b5f
 
 #### Manual
 
-- [x] 1.5 `change.md` correctly describes F-02 as a rubric/documentation foundation and not as selected-log diagnosis runtime work.
-- [x] 1.6 No files are created under `context/archive/`.
+- [x] 1.5 `change.md` correctly describes F-02 as a rubric/documentation foundation and not as selected-log diagnosis runtime work. - cbe6b5f
+- [x] 1.6 No files are created under `context/archive/`. - cbe6b5f
 
 ### Phase 2: Diagnosis Quality Rubric
 
 #### Automated
 
-- [ ] 2.1 Rubric document exists: `Test-Path context\changes\diagnosis-quality-rubric\diagnosis-quality-rubric.md`
-- [ ] 2.2 Rubric contains scoring scale text: `rg "0/1/2|case threshold|critical failure" context\changes\diagnosis-quality-rubric\diagnosis-quality-rubric.md`
-- [ ] 2.3 Rubric contains scope handling text: `rg "mixed-scope|out-of-scope|agar|grain|follow-up" context\changes\diagnosis-quality-rubric\diagnosis-quality-rubric.md`
-- [ ] 2.4 Lint still passes: `npm run lint`
+- [x] 2.1 Rubric document exists: `Test-Path context\changes\diagnosis-quality-rubric\diagnosis-quality-rubric.md`
+- [x] 2.2 Rubric contains scoring scale text: `rg "0/1/2|case threshold|critical failure" context\changes\diagnosis-quality-rubric\diagnosis-quality-rubric.md`
+- [x] 2.3 Rubric contains scope handling text: `rg "mixed-scope|out-of-scope|agar|grain|follow-up" context\changes\diagnosis-quality-rubric\diagnosis-quality-rubric.md`
+- [x] 2.4 Lint still passes: `npm run lint`
 
 #### Manual
 
-- [ ] 2.5 Rubric is understandable without reading the planning conversation.
-- [ ] 2.6 Rubric preserves the PRD guardrails: uncertainty, no guaranteed diagnosis, agar/grain scope, and selected-log dependency.
-- [ ] 2.7 Rubric does not add species-specific advice, image analysis, saved chat history, or multi-user product scope.
+- [x] 2.5 Rubric is understandable without reading the planning conversation.
+- [x] 2.6 Rubric preserves the PRD guardrails: uncertainty, no guaranteed diagnosis, agar/grain scope, and selected-log dependency.
+- [x] 2.7 Rubric does not add species-specific advice, image analysis, saved chat history, or multi-user product scope.
 
 ### Phase 3: Evaluation Case Set
 

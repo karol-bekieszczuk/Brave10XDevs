@@ -22,3 +22,10 @@
 - **Problem**: The agent creates unnecessary extra folders when the repository already has `context/` as the intended place for planning and skill-produced documents.
 - **Rule**: Always write Markdown documents created by the agent under `context/`, unless the user explicitly says otherwise.
 - **Applies to**: plan, new, plan-review, implement, shape
+
+## Never Use Smell Checks For Agar Or Grain
+
+- **Context**: Diagnosis rubric, evaluation cases, prompts, research, and implementation work for agar/grain troubleshooting.
+- **Problem**: AI-generated cultivation advice often suggests judging agar or grain by smell, which is unreliable and exactly the kind of low-quality guidance this product must avoid.
+- **Rule**: Never ask or suggest that the user check agar or grain by smell. Use grow-log facts and direct visual observations instead.
+- **Applies to**: research, plan, plan-review, implement, impl-review
