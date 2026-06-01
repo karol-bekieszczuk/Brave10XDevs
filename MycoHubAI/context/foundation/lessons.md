@@ -15,3 +15,10 @@
 - **Problem**: If the agent marks findings as fixed, skipped, accepted, dismissed, or changes the review verdict without the user's explicit triage decision, it silently replaces the user's product and risk judgment.
 - **Rule**: Never decide review triage outcomes on behalf of the user. Present each pending finding, wait for the user's decision, and only then update the plan, code, saved review decision, or final verdict.
 - **Applies to**: rule-review, plan-review, impl-review
+
+## Keep Agent-Created Markdown Documents Under Context
+
+- **Context**: Skills that produce `.md` files, `/10x-plan`, `/10x-new`, `/10x-plan-review`, `/10x-implement`, `/10x-shape`, .
+- **Problem**: The agent creates unnecessary extra folders when the repository already has `context/` as the intended place for planning and skill-produced documents.
+- **Rule**: Always write Markdown documents created by the agent under `context/`, unless the user explicitly says otherwise.
+- **Applies to**: plan, new, plan-review, implement, shape

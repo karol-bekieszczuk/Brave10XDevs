@@ -10,7 +10,7 @@ Define the quality and safety contract for MycoHubAI diagnosis before the select
 
 ## Desired End State
 
-The repository contains a stable diagnosis quality contract in `docs/reference/diagnosis-quality-rubric.md` and a structured 10-case evaluation set in `docs/reference/diagnosis-evaluation-cases.json`. A future implementer can read these artifacts and know exactly what selected-log diagnosis must satisfy before it is considered done: how to score answers, which cases count toward the 75% PRD target, when to ask follow-up questions, how to handle mixed-scope prompts, and what remains out of scope.
+The repository contains a stable diagnosis quality contract in `context/diagnosis-quality-rubric/reference/diagnosis-quality-rubric.md` and a structured 10-case evaluation set in `context/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json`. A future implementer can read these artifacts and know exactly what selected-log diagnosis must satisfy before it is considered done: how to score answers, which cases count toward the 75% PRD target, when to ask follow-up questions, how to handle mixed-scope prompts, and what remains out of scope.
 
 ### Key Discoveries:
 
@@ -55,7 +55,7 @@ Create the active change folder and prepare the reference-document location that
 
 #### 2. Reference docs directory
 
-**File**: `docs/reference/`
+**File**: `context/diagnosis-quality-rubric/reference/`
 
 **Intent**: Introduce the repo-level reference location named by the lesson path contract for load-bearing implementation names and future agent-readable contracts.
 
@@ -89,7 +89,7 @@ Write the human-readable diagnosis quality contract that future selected-log dia
 
 #### 1. Rubric document
 
-**File**: `docs/reference/diagnosis-quality-rubric.md`
+**File**: `context/diagnosis-quality-rubric/reference/diagnosis-quality-rubric.md`
 
 **Intent**: Define the behavioral contract for scoped, uncertain agar/grain troubleshooting answers in a format humans and agents can review before implementing S-02.
 
@@ -97,7 +97,7 @@ Write the human-readable diagnosis quality contract that future selected-log dia
 
 #### 2. Criteria set
 
-**File**: `docs/reference/diagnosis-quality-rubric.md`
+**File**: `context/diagnosis-quality-rubric/reference/diagnosis-quality-rubric.md`
 
 **Intent**: Make correctness concrete enough that later diagnosis work cannot pass by only producing plausible prose.
 
@@ -105,7 +105,7 @@ Write the human-readable diagnosis quality contract that future selected-log dia
 
 #### 3. Missing-context and mixed-scope rules
 
-**File**: `docs/reference/diagnosis-quality-rubric.md`
+**File**: `context/diagnosis-quality-rubric/reference/diagnosis-quality-rubric.md`
 
 **Intent**: Preserve the user decisions from planning so future implementation knows when to ask a follow-up and when to answer only the in-scope portion of a mixed prompt.
 
@@ -140,7 +140,7 @@ Create the machine-readable prepared case set that future diagnosis implementati
 
 #### 1. Structured evaluation cases
 
-**File**: `docs/reference/diagnosis-evaluation-cases.json`
+**File**: `context/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json`
 
 **Intent**: Capture 10 concrete agar/grain troubleshooting scenarios so the PRD's prepared-case correctness target has a repo-local source of truth.
 
@@ -150,7 +150,7 @@ The rubric or case file documents this compact case schema: `id` is a stable str
 
 #### 2. Case coverage
 
-**File**: `docs/reference/diagnosis-evaluation-cases.json`
+**File**: `context/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json`
 
 **Intent**: Ensure the first case set covers the main MVP risks without turning F-02 into a large domain-research project.
 
@@ -158,19 +158,19 @@ The rubric or case file documents this compact case schema: `id` is a stable str
 
 #### 3. Cross-reference to rubric
 
-**File**: `docs/reference/diagnosis-quality-rubric.md`
+**File**: `context/diagnosis-quality-rubric/reference/diagnosis-quality-rubric.md`
 
 **Intent**: Keep the Markdown contract and JSON cases connected so future agents do not treat them as independent artifacts.
 
-**Contract**: Add a section referencing `docs/reference/diagnosis-evaluation-cases.json` and explaining that the cases are scored using the rubric's 0/1/2 criteria and case threshold. Define how the PRD 75% prepared-case target is computed from cases where `counts_toward_prd_accuracy` is `true`; guardrail-only cases still must pass their scope/safety expectations but do not silently change the diagnosis-accuracy denominator.
+**Contract**: Add a section referencing `context/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json` and explaining that the cases are scored using the rubric's 0/1/2 criteria and case threshold. Define how the PRD 75% prepared-case target is computed from cases where `counts_toward_prd_accuracy` is `true`; guardrail-only cases still must pass their scope/safety expectations but do not silently change the diagnosis-accuracy denominator.
 
 ### Success Criteria:
 
 #### Automated Verification:
 
 - Evaluation case file exists: `Test-Path docs\reference\diagnosis-evaluation-cases.json`
-- Evaluation case file is valid JSON: `node -e "JSON.parse(require('fs').readFileSync('docs/reference/diagnosis-evaluation-cases.json','utf8')); console.log('ok')"`
-- Evaluation case file contains 10 cases: `node -e "const c=JSON.parse(require('fs').readFileSync('docs/reference/diagnosis-evaluation-cases.json','utf8')); if(!Array.isArray(c.cases)||c.cases.length!==10) process.exit(1); console.log(c.cases.length)"`
+- Evaluation case file is valid JSON: `node -e "JSON.parse(require('fs').readFileSync('context/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json','utf8')); console.log('ok')"`
+- Evaluation case file contains 10 cases: `node -e "const c=JSON.parse(require('fs').readFileSync('context/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json','utf8')); if(!Array.isArray(c.cases)||c.cases.length!==10) process.exit(1); console.log(c.cases.length)"`
 - Lint still passes: `npm run lint`
 
 #### Manual Verification:
@@ -193,11 +193,11 @@ Make the new quality contract discoverable and verify that it remains a foundati
 
 #### 1. Contract surfaces registry
 
-**File**: `docs/reference/contract-surfaces.md`
+**File**: `context/diagnosis-quality-rubric/reference/contract-surfaces.md`
 
 **Intent**: Register the new load-bearing rubric and case artifacts so future agents can find them before implementing diagnosis.
 
-**Contract**: If the file does not exist, create it with a concise reference registry. Add H2 sections for `## Diagnosis Quality Rubric` and `## Diagnosis Evaluation Cases`, with the canonical path under each heading. Name `docs/reference/diagnosis-quality-rubric.md` as the canonical diagnosis quality contract and `docs/reference/diagnosis-evaluation-cases.json` as the prepared-case set for S-02.
+**Contract**: If the file does not exist, create it with a concise reference registry. Add H2 sections for `## Diagnosis Quality Rubric` and `## Diagnosis Evaluation Cases`, with the canonical path under each heading. Name `context/diagnosis-quality-rubric/reference/diagnosis-quality-rubric.md` as the canonical diagnosis quality contract and `context/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json` as the prepared-case set for S-02.
 
 #### 2. Plan reference cleanup
 
@@ -219,7 +219,7 @@ Make the new quality contract discoverable and verify that it remains a foundati
 
 #### Manual Verification:
 
-- A future implementer can find the rubric and cases from `docs/reference/contract-surfaces.md`.
+- A future implementer can find the rubric and cases from `context/diagnosis-quality-rubric/reference/contract-surfaces.md`.
 - The change remains documentation/reference-only and does not add diagnosis API, AI provider, grow-log persistence, or saved chat history.
 - The final artifacts give enough detail to begin planning or implementing `selected-log-diagnosis`.
 
@@ -241,9 +241,9 @@ Make the new quality contract discoverable and verify that it remains a foundati
 
 ### Manual Testing Steps:
 
-1. Read `docs/reference/diagnosis-quality-rubric.md` and confirm it can be understood without the planning conversation.
+1. Read `context/diagnosis-quality-rubric/reference/diagnosis-quality-rubric.md` and confirm it can be understood without the planning conversation.
 2. Review all 10 JSON cases and confirm each stays within the MVP constraints or explicitly models out-of-scope/mixed-scope behavior.
-3. Confirm `docs/reference/contract-surfaces.md` points future agents to both diagnosis quality artifacts.
+3. Confirm `context/diagnosis-quality-rubric/reference/contract-surfaces.md` points future agents to both diagnosis quality artifacts.
 
 ## Performance Considerations
 
@@ -301,8 +301,8 @@ No database, Supabase, Cloudflare, or environment migration is required. Do not 
 #### Automated
 
 - [ ] 3.1 Evaluation case file exists: `Test-Path docs\reference\diagnosis-evaluation-cases.json`
-- [ ] 3.2 Evaluation case file is valid JSON: `node -e "JSON.parse(require('fs').readFileSync('docs/reference/diagnosis-evaluation-cases.json','utf8')); console.log('ok')"`
-- [ ] 3.3 Evaluation case file contains 10 cases: `node -e "const c=JSON.parse(require('fs').readFileSync('docs/reference/diagnosis-evaluation-cases.json','utf8')); if(!Array.isArray(c.cases)||c.cases.length!==10) process.exit(1); console.log(c.cases.length)"`
+- [ ] 3.2 Evaluation case file is valid JSON: `node -e "JSON.parse(require('fs').readFileSync('context/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json','utf8')); console.log('ok')"`
+- [ ] 3.3 Evaluation case file contains 10 cases: `node -e "const c=JSON.parse(require('fs').readFileSync('context/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json','utf8')); if(!Array.isArray(c.cases)||c.cases.length!==10) process.exit(1); console.log(c.cases.length)"`
 - [ ] 3.4 Lint still passes: `npm run lint`
 
 #### Manual
@@ -323,6 +323,6 @@ No database, Supabase, Cloudflare, or environment migration is required. Do not 
 
 #### Manual
 
-- [ ] 4.6 A future implementer can find the rubric and cases from `docs/reference/contract-surfaces.md`.
+- [ ] 4.6 A future implementer can find the rubric and cases from `context/diagnosis-quality-rubric/reference/contract-surfaces.md`.
 - [ ] 4.7 The change remains documentation/reference-only and does not add diagnosis API, AI provider, grow-log persistence, or saved chat history.
 - [ ] 4.8 The final artifacts give enough detail to begin planning or implementing `selected-log-diagnosis`.

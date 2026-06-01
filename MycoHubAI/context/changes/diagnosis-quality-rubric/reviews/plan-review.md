@@ -68,7 +68,7 @@ Grounding: 3/3 existing paths pass, 3/3 planned-new paths pass, 6/6 symbols pass
 - **Impact**: LOW - quick decision; fix is obvious and narrowly scoped
 - **Dimension**: Architectural Fitness
 - **Location**: Phase 4 - Contract surfaces registry
-- **Detail**: The local plan-review convention extracts contract surface names from H2 headings in `docs/reference/contract-surfaces.md`. The plan only says to create a "concise reference registry" with entries, so an implementer could create a bullet-only file that humans can read but future tooling will not detect.
+- **Detail**: The local plan-review convention extracts contract surface names from H2 headings in `context/diagnosis-quality-rubric/reference/contract-surfaces.md`. The plan only says to create a "concise reference registry" with entries, so an implementer could create a bullet-only file that humans can read but future tooling will not detect.
 - **Fix**: Require H2 sections for each registered surface, e.g. `## Diagnosis Quality Rubric` and `## Diagnosis Evaluation Cases`, with the canonical path under each heading.
 - **Decision**: FIXED - Applied fix in plan.
 

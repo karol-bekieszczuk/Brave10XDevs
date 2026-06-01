@@ -23,7 +23,7 @@ The repo has one grow-log database migration and one small TypeScript contract m
 | Privacy model | `owner_id = auth.uid()` with RLS | Enforces private grow-log access in Supabase, not only in app code. |
 | Type source | Manual app types now | Gives S-01 a stable TypeScript contract without adding typegen workflow work to F-02. |
 | Stage validation | DB check plus TS union | Keeps the agar/grain invariant enforced in both persistence and application code. |
-| Contract docs | Plan and types only | Avoids creating `docs/reference/contract-surfaces.md` in this change. |
+| Contract docs | Plan and types only | Avoids creating `context/diagnosis-quality-rubric/reference/contract-surfaces.md` in this change. |
 | Runtime boundary | Contract-only helper | Keeps F-02 as a foundation and leaves CRUD runtime for S-01. |
 
 ## Scope
@@ -41,7 +41,7 @@ The repo has one grow-log database migration and one small TypeScript contract m
 
 - CRUD API routes, repositories, pages, or React islands.
 - Selected-log diagnosis runtime, AI provider work, prompts, or saved chat history.
-- `docs/reference/contract-surfaces.md`.
+- `context/diagnosis-quality-rubric/reference/contract-surfaces.md`.
 - Soft delete or recovery behavior.
 - Species-specific advice, photos, image analysis, sharing, collaboration, export, or multi-user account management.
 

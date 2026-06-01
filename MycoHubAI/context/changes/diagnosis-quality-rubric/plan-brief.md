@@ -12,7 +12,7 @@ The roadmap marks `diagnosis-quality-rubric` as F-03, a foundation that unlocks 
 
 ## Desired End State
 
-The repo has a readable rubric at `docs/reference/diagnosis-quality-rubric.md` and a structured 10-case evaluation set at `docs/reference/diagnosis-evaluation-cases.json`. Future diagnosis implementation can use these as the source of truth for scoped uncertain answers and the PRD's 75% prepared-case target.
+The repo has a readable rubric at `context/diagnosis-quality-rubric/reference/diagnosis-quality-rubric.md` and a structured 10-case evaluation set at `context/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json`. Future diagnosis implementation can use these as the source of truth for scoped uncertain answers and the PRD's 75% prepared-case target.
 
 ## Key Decisions Made
 
@@ -30,9 +30,9 @@ The repo has a readable rubric at `docs/reference/diagnosis-quality-rubric.md` a
 
 **In scope:**
 
-- Create `docs/reference/diagnosis-quality-rubric.md`.
-- Create `docs/reference/diagnosis-evaluation-cases.json` with exactly 10 cases.
-- Create/update `docs/reference/contract-surfaces.md` so future agents can find the artifacts.
+- Create `context/diagnosis-quality-rubric/reference/diagnosis-quality-rubric.md`.
+- Create `context/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json` with exactly 10 cases.
+- Create/update `context/diagnosis-quality-rubric/reference/contract-surfaces.md` so future agents can find the artifacts.
 - Define scoring criteria, pass thresholds, critical failures, missing-context behavior, mixed-scope handling, and non-goals.
 
 **Out of scope:**
@@ -49,7 +49,7 @@ This is a reference-artifact change. The Markdown rubric owns the human-readable
 
 | Phase | What it delivers | Key risk |
 | --- | --- | --- |
-| 1. Change Scaffolding And Reference Location | Active change identity and `docs/reference/` location | Accidentally treating F-03 as runtime diagnosis work. |
+| 1. Change Scaffolding And Reference Location | Active change identity and `context/diagnosis-quality-rubric/reference/` location | Accidentally treating F-03 as runtime diagnosis work. |
 | 2. Diagnosis Quality Rubric | Human-readable scoring and behavior contract | Rubric could be too vague to guide implementation. |
 | 3. Evaluation Case Set | 10 structured prepared cases | Cases could overfit wording or miss key scope failures. |
 | 4. Handoff And Verification | Discoverability and final foundation checks | Future agents may miss the rubric unless it is registered clearly. |
