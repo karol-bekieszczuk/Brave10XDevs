@@ -8,3 +8,10 @@
 - **Problem**: Whenever a feature is implemented behind a feature flag, the flag can be removed by the agent unless its removal is planned explicitly. Without a kill date, agent doesnt know when feature flags should be removed and decides by himself.
 - **Rule**: Whenever a feature is implemented with a feature flag, set an explicit `kill date` parameter for that flag. State when the flag should be removed as part of the feature work and this should never be ommited by the agent.
 - **Applies to**: all
+
+## Do Not Decide Review Triage Outcomes
+
+- **Context**: Any triage of review findings from `/10x-rule-review`, `/10x-plan-review`, `/10x-impl-review`, `rule-review.md` `plan-review.md`, or `impl-review.md`.
+- **Problem**: If the agent marks findings as fixed, skipped, accepted, dismissed, or changes the review verdict without the user's explicit triage decision, it silently replaces the user's product and risk judgment.
+- **Rule**: Never decide review triage outcomes on behalf of the user. Present each pending finding, wait for the user's decision, and only then update the plan, code, saved review decision, or final verdict.
+- **Applies to**: rule-review, plan-review, impl-review

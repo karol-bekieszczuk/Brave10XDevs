@@ -4,24 +4,25 @@
 - **Plan**: `context/changes/diagnosis-quality-rubric/plan.md`
 - **Mode**: Deep (local verification)
 - **Date**: 2026-05-28
-- **Verdict**: REVISE
-- **Findings**: 1 critical, 3 warnings, 0 observations
+- **Verdict**: SOUND
+- **Open Findings**: 0
+- **Initial Findings**: 1 critical, 3 warnings, 0 observations; all fixed in plan
 
 ## Verdicts
 
 | Dimension | Verdict |
 |-----------|---------|
-| End-State Alignment | WARNING |
+| End-State Alignment | PASS |
 | Lean Execution | PASS |
-| Architectural Fitness | WARNING |
+| Architectural Fitness | PASS |
 | Blind Spots | PASS |
-| Plan Completeness | FAIL |
+| Plan Completeness | PASS |
 
 ## Grounding
 
 Grounding: 3/3 existing paths pass, 3/3 planned-new paths pass, 6/6 symbols pass, brief-plan consistency pass.
 
-## Findings
+## Resolved Findings
 
 ### F1 - Negative `rg` check will fail when it succeeds
 
@@ -70,3 +71,11 @@ Grounding: 3/3 existing paths pass, 3/3 planned-new paths pass, 6/6 symbols pass
 - **Detail**: The local plan-review convention extracts contract surface names from H2 headings in `docs/reference/contract-surfaces.md`. The plan only says to create a "concise reference registry" with entries, so an implementer could create a bullet-only file that humans can read but future tooling will not detect.
 - **Fix**: Require H2 sections for each registered surface, e.g. `## Diagnosis Quality Rubric` and `## Diagnosis Evaluation Cases`, with the canonical path under each heading.
 - **Decision**: FIXED - Applied fix in plan.
+
+## Triage Summary
+
+- Fixed: F1, F2, F3, F4
+- Skipped: none
+- Accepted: none
+- Dismissed: none
+- Verdict after fixes: SOUND
