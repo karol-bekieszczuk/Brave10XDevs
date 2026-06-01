@@ -97,7 +97,7 @@ const diagnosisResponseSchema = z.object({
 });
 ```
 
-This should be aligned with `context/diagnosis-quality-rubric/reference/diagnosis-quality-rubric.md` before implementation.
+This should be aligned with `context/changes/diagnosis-quality-rubric/reference/diagnosis-quality-rubric.md` before implementation.
 
 ## Options Considered
 
@@ -190,7 +190,7 @@ Tradeoffs:
 - Prefer `generateObject` or structured output over free-form text for the backend contract.
 - Include retrieved source references internally and optionally expose concise source labels in the UI.
 - Make the ingestion script deterministic so a changed Markdown knowledge file can be re-embedded.
-- Add evaluation against `context/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json` once the diagnosis endpoint exists.
+- Add evaluation against `context/changes/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json` once the diagnosis endpoint exists.
 
 ## Sources
 

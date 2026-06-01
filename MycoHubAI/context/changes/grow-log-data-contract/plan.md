@@ -27,7 +27,7 @@ The repository contains a reviewed grow-log database migration and a small TypeS
 - Building grow-log CRUD API routes, server actions, repositories, pages, or React islands.
 - Implementing selected-log diagnosis, AI provider integration, prompts, rubric execution, or saved chat history.
 - Adding species-specific advice, photo storage, image analysis, local export, social features, sharing, collaboration, or multi-user account management.
-- Creating `context/diagnosis-quality-rubric/reference/contract-surfaces.md` in this change.
+- Creating `context/changes/diagnosis-quality-rubric/reference/contract-surfaces.md` in this change.
 - Adding soft delete, archival behavior, or recovery UI; delete semantics for this contract are hard delete.
 - Adding extra owner allowlist tables, role tables, invitation flows, or admin UI.
 
