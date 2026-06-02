@@ -1,9 +1,9 @@
 ---
 change_id: selected-log-diagnosis
 title: Selected log diagnosis
-status: new
+status: plan_reviewed
 created: 2026-06-01
-updated: 2026-06-01
+updated: 2026-06-02
 archived_at: null
 ---
 
