@@ -3,7 +3,7 @@ project: MycoHubAI
 version: 1
 status: draft
 created: 2026-05-27
-updated: 2026-06-01
+updated: 2026-06-04
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -34,6 +34,8 @@ The MVP must stay single-user-first, text-only, and constrained to agar and grai
 | F-03 | diagnosis-quality-rubric | (foundation) diagnosis quality and safety checks are explicit enough to verify scoped uncertain answers | - | Success Criteria, NFRs, FR-003, FR-004 | done |
 | S-01 | staged-grow-log-crud | user can create, view, edit, and delete their own text grow logs with an agar/grain stage | F-02 | FR-001, FR-005 | done |
 | S-02 | selected-log-diagnosis | user can ask about one selected agar or grain grow log and receive scoped causes, actions, uncertainty, or a follow-up question | S-01, F-03 | US-01, FR-002, FR-003, FR-004 | proposed |
+| S-03 | delete-user-account | user can permanently delete their own account and grow-log data | F-01, S-01 | FR-005, Access Control | proposed |
+| S-04 | bulk-grow-log-actions | user can select and delete multiple grow logs in one action | F-01 | FR-001, FR-005 | planned |
 
 ## Streams
 
@@ -44,6 +46,8 @@ Navigation aid - groups items that share a Prerequisites chain. Canonical orderi
 | A | Access path | `F-01` | Locks the MVP to one authorized user before later slices expand app behavior. |
 | B | Grow-log path | `F-02` -> `S-01` | Fastest route to the selected log that the diagnosis flow needs. |
 | C | Diagnosis path | `F-03` -> `S-02` | Joins Stream B after `S-01`; keeps safety checks ready before the diagnosis slice. |
+| D | Account lifecycle path | `F-01` -> `S-01` -> `S-03` | Adds user-owned deletion only after owner access and grow-log deletion paths exist. |
+| E | Log maintenance path | `F-01` -> `S-04` | Adds bulk cleanup without blocking diagnosis or account deletion. |
 
 ## Baseline
 
@@ -63,7 +67,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Outcome:** (foundation) Only one authorized user can access the MVP, public registration is removed, and stale non-owner sessions are denied.
 - **Change ID:** single-user-access-gate
 - **PRD refs:** FR-005, Access Control
-- **Unlocks:** S-01, S-02
+- **Unlocks:** S-01, S-02, S-03, S-04
 - **Prerequisites:** -
 - **Parallel with:** F-02, F-03
 - **Blockers:** -
@@ -123,6 +127,30 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Risk:** This is the product proof point; delaying it behind non-essential surfaces would optimize the shell instead of the diagnosis value.
 - **Status:** proposed
 
+### S-03: Delete user account
+
+- **Outcome:** user can permanently delete their own account and grow-log data.
+- **Change ID:** delete-user-account
+- **PRD refs:** FR-005, Access Control
+- **Prerequisites:** F-01, S-01
+- **Parallel with:** S-02
+- **Blockers:** -
+- **Unknowns:** Supabase auth-user deletion ownership and whether deletion must be dashboard-assisted for the MVP.
+- **Risk:** Without an account deletion path, the private single-user data contract has no user-owned exit.
+- **Status:** proposed
+
+### S-04: Bulk grow-log actions
+
+- **Outcome:** user can select and delete multiple grow logs in one action.
+- **Change ID:** bulk-grow-log-actions
+- **PRD refs:** FR-001, FR-005
+- **Prerequisites:** F-01
+- **Parallel with:** S-03
+- **Blockers:** -
+- **Unknowns:** Whether bulk deletion needs undo, confirmation-only deletion, or both.
+- **Risk:** Without bulk actions, cleanup stays repetitive once real grow-log history accumulates.
+- **Status:** planned
+
 ## Backlog Handoff
 
 | Roadmap ID | Change ID | Suggested issue title | Ready for `/10x-plan` | Notes |
@@ -132,6 +160,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | F-03 | diagnosis-quality-rubric | Define the diagnosis quality and safety rubric | yes | Run `/10x-plan diagnosis-quality-rubric` |
 | S-01 | staged-grow-log-crud | Build staged grow-log CRUD | no | Depends on F-02 |
 | S-02 | selected-log-diagnosis | Build selected-log diagnosis | no | Depends on S-01 and F-03 |
+| S-03 | delete-user-account | Add account deletion | no | Depends on F-01 and S-01 |
+| S-04 | bulk-grow-log-actions | Add bulk grow-log deletion UX | no | Depends on F-01; can run in parallel with S-03 |
 
 ## Open Roadmap Questions
 
@@ -144,7 +174,7 @@ None.
 - **Local export or download of grow logs** - Why parked: not required for the shortest diagnosis path.
 - **Social media integrations** - Why parked: outside the single-user troubleshooting surface.
 - **Sharing grow logs between users** - Why parked: conflicts with private single-user data handling in the MVP.
-- **Full multi-user account management** - Why parked: starter auth may remain plumbing, but account product features are out of scope.
+- **Full multi-user account management** - Why parked: starter auth may remain plumbing, but account product features beyond owner deletion are out of scope.
 - **Saved chat history** - Why parked: PRD keeps only grow logs persisted.
 
 ## Done
