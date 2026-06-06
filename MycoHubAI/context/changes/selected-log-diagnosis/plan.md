@@ -484,21 +484,21 @@ This change introduces a new Supabase migration for pgvector knowledge chunks an
 
 #### Automated
 
-- [x] 3.1 API route exports uppercase `POST` and returns JSON.
-- [x] 3.2 API validates `growLogId` and `question` before service execution.
-- [x] 3.3 Service loads selected log through the owner-scoped repository contract before embedding or generation.
-- [x] 3.4 Prompt tests confirm guardrails for uncertainty, mixed scope, out-of-scope, no smell, no photo/image analysis, no species advice, and no saved chat history.
-- [x] 3.5 No-match retrieval path returns `missing_context` or uncertainty-forward behavior instead of invented diagnosis.
-- [x] 3.6 Provider failure path returns a controlled retryable error without unvalidated diagnosis content.
-- [x] 3.7 Mocked full service-flow tests pass: `npm run test:unit`.
-- [x] 3.8 Linting passes: `npm run lint`.
-- [x] 3.9 Build passes: `npm run build`.
+- [x] 3.1 API route exports uppercase `POST` and returns JSON. — 5dc88cc
+- [x] 3.2 API validates `growLogId` and `question` before service execution. — 5dc88cc
+- [x] 3.3 Service loads selected log through the owner-scoped repository contract before embedding or generation. — 5dc88cc
+- [x] 3.4 Prompt tests confirm guardrails for uncertainty, mixed scope, out-of-scope, no smell, no photo/image analysis, no species advice, and no saved chat history. — 5dc88cc
+- [x] 3.5 No-match retrieval path returns `missing_context` or uncertainty-forward behavior instead of invented diagnosis. — 5dc88cc
+- [x] 3.6 Provider failure path returns a controlled retryable error without unvalidated diagnosis content. — 5dc88cc
+- [x] 3.7 Mocked full service-flow tests pass: `npm run test:unit`. — 5dc88cc
+- [x] 3.8 Linting passes: `npm run lint`. — 5dc88cc
+- [x] 3.9 Build passes: `npm run build`. — 5dc88cc
 
 #### Manual
 
-- [x] 3.10 API behavior is intentionally a new JSON convention, while still preserving local auth/client/error-handling patterns.
-- [x] 3.11 Missing or non-owned grow log IDs do not trigger embedding, retrieval, or model calls.
-- [x] 3.12 Response contract remains compatible with the F-03 prepared cases.
+- [x] 3.10 API behavior is intentionally a new JSON convention, while still preserving local auth/client/error-handling patterns. — 5dc88cc
+- [x] 3.11 Missing or non-owned grow log IDs do not trigger embedding, retrieval, or model calls. — 5dc88cc
+- [x] 3.12 Response contract remains compatible with the F-03 prepared cases. — 5dc88cc
 
 ### Phase 4: Selected-Log UI On Detail Page
 
