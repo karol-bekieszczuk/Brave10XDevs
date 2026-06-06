@@ -464,41 +464,41 @@ This change introduces a new Supabase migration for pgvector knowledge chunks an
 
 #### Automated
 
-- [x] 2.1 Knowledge Markdown files exist under `lib/diagnosis/knowledge/`.
-- [x] 2.2 Search confirms knowledge files contain no smell-check instructions.
-- [x] 2.3 `package.json` defines `diagnosis:ingest` for `scripts/ingest-diagnosis-knowledge.ts`.
-- [x] 2.4 Migration creates `diagnosis_knowledge_chunks`, enables RLS/no direct client table reads, and exposes `match_diagnosis_knowledge_chunks`.
-- [x] 2.5 RPC contract includes `stage_filter`, `match_threshold`, and `match_count`.
-- [x] 2.6 Retrieval mapper converts snake_case source metadata to camelCase.
-- [x] 2.7 Retrieval contract tests pass with a mocked Supabase client: `npm run test:unit`.
-- [x] 2.8 Linting passes: `npm run lint`.
-- [x] 2.9 Build passes: `npm run build`.
+- [x] 2.1 Knowledge Markdown files exist under `lib/diagnosis/knowledge/`. — a304cdb
+- [x] 2.2 Search confirms knowledge files contain no smell-check instructions. — a304cdb
+- [x] 2.3 `package.json` defines `diagnosis:ingest` for `scripts/ingest-diagnosis-knowledge.ts`. — a304cdb
+- [x] 2.4 Migration creates `diagnosis_knowledge_chunks`, enables RLS/no direct client table reads, and exposes `match_diagnosis_knowledge_chunks`. — a304cdb
+- [x] 2.5 RPC contract includes `stage_filter`, `match_threshold`, and `match_count`. — a304cdb
+- [x] 2.6 Retrieval mapper converts snake_case source metadata to camelCase. — a304cdb
+- [x] 2.7 Retrieval contract tests pass with a mocked Supabase client: `npm run test:unit`. — a304cdb
+- [x] 2.8 Linting passes: `npm run lint`. — a304cdb
+- [x] 2.9 Build passes: `npm run build`. — a304cdb
 
 #### Manual
 
-- [x] 2.10 Knowledge content is reviewable as product knowledge, not hidden only in database rows.
-- [x] 2.11 Runtime retrieval is RPC-only, stage-scoped, and backed by explicit table/RPC grants or revokes.
-- [x] 2.12 HNSW/performance indexing remains deferred unless corpus size or latency justifies it.
+- [x] 2.10 Knowledge content is reviewable as product knowledge, not hidden only in database rows. — a304cdb
+- [x] 2.11 Runtime retrieval is RPC-only, stage-scoped, and backed by explicit table/RPC grants or revokes. — a304cdb
+- [x] 2.12 HNSW/performance indexing remains deferred unless corpus size or latency justifies it. — a304cdb
 
 ### Phase 3: Diagnosis Service And JSON API
 
 #### Automated
 
-- [ ] 3.1 API route exports uppercase `POST` and returns JSON.
-- [ ] 3.2 API validates `growLogId` and `question` before service execution.
-- [ ] 3.3 Service loads selected log through the owner-scoped repository contract before embedding or generation.
-- [ ] 3.4 Prompt tests confirm guardrails for uncertainty, mixed scope, out-of-scope, no smell, no photo/image analysis, no species advice, and no saved chat history.
-- [ ] 3.5 No-match retrieval path returns `missing_context` or uncertainty-forward behavior instead of invented diagnosis.
-- [ ] 3.6 Provider failure path returns a controlled retryable error without unvalidated diagnosis content.
-- [ ] 3.7 Mocked full service-flow tests pass: `npm run test:unit`.
-- [ ] 3.8 Linting passes: `npm run lint`.
-- [ ] 3.9 Build passes: `npm run build`.
+- [x] 3.1 API route exports uppercase `POST` and returns JSON.
+- [x] 3.2 API validates `growLogId` and `question` before service execution.
+- [x] 3.3 Service loads selected log through the owner-scoped repository contract before embedding or generation.
+- [x] 3.4 Prompt tests confirm guardrails for uncertainty, mixed scope, out-of-scope, no smell, no photo/image analysis, no species advice, and no saved chat history.
+- [x] 3.5 No-match retrieval path returns `missing_context` or uncertainty-forward behavior instead of invented diagnosis.
+- [x] 3.6 Provider failure path returns a controlled retryable error without unvalidated diagnosis content.
+- [x] 3.7 Mocked full service-flow tests pass: `npm run test:unit`.
+- [x] 3.8 Linting passes: `npm run lint`.
+- [x] 3.9 Build passes: `npm run build`.
 
 #### Manual
 
-- [ ] 3.10 API behavior is intentionally a new JSON convention, while still preserving local auth/client/error-handling patterns.
-- [ ] 3.11 Missing or non-owned grow log IDs do not trigger embedding, retrieval, or model calls.
-- [ ] 3.12 Response contract remains compatible with the F-03 prepared cases.
+- [x] 3.10 API behavior is intentionally a new JSON convention, while still preserving local auth/client/error-handling patterns.
+- [x] 3.11 Missing or non-owned grow log IDs do not trigger embedding, retrieval, or model calls.
+- [x] 3.12 Response contract remains compatible with the F-03 prepared cases.
 
 ### Phase 4: Selected-Log UI On Detail Page
 
