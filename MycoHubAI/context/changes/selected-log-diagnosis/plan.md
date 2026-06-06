@@ -445,20 +445,20 @@ This change introduces a new Supabase migration for pgvector knowledge chunks an
 
 #### Automated
 
-- [ ] 1.1 Dependencies include `ai`, `@ai-sdk/openai`, and `zod`.
-- [ ] 1.2 Provider secret is declared in server-only env config, runtime-env accessors, and `wrangler.jsonc` required secrets.
-- [ ] 1.3 `.env.example` documents the local provider secret name.
-- [ ] 1.4 Diagnosis response schema includes `mixed_scope`.
-- [ ] 1.5 Diagnosis schema rejects unsupported `scopeStatus` values.
-- [ ] 1.6 Diagnosis schema unit tests pass: `npm run test:unit`.
-- [ ] 1.7 Linting passes: `npm run lint`.
-- [ ] 1.8 Build passes: `npm run build`.
+- [x] 1.1 Dependencies include `ai`, `@ai-sdk/openai`, and `zod`.
+- [x] 1.2 Provider secret is declared in server-only env config, runtime-env accessors, and `wrangler.jsonc` required secrets.
+- [x] 1.3 `.env.example` documents the local provider secret name.
+- [x] 1.4 Diagnosis response schema includes `mixed_scope`.
+- [x] 1.5 Diagnosis schema rejects unsupported `scopeStatus` values.
+- [x] 1.6 Diagnosis schema unit tests pass: `npm run test:unit`.
+- [x] 1.7 Linting passes: `npm run lint`.
+- [x] 1.8 Build passes: `npm run build`.
 
 #### Manual
 
-- [ ] 1.9 Provider secret handling is documented as committed env alignment plus local `.dev.vars` and manual Cloudflare secret configuration.
-- [ ] 1.10 No production verification is claimed before the production secret is configured.
-- [ ] 1.11 The schema contract visibly matches F-03 outcome categories.
+- [x] 1.9 Provider secret handling is documented as committed env alignment plus local `.dev.vars` and manual Cloudflare secret configuration.
+- [x] 1.10 No production verification is claimed before the production secret is configured.
+- [x] 1.11 The schema contract visibly matches F-03 outcome categories.
 
 ### Phase 2: Knowledge Corpus And Supabase Retrieval
 

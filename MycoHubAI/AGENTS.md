@@ -20,7 +20,8 @@ MycoHubAI is an Astro 6 SSR app for an after-hours MVP: text grow logs plus AI-a
 Use the `@/*` alias for imports from `src`, as configured in @tsconfig.json. Prefer Astro components for pages, layouts, and static UI; use React components only for interactive islands. Use `cn()` from `@/lib/utils` for conditional Tailwind classes instead of manual string concatenation. Follow the existing shadcn/ui `new-york` setup in @components.json and lucide icons for icon buttons.
 
 ## Configuration
-Supabase values are server-only secrets declared in @astro.config.mjs and read through `astro:env/server`. Keep local examples in `.env.example`; use `.env` for Node tooling and `.dev.vars` for Cloudflare local secrets.
+Supabase and provider values are server-only secrets declared in @astro.config.mjs and read through `astro:env/server`. Keep local examples in `.env.example`; use shell/OS environment variables for local secret values and Cloudflare dashboard/Wrangler secrets for deployed Workers.
+Do not read `.env`, `.dev.vars`, or any file that may contain real API keys or secrets unless the user explicitly instructs you to inspect that file in the current turn. Prefer `.env.example`, committed config schemas, and environment variable names for implementation work.
 
 <!-- BEGIN @przeprogramowani/10x-cli -->
 
