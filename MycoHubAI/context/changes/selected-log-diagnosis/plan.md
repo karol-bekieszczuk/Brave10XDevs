@@ -504,21 +504,21 @@ This change introduces a new Supabase migration for pgvector knowledge chunks an
 
 #### Automated
 
-- [x] 4.1 `/grow-logs/[id]` renders the diagnosis panel only for an existing owner-scoped log.
-- [x] 4.2 UI submits one JSON request to the selected-log diagnosis endpoint.
-- [x] 4.3 UI displays loading and retryable error states.
-- [x] 4.4 UI renders possible causes, suggested actions, confidence, uncertainty, follow-up question, and source labels from structured JSON.
-- [x] 4.5 UI tests pass with mocked API responses: `npm run test:unit`.
-- [x] 4.6 Linting passes: `npm run lint`.
-- [x] 4.7 Build passes: `npm run build`.
+- [x] 4.1 `/grow-logs/[id]` renders the diagnosis panel only for an existing owner-scoped log. — 12a462c
+- [x] 4.2 UI submits one JSON request to the selected-log diagnosis endpoint. — 12a462c
+- [x] 4.3 UI displays loading and retryable error states. — 12a462c
+- [x] 4.4 UI renders possible causes, suggested actions, confidence, uncertainty, follow-up question, and source labels from structured JSON. — 12a462c
+- [x] 4.5 UI tests pass with mocked API responses: `npm run test:unit`. — 12a462c
+- [x] 4.6 Linting passes: `npm run lint`. — 12a462c
+- [x] 4.7 Build passes: `npm run build`. — 12a462c
 
 #### Manual
 
-- [x] 4.8 Owner can ask a question from a selected grow-log detail page and see a readable diagnosis result.
-- [x] 4.9 Source labels are concise and understandable.
-- [x] 4.10 The UI does not show raw JSON/debug output.
-- [x] 4.11 The UI does not create saved chat history or mutate the grow-log body/title/stage.
-- [x] 4.12 Text and controls fit cleanly on desktop and mobile widths.
+- [x] 4.8 Owner can ask a question from a selected grow-log detail page and see a readable diagnosis result. — 12a462c
+- [x] 4.9 Source labels are concise and understandable. — 12a462c
+- [x] 4.10 The UI does not show raw JSON/debug output. — 12a462c
+- [x] 4.11 The UI does not create saved chat history or mutate the grow-log body/title/stage. — 12a462c
+- [x] 4.12 Text and controls fit cleanly on desktop and mobile widths. — 12a462c
 
 ### Phase 5: F-03 Evaluation And Final Scope Audit
 
