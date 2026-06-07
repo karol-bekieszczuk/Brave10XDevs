@@ -6,7 +6,7 @@ stage: grain
 
 ## Excess moisture indicators
 
-Very wet kernels, pooling liquid, burst grains, sticky clumps, or dense uncolonized areas can point toward excess moisture or bacterial competition. These signs are stronger when growth stalls for several days and the selected log reports that colonized areas stop expanding.
+Very wet kernels, pooling liquid, sticky clumps, or dense uncolonized areas can point toward excess moisture or bacterial competition. These signs are stronger when growth stalls for several days and the selected log reports that colonized areas stop expanding.
 
 Do not treat moisture alone as a certain cause. The answer should explain uncertainty and connect possible causes to the selected log's timeline, shake history, and visible grain condition.
 

@@ -1,5 +1,6 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import SelectedLogDiagnosisPanel from "@/components/diagnosis/SelectedLogDiagnosisPanel";
 import { getOwnerGrowLog } from "@/lib/grow-logs/repository";
 import { createClient } from "@/lib/supabase";
 
@@ -97,6 +98,8 @@ const updatedAt = log
               <h2 class="text-sm font-semibold tracking-[0.3em] text-cyan-200 uppercase">Body</h2>
               <p class="mt-4 text-base leading-7 whitespace-pre-wrap text-blue-100/85">{log.body}</p>
             </article>
+
+            <SelectedLogDiagnosisPanel client:load growLogId={log.id} logTitle={log.title} logStage={log.stage} />
 
             <form
               action={`/api/grow-logs/${log.id}/delete`}

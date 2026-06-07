@@ -2,7 +2,7 @@ import type { APIRoute } from "astro";
 import { createDiagnosisProvider } from "@/lib/diagnosis/provider";
 import { diagnoseSelectedLog } from "@/lib/diagnosis/service";
 import { diagnosisRequestSchema, type DiagnosisApiResponse } from "@/lib/diagnosis/schema";
-import { getOpenAiApiKey } from "@/lib/runtime-env";
+import { getOpenRouterApiKey } from "@/lib/runtime-env";
 import { createClient } from "@/lib/supabase";
 
 function json(response: DiagnosisApiResponse, status: number) {
@@ -74,7 +74,7 @@ export const POST: APIRoute = async (context) => {
     }
 
     const response = await diagnoseSelectedLog(supabase, user.id, request.data, {
-      provider: createDiagnosisProvider(getOpenAiApiKey()),
+      provider: createDiagnosisProvider(getOpenRouterApiKey()),
     });
     return json(response, statusFor(response));
   } catch {

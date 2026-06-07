@@ -16,7 +16,7 @@ Build a small custom retrieval-augmented generation (RAG) flow using the existin
 
 - Astro API route for the selected-log diagnosis endpoint.
 - Vercel AI SDK (`ai`) for model calls, query/chunk embeddings, streaming if needed, and structured output.
-- `@ai-sdk/openai` as the first provider package because the repo already has an `OPENAI_API_KEY` surface in Supabase config.
+- `@openrouter/ai-sdk-provider` as the first provider package so runtime diagnosis and knowledge embeddings can use OpenRouter credits and model routing rather than requiring direct OpenAI API billing.
 - Zod as an explicit application dependency for request validation and the diagnosis response schema.
 - Supabase Postgres with `pgvector` for semantic search over the internal knowledge base.
 - Repo-local Markdown files as the source of truth for diagnosis knowledge.
@@ -27,7 +27,7 @@ This fits the MVP better than a full agent framework because the workflow is nar
 Suggested dependencies for implementation:
 
 ```bash
-npm install ai @ai-sdk/openai zod
+npm install ai @openrouter/ai-sdk-provider zod
 ```
 
 ## Proposed Architecture
@@ -81,7 +81,7 @@ create table diagnosis_knowledge_chunks (
 );
 ```
 
-The final embedding dimension depends on the chosen embedding model. If using OpenAI `text-embedding-3-small`, use 1536 dimensions unless deliberately opting into a smaller dimension. If using Supabase's built-in `gte-small` flow, dimensions differ. The schema, query RPC argument type, and index must match the selected model.
+The final embedding dimension depends on the chosen embedding model. If using OpenRouter model id `openai/text-embedding-3-small`, use 1536 dimensions unless deliberately opting into a smaller dimension. If using Supabase's built-in `gte-small` flow, dimensions differ. The schema, query RPC argument type, and index must match the selected model.
 
 Use an HNSW index for the embedding column once there is enough data for retrieval latency to matter. Keep the first migration simple if the corpus is tiny, but design the table so the index can be added without reshaping the app contract.
 

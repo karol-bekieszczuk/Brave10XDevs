@@ -35,7 +35,7 @@ The grow-log detail page contains a compact diagnosis panel. Submitting a questi
 
 **In scope:**
 
-- AI SDK, OpenAI provider, and Zod dependency setup.
+- AI SDK, OpenRouter provider, and Zod dependency setup.
 - Provider env surfaces for local and Cloudflare runtime configuration.
 - Diagnosis schemas with `mixed_scope`.
 - Canonical Markdown knowledge under `lib/diagnosis/knowledge/`.

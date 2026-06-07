@@ -1,4 +1,4 @@
-import { createOpenAI } from "@ai-sdk/openai";
+import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { embed, generateText, Output } from "ai";
 import { buildDiagnosisPrompt, buildDiagnosisRetrievalText } from "@/lib/diagnosis/prompt";
 import type { DiagnosisKnowledgeChunk } from "@/lib/diagnosis/retrieval";
@@ -6,8 +6,13 @@ import { diagnosisResponseSchema, type DiagnosisResponse } from "@/lib/diagnosis
 import { DiagnosisError } from "@/lib/diagnosis/errors";
 import type { GrowLogRow } from "@/lib/grow-logs/types";
 
-const EMBEDDING_MODEL = "text-embedding-3-small";
-const DIAGNOSIS_MODEL = "gpt-4o-mini";
+const EMBEDDING_MODEL = "openai/text-embedding-3-small";
+const DIAGNOSIS_MODEL = "qwen/qwen3-32b";
+type TextEmbeddingModel = Parameters<typeof embed>[0]["model"];
+
+interface OpenRouterRuntimeEmbeddings {
+  textEmbeddingModel(modelId: string): TextEmbeddingModel;
+}
 
 export interface DiagnosisGenerationInput {
   growLog: GrowLogRow;
@@ -32,18 +37,26 @@ function toProviderError(error: unknown): DiagnosisError {
   return new DiagnosisError("provider_failed", "Diagnosis provider failed.");
 }
 
+function createTextEmbeddingModel(provider: unknown, modelId: string) {
+  return (provider as OpenRouterRuntimeEmbeddings).textEmbeddingModel(modelId);
+}
+
 export function createDiagnosisProvider(apiKey: string): DiagnosisProvider {
   if (!apiKey) {
-    throw new DiagnosisError("provider_failed", "OpenAI API key is not configured.");
+    throw new DiagnosisError("provider_failed", "OpenRouter API key is not configured.");
   }
 
-  const openai = createOpenAI({ apiKey });
+  const openrouter = createOpenRouter({
+    apiKey,
+    appName: "MycoHubAI",
+    appUrl: "https://myco-hub-ai.karol-bekieszczuk.workers.dev",
+  });
 
   return {
     async createQueryEmbedding(growLog, question) {
       try {
         const { embedding } = await embed({
-          model: openai.embedding(EMBEDDING_MODEL),
+          model: createTextEmbeddingModel(openrouter, EMBEDDING_MODEL),
           value: buildDiagnosisRetrievalText(growLog, question),
         });
 
@@ -56,7 +69,7 @@ export function createDiagnosisProvider(apiKey: string): DiagnosisProvider {
     async generateDiagnosis(input) {
       try {
         const { output } = await generateText({
-          model: openai(DIAGNOSIS_MODEL),
+          model: openrouter(DIAGNOSIS_MODEL),
           output: Output.object({
             schema: diagnosisResponseSchema,
           }),

@@ -13,7 +13,7 @@ S-02 should let the user ask a question about one selected agar or grain grow lo
 Compared with the foundation stack, the selected-log diagnosis implementation adds or expands these surfaces:
 
 - Vercel AI SDK package `ai`.
-- OpenAI provider package `@ai-sdk/openai`.
+- OpenRouter provider package `@openrouter/ai-sdk-provider`.
 - Zod as an explicit runtime validation and structured-output schema dependency.
 - Supabase Postgres `pgvector` semantic search as a Supabase capability for indexing internal knowledge chunks.
 
@@ -34,23 +34,28 @@ Key findings:
 - Use `embed()` from `ai` to generate embeddings for a user/log query.
 - Use `embedMany()` or repeated `embed()` calls during ingestion to generate embeddings for Markdown knowledge chunks.
 - Use `generateObject()` from `ai` with a Zod schema for the diagnosis response contract.
-- Use `@ai-sdk/openai` for OpenAI models and embedding models.
+- Use `@openrouter/ai-sdk-provider` for OpenRouter chat and embedding models.
 - AI SDK examples show embedding calls returning both `embedding` and `usage`, which can be useful for logging or debugging ingestion cost.
 
 Relevant API shape:
 
 ```ts
 import { embed, generateObject } from "ai";
-import { openai } from "@ai-sdk/openai";
+import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { z } from "zod";
 
+const openrouter = createOpenRouter({
+  apiKey: process.env.OPENROUTER_API_KEY,
+  appName: "MycoHubAI",
+});
+
 const { embedding } = await embed({
-  model: openai.embedding("text-embedding-3-small"),
+  model: openrouter.embeddingModel("openai/text-embedding-3-small"),
   value: queryText,
 });
 
 const result = await generateObject({
-  model: openai("gpt-4o-mini"),
+  model: openrouter("openai/gpt-4o-mini"),
   schema: diagnosisResponseSchema,
   prompt,
 });
@@ -101,7 +106,7 @@ create table diagnosis_knowledge_chunks (
 );
 ```
 
-The `1536` dimension matches OpenAI `text-embedding-3-small` when using its default embedding size. If another embedding model or custom dimension is selected, the table, RPC argument type, and index must use the same dimension.
+The `1536` dimension matches OpenRouter model id `openai/text-embedding-3-small` when using its default embedding size. If another embedding model or custom dimension is selected, the table, RPC argument type, and index must use the same dimension.
 
 Suggested S-02 RPC shape:
 
@@ -212,4 +217,3 @@ User submits selected grow log question
 - Keep retrieved sources attached to the output so diagnosis answers remain inspectable.
 - Treat no-match retrieval as a first-class outcome: return `missing_context`, uncertainty, or a follow-up question instead of inventing missing knowledge.
 - Add the HNSW index only when the chunk corpus is large enough or retrieval latency proves it is needed.
-

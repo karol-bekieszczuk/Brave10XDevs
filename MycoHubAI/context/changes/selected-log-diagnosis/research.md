@@ -34,8 +34,8 @@ The current app already has the two most important primitives:
 
 The main compatibility gaps are implementation details that should be corrected in the S-02 plan:
 
-- `ai`, `@ai-sdk/openai`, and `zod` are not installed yet (`package.json:15-35`).
-- `OPENAI_API_KEY` or equivalent provider secret is not declared in `astro.config.mjs` or `src/lib/runtime-env.ts`; current server env covers Supabase and `AUTHORIZED_USER_ID` only.
+- `ai`, `@openrouter/ai-sdk-provider`, and `zod` are the runtime dependency surface for selected-log diagnosis (`package.json:15-35`).
+- `OPENROUTER_API_KEY` is the chosen provider secret name for Astro server code and Cloudflare Workers deployment.
 - No Supabase migration exists yet for `pgvector`, `diagnosis_knowledge_chunks`, or `match_diagnosis_knowledge_chunks`; the only migration creates `grow_logs`.
 - The current API convention is server-first form POST plus redirects. A JSON diagnosis endpoint for a React island is acceptable, but it will be a new API response convention and should still use uppercase `POST`, `context.locals.user`, `createClient`, and guarded error handling.
 - The proposed `scopeStatus` enum omits `mixed_scope`, which conflicts with the F-03 rubric and evaluation cases.
@@ -86,11 +86,11 @@ A diagnosis UI will likely need a JSON endpoint for an interactive React island.
 
 ### Dependency And Secret Readiness
 
-`context7-docs.md` adds these runtime surfaces: `ai`, `@ai-sdk/openai`, Zod, and Supabase `pgvector` (`context/changes/selected-log-diagnosis/context7-docs.md:15`, `context/changes/selected-log-diagnosis/context7-docs.md:16`, `context/changes/selected-log-diagnosis/context7-docs.md:17`, `context/changes/selected-log-diagnosis/context7-docs.md:18`).
+`context7-docs.md` adds these runtime surfaces: `ai`, `@openrouter/ai-sdk-provider`, Zod, and Supabase `pgvector` (`context/changes/selected-log-diagnosis/context7-docs.md:15`, `context/changes/selected-log-diagnosis/context7-docs.md:16`, `context/changes/selected-log-diagnosis/context7-docs.md:17`, `context/changes/selected-log-diagnosis/context7-docs.md:18`).
 
-Current `package.json` does not include `ai`, `@ai-sdk/openai`, or `zod`; dependencies cover Astro, React, Supabase, Tailwind, lucide, and supporting packages (`package.json:15-35`). S-02 implementation must add these dependencies before importing the snippets.
+Current `package.json` should include `ai`, `@openrouter/ai-sdk-provider`, and `zod`; dependencies also cover Astro, React, Supabase, Tailwind, lucide, and supporting packages (`package.json:15-35`). S-02 implementation must add these dependencies before importing the snippets.
 
-Provider configuration is also incomplete. Current env configuration is focused on Supabase and the single authorized user, so S-02 must add an OpenAI or equivalent model-provider secret path for Astro server code and Cloudflare Workers deployment. This should be reflected in `.env.example`, `.dev.vars`, `astro.config.mjs`, and the runtime-env helper as appropriate.
+Provider configuration uses OpenRouter rather than direct OpenAI API billing. S-02 must add the `OPENROUTER_API_KEY` model-provider secret path for Astro server code and Cloudflare Workers deployment. This should be reflected in `.env.example`, `.dev.vars`, `astro.config.mjs`, and the runtime-env helper as appropriate.
 
 ### Supabase pgvector Compatibility
 
@@ -148,7 +148,7 @@ Because `context7-docs.md` is itself a library documentation note, the relevant 
 
 - `context/foundation/roadmap.md:24` - S-02 is the north-star selected-log diagnosis slice.
 - `context/foundation/roadmap.md:147` - S-02 outcome and prerequisites: S-01 plus F-03.
-- `context/changes/selected-log-diagnosis/context7-docs.md:15-18` - New implementation surfaces: AI SDK, OpenAI provider, Zod, Supabase pgvector.
+- `context/changes/selected-log-diagnosis/context7-docs.md:15-18` - New implementation surfaces: AI SDK, OpenRouter provider, Zod, Supabase pgvector.
 - `context/changes/selected-log-diagnosis/context7-docs.md:61` - Retrieval text should include selected log title, body, stage, and question.
 - `context/changes/selected-log-diagnosis/context7-docs.md:109-137` - Proposed stage-filtered match RPC.
 - `context/changes/selected-log-diagnosis/context7-docs.md:168-180` - Proposed structured response schema, currently missing `mixed_scope`.
@@ -186,7 +186,7 @@ Use explicit mappers between database/RPC rows and UI response objects. The repo
 
 ## Historical Context
 
-- `context/changes/selected-log-diagnosis/technology-research.md` - Prior technology decision selected a small custom RAG flow in the existing Astro/Supabase/Cloudflare stack, using AI SDK, OpenAI provider, Zod, pgvector, repo-local Markdown, and deterministic ingestion.
+- `context/changes/selected-log-diagnosis/technology-research.md` - Prior technology decision selected a small custom RAG flow in the existing Astro/Supabase/Cloudflare stack, using AI SDK, OpenRouter provider, Zod, pgvector, repo-local Markdown, and deterministic ingestion.
 - `context/changes/diagnosis-quality-rubric/reference/contract-surfaces.md` - F-03 declares the rubric and evaluation cases as required references for future selected-log diagnosis work.
 - `context/changes/diagnosis-quality-rubric/reference/diagnosis-quality-rubric.md` - Defines selected-log dependency, uncertainty, missing context, mixed-scope handling, out-of-scope redirects, and non-goals.
 - `context/changes/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json` - Defines the prepared S-02 evaluation cases and the `scope_class` values implementation must represent.
@@ -202,7 +202,7 @@ Use explicit mappers between database/RPC rows and UI response objects. The repo
 ## Open Questions
 
 - Which AI SDK major should S-02 install? If v6 is installed, use the current structured-output API instead of `generateObject`.
-- What exact Cloudflare Worker secret path should hold the OpenAI/provider key, and should `.dev.vars` and `.env.example` both document it?
+- What exact Cloudflare Worker secret path should hold the OpenRouter/provider key, and should `.dev.vars` and `.env.example` both document it?
 - Should `diagnosis_knowledge_chunks` be readable only through a `security definer` RPC, or should it have authenticated RLS policies?
 - Where should canonical diagnosis knowledge live: `context/diagnosis-knowledge/` as proposed, or a different repo path under `context/changes/selected-log-diagnosis/reference/` until promoted?
 - Should the S-02 UI expose retrieved source labels to the user or keep them internal for evaluation/debugging in the first slice?

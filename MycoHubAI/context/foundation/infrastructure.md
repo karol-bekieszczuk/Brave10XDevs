@@ -14,7 +14,7 @@ tech_stack:
 
 **Deploy on Cloudflare Workers.**
 
-Cloudflare Workers is the best MVP target because the repo is already configured for Astro 6 SSR through `@astrojs/cloudflare`, `astro.config.mjs`, and `wrangler.jsonc`. The interview constraints do not require persistent server processes, cost and DX are balanced, Cloudflare familiarity is a tie-breaker, and external Supabase/OpenAI services are expected.
+Cloudflare Workers is the best MVP target because the repo is already configured for Astro 6 SSR through `@astrojs/cloudflare`, `astro.config.mjs`, and `wrangler.jsonc`. The interview constraints do not require persistent server processes, cost and DX are balanced, Cloudflare familiarity is a tie-breaker, and external Supabase/OpenRouter services are expected.
 
 Use Workers, not Cloudflare Pages, for this project. Astro's current Cloudflare adapter path for Astro 6 SSR targets Workers, and the repo already has a Worker-shaped `wrangler.jsonc`.
 
@@ -56,14 +56,14 @@ Netlify is the third option because it supports Astro SSR and has strong agent-r
 ### Devil's Advocate - Weaknesses
 
 1. Workers is not full Node.js. `nodejs_compat` helps, but packages that rely on unsupported Node APIs, filesystem access, native modules, or long-lived in-memory state can fail at runtime.
-2. The edge runtime does not co-locate Supabase or OpenAI. Most valuable requests still cross provider boundaries, so network latency and provider limits can dominate response time.
+2. The edge runtime does not co-locate Supabase or OpenRouter. Most valuable requests still cross provider boundaries, so network latency and provider limits can dominate response time.
 3. The Astro 6 Cloudflare path is version-sensitive. Pages-era deploy guidance or stale adapter examples can produce a wrong deploy plan.
 4. Secrets can drift between `.env`, `.dev.vars`, Cloudflare Worker secrets, and Astro's `astro:env/server` schema.
 5. Worker rollback only restores deployed code. It does not undo Supabase schema changes, prompt changes, model/provider changes, or secret rotations.
 
 ### Pre-Mortem - How This Could Fail
 
-The team deployed the MVP to Cloudflare Workers because the starter already had the Cloudflare adapter. Early deploys worked, but the implementation gradually pulled in Node-oriented libraries for auth, AI streaming, validation, or logging. Local builds passed, yet production requests failed under Workers because one dependency expected unavailable Node APIs. To move fast, secrets were patched manually in several places, leaving `.env`, `.dev.vars`, and Worker secrets out of sync. Diagnosis calls then became slow or flaky because every useful request depended on both Supabase and OpenAI from the edge runtime, and no timeout or fallback policy had been planned. When a bad release reached production, `wrangler rollback` restored Worker code, but the real regression was a changed prompt, data shape, or secret. The team lost time debugging platform behavior when the root issue was an unmanaged operational contract around external services and runtime compatibility.
+The team deployed the MVP to Cloudflare Workers because the starter already had the Cloudflare adapter. Early deploys worked, but the implementation gradually pulled in Node-oriented libraries for auth, AI streaming, validation, or logging. Local builds passed, yet production requests failed under Workers because one dependency expected unavailable Node APIs. To move fast, secrets were patched manually in several places, leaving `.env`, `.dev.vars`, and Worker secrets out of sync. Diagnosis calls then became slow or flaky because every useful request depended on both Supabase and OpenRouter from the edge runtime, and no timeout or fallback policy had been planned. When a bad release reached production, `wrangler rollback` restored Worker code, but the real regression was a changed prompt, data shape, or secret. The team lost time debugging platform behavior when the root issue was an unmanaged operational contract around external services and runtime compatibility.
 
 ### Unknown Unknowns
 
@@ -96,7 +96,7 @@ Cloudflare Access is the preview protection mechanism for this MVP. It is accept
 | Risk | Source | Likelihood | Impact | Mitigation |
 |---|---|---|---|---|
 | Unsupported Node API appears in a dependency | Devil's advocate | Medium | High | Keep runtime-facing code Web API compatible, run `npm run build`, and verify deployed Worker behavior before production release. |
-| External Supabase/OpenAI latency dominates requests | Pre-mortem | Medium | Medium | Pick a Supabase region deliberately, add request timeouts, and keep diagnosis UX tolerant of slow AI responses. |
+| External Supabase/OpenRouter latency dominates requests | Pre-mortem | Medium | Medium | Pick a Supabase region deliberately, add request timeouts, and keep diagnosis UX tolerant of slow AI responses. |
 | Deployment ownership is inferred incorrectly | Unknown unknowns | Medium | High | Keep Cloudflare Workers Builds as the documented deploy owner and GitHub Actions validation-only; do not add `wrangler deploy` to CI unless the ownership contract changes. |
 | Secret values drift across local and production environments | Devil's advocate | Medium | High | Maintain `.env.example`, `.dev.vars` locally, and Cloudflare Worker secrets with the same required key names; current required keys are `SUPABASE_URL` and `SUPABASE_KEY`. |
 | Secret rotation silently creates a new production Worker version | Devil's advocate | Medium | High | Treat secret rotation as a production deployment. Prefer `npx wrangler versions secret put <KEY>` followed by an intentional `npx wrangler versions deploy` instead of an immediate `npx wrangler secret put <KEY>` on production secrets. |
@@ -113,7 +113,7 @@ Cloudflare Access is the preview protection mechanism for this MVP. It is accept
 6. Keep GitHub Actions validation-only and require it through branch protection before merge to `master`.
 7. Verify runtime behavior after Cloudflare deploys with `npx wrangler tail` and a smoke test of sign-in, grow-log CRUD, and one diagnosis request.
 
-When the AI diagnosis route lands, add the chosen provider secret in the same change across `.env.example`, `astro.config.mjs`, `wrangler.jsonc` `secrets.required`, and Cloudflare Worker secrets. If OpenAI is the chosen provider, use `OPENAI_API_KEY` unless the implementation documents a different name.
+When the AI diagnosis route lands, add the chosen provider secret in the same change across `.env.example`, `astro.config.mjs`, `wrangler.jsonc` `secrets.required`, and Cloudflare Worker secrets. For the selected-log diagnosis implementation, use `OPENROUTER_API_KEY`.
 
 ## Evidence Links
 

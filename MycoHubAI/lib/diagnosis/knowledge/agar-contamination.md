@@ -6,7 +6,7 @@ stage: agar
 
 ## Fast spreading non-mycelial growth
 
-Watch for growth that expands much faster than the intended culture, appears in isolated patches away from the inoculation point, or changes color over time. Green, black, pink, or intensely colored patches are stronger contamination signals than slow, uniform white growth.
+Watch for growth that expands much faster than the intended culture, appears in isolated patches away from the inoculation point, or changes color over time. Green, black, or intensely colored patches are stronger contamination signals than slow, uniform white growth.
 
 Treat the observation as uncertain when the log only says that the plate "looks odd" or "changed" without location, timing, color, or texture. In that case, ask for direct visual observations from the same selected plate before suggesting a cause.
 

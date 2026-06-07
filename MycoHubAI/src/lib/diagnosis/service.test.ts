@@ -139,6 +139,77 @@ describe("selected-log diagnosis service", () => {
     expect(dependencies.provider.generateDiagnosis).not.toHaveBeenCalled();
   });
 
+  it("returns mixed_scope for questions that combine selected grain diagnosis with fruiting scope", async () => {
+    const dependencies = createDependencies({
+      getGrowLog: vi.fn().mockResolvedValue({
+        ...growLog,
+        stage: "grain",
+        body: "The jar stalled after shaking and a wet patch has not changed for 3 days.",
+      }),
+      retrieveChunks: vi.fn().mockResolvedValue([]),
+    });
+
+    const response = await diagnoseSelectedLog(
+      client,
+      "owner-1",
+      {
+        growLogId: "log-1",
+        question: "What does this grain log suggest, and how should I improve fruiting conditions?",
+      },
+      dependencies,
+    );
+
+    expect(response.ok).toBe(true);
+    expect(response.ok ? response.diagnosis.scopeStatus : null).toBe("mixed_scope");
+    expect(response.ok ? response.diagnosis.uncertainty : "").toContain("unsupported scope");
+    expect(dependencies.provider.createQueryEmbedding).not.toHaveBeenCalled();
+    expect(dependencies.retrieveChunks).not.toHaveBeenCalled();
+  });
+
+  it("returns out_of_scope for species or photo identification questions before retrieval fallback", async () => {
+    const dependencies = createDependencies({
+      retrieveChunks: vi.fn().mockResolvedValue([]),
+    });
+
+    const response = await diagnoseSelectedLog(
+      client,
+      "owner-1",
+      { growLogId: "log-1", question: "Can you identify this species from a photo?" },
+      dependencies,
+    );
+
+    expect(response.ok).toBe(true);
+    expect(response.ok ? response.diagnosis.scopeStatus : null).toBe("out_of_scope");
+    expect(response.ok ? response.diagnosis.uncertainty : "").toContain("agar and grain-stage troubleshooting only");
+    expect(dependencies.provider.createQueryEmbedding).not.toHaveBeenCalled();
+    expect(dependencies.retrieveChunks).not.toHaveBeenCalled();
+  });
+
+  it("returns a no-smell guardrail response before retrieval fallback", async () => {
+    const dependencies = createDependencies({
+      getGrowLog: vi.fn().mockResolvedValue({
+        ...growLog,
+        stage: "grain",
+        body: "The jar has wet-looking grains and stalled recovery after shaking.",
+      }),
+      retrieveChunks: vi.fn().mockResolvedValue([]),
+    });
+
+    const response = await diagnoseSelectedLog(
+      client,
+      "owner-1",
+      { growLogId: "log-1", question: "Should I smell the jar to check contamination?" },
+      dependencies,
+    );
+
+    expect(response.ok).toBe(true);
+    expect(response.ok ? response.diagnosis.scopeStatus : null).toBe("in_scope");
+    expect(response.ok ? response.diagnosis.uncertainty : "").toContain("Smell is not a safe");
+    expect(response.ok ? response.diagnosis.suggestedActions.join(" ") : "").toContain("Do not use smell");
+    expect(dependencies.provider.createQueryEmbedding).not.toHaveBeenCalled();
+    expect(dependencies.retrieveChunks).not.toHaveBeenCalled();
+  });
+
   it("returns a controlled retryable provider error without diagnosis content", async () => {
     const dependencies = createDependencies({
       provider: {

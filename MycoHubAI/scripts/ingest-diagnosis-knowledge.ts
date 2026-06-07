@@ -1,15 +1,21 @@
 import { createHash } from "node:crypto";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
+import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { embedMany } from "ai";
-import { openai } from "@ai-sdk/openai";
 import { createClient } from "@supabase/supabase-js";
 
 const KNOWLEDGE_DIR = path.resolve("lib", "diagnosis", "knowledge");
-const EMBEDDING_MODEL = "text-embedding-3-small";
+const EMBEDDING_MODEL = "openai/text-embedding-3-small";
 const MAX_CHUNK_CHARS = 1800;
+const LOCAL_DEV_VARS_PATH = path.resolve(".dev.vars");
 
 type DiagnosisStage = "agar" | "grain";
+type TextEmbeddingModel = Parameters<typeof embedMany>[0]["model"];
+
+interface OpenRouterRuntimeEmbeddings {
+  textEmbeddingModel(modelId: string): TextEmbeddingModel;
+}
 
 interface KnowledgeChunk {
   sourcePath: string;
@@ -28,6 +34,65 @@ function requireEnv(name: string) {
   }
 
   return value;
+}
+
+function requireSupabaseServiceRoleKey() {
+  const value = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
+
+  if (value.split(".").length !== 3) {
+    throw new Error(
+      "SUPABASE_SERVICE_ROLE_KEY must be the Supabase service_role JWT with three dot-separated parts. For local Supabase, copy the service_role key from `npx supabase status`.",
+    );
+  }
+
+  return value;
+}
+
+function createTextEmbeddingModel(provider: unknown, modelId: string) {
+  return (provider as OpenRouterRuntimeEmbeddings).textEmbeddingModel(modelId);
+}
+
+function parseDevVars(content: string) {
+  for (const rawLine of content.split(/\r?\n/)) {
+    const line = rawLine.trim();
+
+    if (!line || line.startsWith("#")) {
+      continue;
+    }
+
+    const separatorIndex = line.indexOf("=");
+
+    if (separatorIndex <= 0) {
+      throw new Error(`Invalid .dev.vars line: ${rawLine}`);
+    }
+
+    const name = line.slice(0, separatorIndex).trim();
+
+    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(name)) {
+      throw new Error(`Invalid .dev.vars variable name: ${name}`);
+    }
+
+    let value = line.slice(separatorIndex + 1).trim();
+    const quote = value[0];
+
+    if ((quote === `"` || quote === "'") && value.endsWith(quote)) {
+      value = value.slice(1, -1);
+    }
+
+    process.env[name] ??= value;
+  }
+}
+
+async function loadLocalDevVars() {
+  try {
+    parseDevVars(await readFile(LOCAL_DEV_VARS_PATH, "utf8"));
+  } catch (error) {
+    if (error instanceof Error && "code" in error && error.code === "ENOENT") {
+      return;
+    }
+
+    throw error;
+  }
 }
 
 function parseStage(markdown: string, sourcePath: string): DiagnosisStage {
@@ -133,9 +198,16 @@ async function readKnowledgeChunks() {
 }
 
 async function main() {
+  await loadLocalDevVars();
+
   const supabaseUrl = requireEnv("SUPABASE_URL");
-  const supabaseServiceRoleKey = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
-  requireEnv("OPENAI_API_KEY");
+  const supabaseServiceRoleKey = requireSupabaseServiceRoleKey();
+  const openRouterApiKey = requireEnv("OPENROUTER_API_KEY");
+  const openrouter = createOpenRouter({
+    apiKey: openRouterApiKey,
+    appName: "MycoHubAI",
+    appUrl: "https://myco-hub-ai.karol-bekieszczuk.workers.dev",
+  });
 
   const chunks = await readKnowledgeChunks();
 
@@ -144,7 +216,7 @@ async function main() {
   }
 
   const { embeddings } = await embedMany({
-    model: openai.embedding(EMBEDDING_MODEL),
+    model: createTextEmbeddingModel(openrouter, EMBEDDING_MODEL),
     values: chunks.map((chunk) => chunk.content),
   });
 

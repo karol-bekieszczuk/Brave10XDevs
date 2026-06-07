@@ -19,7 +19,7 @@ The owner can open a single grow log detail page, submit one troubleshooting que
 - `src/lib/grow-logs/repository.ts:48` already provides `getOwnerGrowLog`, filtering by both `id` and `owner_id`.
 - `src/pages/grow-logs/[id].astro:7` already loads the selected grow log detail page through the server Supabase client.
 - `src/pages/api/grow-logs/create.ts:20` shows the current API convention: uppercase `POST`, `context.locals.user`, `createClient`, and guarded error handling.
-- `package.json:15` does not yet include `ai`, `@ai-sdk/openai`, or `zod`.
+- `package.json:15` uses `ai`, `@openrouter/ai-sdk-provider`, and `zod` for the selected-log diagnosis runtime.
 - `astro.config.mjs:20` and `src/lib/runtime-env.ts:8` currently expose Supabase and `AUTHORIZED_USER_ID`, not an AI provider secret.
 - `context/changes/diagnosis-quality-rubric/reference/diagnosis-evaluation-cases.json:10` defines `scope_class` as `in_scope`, `missing_context`, `mixed_scope`, or `out_of_scope`.
 - `context/changes/diagnosis-quality-rubric/reference/diagnosis-quality-rubric.md:152` forbids missing-context follow-ups from asking for smell, photos, saved chat history, species-specific details, or multi-log comparisons.
@@ -68,7 +68,7 @@ Add the minimal runtime dependency and type contract needed before any retrieval
 
 **Intent**: Add the packages needed for structured AI calls and runtime validation.
 
-**Contract**: Add `ai`, `@ai-sdk/openai`, and `zod` as dependencies. Keep the dependency surface smaller than LangChain, Mastra, or LlamaIndex for this MVP.
+**Contract**: Add `ai`, `@openrouter/ai-sdk-provider`, and `zod` as dependencies. Keep the dependency surface smaller than LangChain, Mastra, or LlamaIndex for this MVP.
 
 #### 2. Provider environment contract
 
@@ -84,7 +84,7 @@ Add the minimal runtime dependency and type contract needed before any retrieval
 
 **Intent**: Make the AI provider secret available to server-only Astro/Cloudflare code while keeping production secret configuration dashboard-owned.
 
-**Contract**: Add an `OPENAI_API_KEY` or equivalent provider key surface that mirrors the current Supabase/AUTHORIZED_USER_ID pattern. Document the committed local example in `.env.example`, add the required Worker secret name to `wrangler.jsonc` `secrets.required`, and treat `.dev.vars` as the uncommitted local Worker secret file. The plan and implementation must state that the Cloudflare production secret is configured manually through the Cloudflare dashboard or Wrangler and cannot be proven by local code alone.
+**Contract**: Add an `OPENROUTER_API_KEY` provider key surface that mirrors the current Supabase/AUTHORIZED_USER_ID pattern. Document the committed local example in `.env.example`, add the required Worker secret name to `wrangler.jsonc` `secrets.required`, and treat `.dev.vars` as the uncommitted local Worker secret file. The plan and implementation must state that the Cloudflare production secret is configured manually through the Cloudflare dashboard or Wrangler and cannot be proven by local code alone.
 
 #### 3. Diagnosis request and response schemas
 
@@ -106,7 +106,7 @@ Add the minimal runtime dependency and type contract needed before any retrieval
 
 #### Automated Verification:
 
-- Dependencies include `ai`, `@ai-sdk/openai`, and `zod`.
+- Dependencies include `ai`, `@openrouter/ai-sdk-provider`, and `zod`.
 - Provider secret is declared in server-only env config, runtime-env accessors, and `wrangler.jsonc` required secrets.
 - `.env.example` documents the local provider secret name.
 - Diagnosis response schema includes `mixed_scope`.
@@ -235,7 +235,7 @@ Build the backend end-to-end diagnosis path while keeping it request-scoped and 
 
 **File**: `src/lib/diagnosis/*.test.ts`
 
-**Intent**: Protect orchestration behavior without making unit tests depend on live OpenAI or live Supabase.
+**Intent**: Protect orchestration behavior without making unit tests depend on live OpenRouter or live Supabase.
 
 **Contract**: Mock provider and retrieval boundaries. Cover owner-scoped missing log behavior, unsupported/missing request validation, no-match retrieval behavior, structured output validation, provider error handling, and prompt guardrail inclusion.
 
@@ -445,7 +445,7 @@ This change introduces a new Supabase migration for pgvector knowledge chunks an
 
 #### Automated
 
-- [x] 1.1 Dependencies include `ai`, `@ai-sdk/openai`, and `zod`. — a848810
+- [x] 1.1 Dependencies include `ai`, `@openrouter/ai-sdk-provider`, and `zod`. — a848810
 - [x] 1.2 Provider secret is declared in server-only env config, runtime-env accessors, and `wrangler.jsonc` required secrets. — a848810
 - [x] 1.3 `.env.example` documents the local provider secret name. — a848810
 - [x] 1.4 Diagnosis response schema includes `mixed_scope`. — a848810
@@ -504,21 +504,21 @@ This change introduces a new Supabase migration for pgvector knowledge chunks an
 
 #### Automated
 
-- [ ] 4.1 `/grow-logs/[id]` renders the diagnosis panel only for an existing owner-scoped log.
-- [ ] 4.2 UI submits one JSON request to the selected-log diagnosis endpoint.
-- [ ] 4.3 UI displays loading and retryable error states.
-- [ ] 4.4 UI renders possible causes, suggested actions, confidence, uncertainty, follow-up question, and source labels from structured JSON.
-- [ ] 4.5 UI tests pass with mocked API responses: `npm run test:unit`.
-- [ ] 4.6 Linting passes: `npm run lint`.
-- [ ] 4.7 Build passes: `npm run build`.
+- [x] 4.1 `/grow-logs/[id]` renders the diagnosis panel only for an existing owner-scoped log.
+- [x] 4.2 UI submits one JSON request to the selected-log diagnosis endpoint.
+- [x] 4.3 UI displays loading and retryable error states.
+- [x] 4.4 UI renders possible causes, suggested actions, confidence, uncertainty, follow-up question, and source labels from structured JSON.
+- [x] 4.5 UI tests pass with mocked API responses: `npm run test:unit`.
+- [x] 4.6 Linting passes: `npm run lint`.
+- [x] 4.7 Build passes: `npm run build`.
 
 #### Manual
 
-- [ ] 4.8 Owner can ask a question from a selected grow-log detail page and see a readable diagnosis result.
-- [ ] 4.9 Source labels are concise and understandable.
-- [ ] 4.10 The UI does not show raw JSON/debug output.
-- [ ] 4.11 The UI does not create saved chat history or mutate the grow-log body/title/stage.
-- [ ] 4.12 Text and controls fit cleanly on desktop and mobile widths.
+- [x] 4.8 Owner can ask a question from a selected grow-log detail page and see a readable diagnosis result.
+- [x] 4.9 Source labels are concise and understandable.
+- [x] 4.10 The UI does not show raw JSON/debug output.
+- [x] 4.11 The UI does not create saved chat history or mutate the grow-log body/title/stage.
+- [x] 4.12 Text and controls fit cleanly on desktop and mobile widths.
 
 ### Phase 5: F-03 Evaluation And Final Scope Audit
 

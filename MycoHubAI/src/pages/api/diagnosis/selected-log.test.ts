@@ -15,7 +15,7 @@ vi.mock("@/lib/diagnosis/provider", () => ({
 }));
 
 vi.mock("@/lib/runtime-env", () => ({
-  getOpenAiApiKey: vi.fn(() => "test-key"),
+  getOpenRouterApiKey: vi.fn(() => "test-key"),
 }));
 
 vi.mock("@/lib/supabase", () => ({
