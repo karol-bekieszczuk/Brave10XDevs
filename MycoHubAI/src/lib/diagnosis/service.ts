@@ -43,7 +43,6 @@ const supportedScopePatterns = [
   /\bjars?\b/i,
   /\bcoloniz/i,
   /\bmycel/i,
-  /\bcontamin/i,
   /\bstall/i,
   /\brecover/i,
   /\bshake\b/i,

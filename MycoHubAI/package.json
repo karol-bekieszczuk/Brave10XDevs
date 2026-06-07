@@ -8,6 +8,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "diagnosis:ingest": "tsx scripts/ingest-diagnosis-knowledge.ts",
+    "diagnosis:evaluate": "tsx scripts/evaluate-diagnosis-cases.ts",
     "test:unit": "vitest run",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

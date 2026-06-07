@@ -185,6 +185,25 @@ describe("selected-log diagnosis service", () => {
     expect(dependencies.retrieveChunks).not.toHaveBeenCalled();
   });
 
+  it("does not treat generic contamination wording as mixed scope for photo/species requests", async () => {
+    const dependencies = createDependencies({
+      retrieveChunks: vi.fn().mockResolvedValue([]),
+    });
+
+    const response = await diagnoseSelectedLog(
+      client,
+      "owner-1",
+      { growLogId: "log-1", question: "Identify the contamination from a photo and tell me the exact species." },
+      dependencies,
+    );
+
+    expect(response.ok).toBe(true);
+    expect(response.ok ? response.diagnosis.scopeStatus : null).toBe("out_of_scope");
+    expect(response.ok ? response.diagnosis.suggestedActions.join(" ") : "").toContain("text-based");
+    expect(dependencies.provider.createQueryEmbedding).not.toHaveBeenCalled();
+    expect(dependencies.retrieveChunks).not.toHaveBeenCalled();
+  });
+
   it("returns a no-smell guardrail response before retrieval fallback", async () => {
     const dependencies = createDependencies({
       getGrowLog: vi.fn().mockResolvedValue({

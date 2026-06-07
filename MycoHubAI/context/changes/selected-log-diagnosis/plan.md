@@ -524,15 +524,15 @@ This change introduces a new Supabase migration for pgvector knowledge chunks an
 
 #### Automated
 
-- [ ] 5.1 Evaluation runner reads all 10 F-03 prepared cases.
-- [ ] 5.2 Evaluation runner reports the four scope classes: `in_scope`, `missing_context`, `mixed_scope`, and `out_of_scope`.
-- [ ] 5.3 Evaluation runner distinguishes PRD accuracy cases from guardrail-only cases using `counts_toward_prd_accuracy`.
-- [ ] 5.4 `package.json` defines `diagnosis:evaluate` for `scripts/evaluate-diagnosis-cases.ts`.
-- [ ] 5.5 Search confirms no smell-check guidance exists in diagnosis prompts, knowledge files, or UI copy.
-- [ ] 5.6 Search confirms no live web search, saved chat history persistence, image/photo upload, species advice, sharing, export, or fruiting-stage support was added.
-- [ ] 5.7 Unit tests pass: `npm run test:unit`.
-- [ ] 5.8 Linting passes: `npm run lint`.
-- [ ] 5.9 Build passes: `npm run build`.
+- [x] 5.1 Evaluation runner reads all 10 F-03 prepared cases.
+- [x] 5.2 Evaluation runner reports the four scope classes: `in_scope`, `missing_context`, `mixed_scope`, and `out_of_scope`.
+- [x] 5.3 Evaluation runner distinguishes PRD accuracy cases from guardrail-only cases using `counts_toward_prd_accuracy`.
+- [x] 5.4 `package.json` defines `diagnosis:evaluate` for `scripts/evaluate-diagnosis-cases.ts`.
+- [x] 5.5 Search confirms no smell-check guidance exists in diagnosis prompts, knowledge files, or UI copy.
+- [x] 5.6 Search confirms no live web search, saved chat history persistence, image/photo upload, species advice, sharing, export, or fruiting-stage support was added.
+- [x] 5.7 Unit tests pass: `npm run test:unit`.
+- [x] 5.8 Linting passes: `npm run lint`.
+- [x] 5.9 Build passes: `npm run build`.
 
 #### Manual
 
