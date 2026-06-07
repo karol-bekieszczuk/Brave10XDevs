@@ -64,9 +64,19 @@ const smellCheckPatterns = [
   /\bzapach/i,
 ];
 
+const thinLogPatterns = [
+  /\bno details recorded\b/i,
+  /\bonly says\b/i,
+  /\bno timing\b/i,
+  /\bno .*appearance\b/i,
+  /\bno .*growth pattern\b/i,
+  /\bno .*visual/i,
+];
+
 export interface DiagnoseSelectedLogDependencies {
   getGrowLog?: (client: GrowLogClient, id: string, ownerId: string) => Promise<GrowLogRow | null>;
   provider?: DiagnosisProvider;
+  createProvider?: () => DiagnosisProvider;
   retrieveChunks?: (
     client: DiagnosisRetrievalClient,
     args: { queryEmbedding: number[]; stage: "agar" | "grain" },
@@ -91,6 +101,12 @@ function missingContextResponse(): DiagnosisApiResponse {
 
 function matchesAny(value: string, patterns: RegExp[]) {
   return patterns.some((pattern) => pattern.test(value));
+}
+
+function lacksCriticalSelectedLogContext(growLog: GrowLogRow) {
+  const selectedLogText = `${growLog.title}\n${growLog.body}`;
+
+  return matchesAny(selectedLogText, thinLogPatterns);
 }
 
 function guardrailResponse(question: string): DiagnosisApiResponse | null {
@@ -181,19 +197,23 @@ export async function diagnoseSelectedLog(
     return new DiagnosisError("unsupported_stage", "Diagnosis is only supported for agar and grain logs.").toResponse();
   }
 
+  if (lacksCriticalSelectedLogContext(growLog)) {
+    return missingContextResponse();
+  }
+
   const scopedGuardrailResponse = guardrailResponse(request.data.question);
 
   if (scopedGuardrailResponse) {
     return scopedGuardrailResponse;
   }
 
-  const provider = dependencies.provider;
-
-  if (!provider) {
-    return new DiagnosisError("provider_failed", "Diagnosis provider is not configured.").toResponse();
-  }
-
   try {
+    const provider = dependencies.provider ?? dependencies.createProvider?.();
+
+    if (!provider) {
+      return new DiagnosisError("provider_failed", "Diagnosis provider is not configured.").toResponse();
+    }
+
     const queryEmbedding = await provider.createQueryEmbedding(growLog, request.data.question);
     const retrieve = dependencies.retrieveChunks ?? matchDiagnosisKnowledgeChunks;
     const chunks = await retrieve(client, {

@@ -6,6 +6,7 @@ import { embedMany } from "ai";
 import { createClient } from "@supabase/supabase-js";
 
 const KNOWLEDGE_DIR = path.resolve("lib", "diagnosis", "knowledge");
+const KNOWLEDGE_SOURCE_PREFIX = "lib/diagnosis/knowledge/";
 const EMBEDDING_MODEL = "openai/text-embedding-3-small";
 const MAX_CHUNK_CHARS = 1800;
 const LOCAL_DEV_VARS_PATH = path.resolve(".dev.vars");
@@ -169,6 +170,14 @@ function hashContent(content: string) {
   return createHash("sha256").update(content).digest("hex");
 }
 
+function postgrestStringList(values: string[]) {
+  return `(${values.map((value) => `"${value.replace(/"/g, '\\"')}"`).join(",")})`;
+}
+
+function postgrestNumberList(values: number[]) {
+  return `(${values.join(",")})`;
+}
+
 async function readKnowledgeChunks() {
   const entries = await readdir(KNOWLEDGE_DIR, { withFileTypes: true });
   const chunks: KnowledgeChunk[] = [];
@@ -241,6 +250,31 @@ async function main() {
 
   if (error) {
     throw error;
+  }
+
+  const currentSourcePaths = [...new Set(rows.map((row) => row.source_path))];
+  const { error: removedSourceError } = await client
+    .from("diagnosis_knowledge_chunks")
+    .delete()
+    .like("source_path", `${KNOWLEDGE_SOURCE_PREFIX}%`)
+    .not("source_path", "in", postgrestStringList(currentSourcePaths));
+
+  if (removedSourceError) {
+    throw removedSourceError;
+  }
+
+  for (const sourcePath of currentSourcePaths) {
+    const currentChunkIndexes = rows.filter((row) => row.source_path === sourcePath).map((row) => row.chunk_index);
+
+    const { error: staleChunkError } = await client
+      .from("diagnosis_knowledge_chunks")
+      .delete()
+      .eq("source_path", sourcePath)
+      .not("chunk_index", "in", postgrestNumberList(currentChunkIndexes));
+
+    if (staleChunkError) {
+      throw staleChunkError;
+    }
   }
 
   console.log(`Ingested ${rows.length} diagnosis knowledge chunk(s).`);

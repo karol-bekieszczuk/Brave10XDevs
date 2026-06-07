@@ -74,7 +74,7 @@ export const POST: APIRoute = async (context) => {
     }
 
     const response = await diagnoseSelectedLog(supabase, user.id, request.data, {
-      provider: createDiagnosisProvider(getOpenRouterApiKey()),
+      createProvider: () => createDiagnosisProvider(getOpenRouterApiKey()),
     });
     return json(response, statusFor(response));
   } catch {

@@ -69,6 +69,8 @@ describe("selected-log diagnosis API route", () => {
       "owner-1",
       { growLogId: "log-1", question: "Is this okay?" },
     ]);
+    const dependenciesArg = diagnoseSelectedLogMock.mock.calls[0]?.[3] as { createProvider?: unknown };
+    expect(typeof dependenciesArg.createProvider).toBe("function");
   });
 
   it("validates request shape before service execution", async () => {

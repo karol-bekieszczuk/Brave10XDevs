@@ -8,6 +8,8 @@ import type { GrowLogRow } from "@/lib/grow-logs/types";
 
 const EMBEDDING_MODEL = "openai/text-embedding-3-small";
 const DIAGNOSIS_MODEL = "qwen/qwen3-32b";
+const QUERY_EMBEDDING_TIMEOUT_MS = 15_000;
+const DIAGNOSIS_GENERATION_TIMEOUT_MS = 45_000;
 type TextEmbeddingModel = Parameters<typeof embed>[0]["model"];
 
 interface OpenRouterRuntimeEmbeddings {
@@ -30,7 +32,10 @@ function toProviderError(error: unknown): DiagnosisError {
     return error;
   }
 
-  if (error instanceof Error && error.name.toLowerCase().includes("timeout")) {
+  if (
+    error instanceof Error &&
+    (error.name.toLowerCase().includes("timeout") || error.message.toLowerCase().includes("timeout"))
+  ) {
     return new DiagnosisError("provider_timeout", "Diagnosis provider timed out.");
   }
 
@@ -58,6 +63,7 @@ export function createDiagnosisProvider(apiKey: string): DiagnosisProvider {
         const { embedding } = await embed({
           model: createTextEmbeddingModel(openrouter, EMBEDDING_MODEL),
           value: buildDiagnosisRetrievalText(growLog, question),
+          abortSignal: AbortSignal.timeout(QUERY_EMBEDDING_TIMEOUT_MS),
         });
 
         return embedding;
@@ -74,6 +80,7 @@ export function createDiagnosisProvider(apiKey: string): DiagnosisProvider {
             schema: diagnosisResponseSchema,
           }),
           prompt: buildDiagnosisPrompt(input),
+          abortSignal: AbortSignal.timeout(DIAGNOSIS_GENERATION_TIMEOUT_MS),
         });
 
         const parsed = diagnosisResponseSchema.safeParse(output);

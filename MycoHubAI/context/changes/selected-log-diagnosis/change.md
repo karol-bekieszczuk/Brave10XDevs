@@ -1,7 +1,7 @@
 ---
 change_id: selected-log-diagnosis
 title: Selected log diagnosis
-status: implemented
+status: impl_reviewed
 created: 2026-06-01
 updated: 2026-06-07
 archived_at: null

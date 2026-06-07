@@ -76,16 +76,20 @@ describe("selected-log diagnosis service", () => {
         order.push("getGrowLog");
         return Promise.resolve(growLog);
       }),
-      provider: {
-        createQueryEmbedding: vi.fn().mockImplementation(() => {
-          order.push("createQueryEmbedding");
-          return Promise.resolve([0.1, 0.2, 0.3]);
-        }),
-        generateDiagnosis: vi.fn().mockImplementation(() => {
-          order.push("generateDiagnosis");
-          return Promise.resolve(diagnosis);
-        }),
-      },
+      provider: undefined,
+      createProvider: vi.fn().mockImplementation(() => {
+        order.push("createProvider");
+        return {
+          createQueryEmbedding: vi.fn().mockImplementation(() => {
+            order.push("createQueryEmbedding");
+            return Promise.resolve([0.1, 0.2, 0.3]);
+          }),
+          generateDiagnosis: vi.fn().mockImplementation(() => {
+            order.push("generateDiagnosis");
+            return Promise.resolve(diagnosis);
+          }),
+        };
+      }),
       retrieveChunks: vi.fn().mockImplementation(() => {
         order.push("retrieveChunks");
         return Promise.resolve([chunk]);
@@ -101,7 +105,13 @@ describe("selected-log diagnosis service", () => {
 
     expect(response).toEqual({ ok: true, diagnosis });
     expect(dependencies.getGrowLog).toHaveBeenCalledWith(client, "log-1", "owner-1");
-    expect(order).toEqual(["getGrowLog", "createQueryEmbedding", "retrieveChunks", "generateDiagnosis"]);
+    expect(order).toEqual([
+      "getGrowLog",
+      "createProvider",
+      "createQueryEmbedding",
+      "retrieveChunks",
+      "generateDiagnosis",
+    ]);
   });
 
   it("does not call provider or retrieval when the selected log is missing", async () => {
@@ -122,6 +132,26 @@ describe("selected-log diagnosis service", () => {
     expect(dependencies.retrieveChunks).not.toHaveBeenCalled();
   });
 
+  it("does not create the provider when the selected log is missing", async () => {
+    const createProvider = vi.fn(() => createDependencies().provider);
+    const dependencies = createDependencies({
+      getGrowLog: vi.fn().mockResolvedValue(null),
+      provider: undefined,
+      createProvider,
+    });
+
+    const response = await diagnoseSelectedLog(
+      client,
+      "owner-1",
+      { growLogId: "missing", question: "Is this okay?" },
+      dependencies,
+    );
+
+    expect(response.ok).toBe(false);
+    expect(response.ok ? null : response.error.code).toBe("grow_log_not_found");
+    expect(createProvider).not.toHaveBeenCalled();
+  });
+
   it("returns missing_context when retrieval finds no same-stage chunks", async () => {
     const dependencies = createDependencies({
       retrieveChunks: vi.fn().mockResolvedValue([]),
@@ -137,6 +167,26 @@ describe("selected-log diagnosis service", () => {
     expect(response.ok).toBe(true);
     expect(response.ok ? response.diagnosis.scopeStatus : null).toBe("missing_context");
     expect(dependencies.provider.generateDiagnosis).not.toHaveBeenCalled();
+  });
+
+  it("returns missing_context for selected logs that explicitly lack critical observation detail", async () => {
+    const dependencies = createDependencies({
+      getGrowLog: vi.fn().mockResolvedValue({
+        ...growLog,
+        body: "Agar plate started this week. No details recorded about appearance, timing, transfer source, growth pattern, or contamination signs.",
+      }),
+    });
+
+    const response = await diagnoseSelectedLog(
+      client,
+      "owner-1",
+      { growLogId: "log-1", question: "What is wrong with my plate?" },
+      dependencies,
+    );
+
+    expect(response.ok ? response.diagnosis.scopeStatus : null).toBe("missing_context");
+    expect(dependencies.provider.createQueryEmbedding).not.toHaveBeenCalled();
+    expect(dependencies.retrieveChunks).not.toHaveBeenCalled();
   });
 
   it("returns mixed_scope for questions that combine selected grain diagnosis with fruiting scope", async () => {

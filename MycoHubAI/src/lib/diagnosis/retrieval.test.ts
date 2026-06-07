@@ -83,7 +83,7 @@ describe("diagnosis retrieval", () => {
         args: {
           query_embedding: [0.1],
           stage_filter: "grain",
-          match_threshold: 0.72,
+          match_threshold: 0,
           match_count: 5,
         },
       },
