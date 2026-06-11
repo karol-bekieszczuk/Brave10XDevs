@@ -59,6 +59,8 @@ Required local values in both `.env` and `.dev.vars`:
 | `SUPABASE_URL` | Supabase project URL |
 | `SUPABASE_KEY` | Supabase anon/public key used by SSR auth |
 | `AUTHORIZED_USER_ID` | Allowed owner ID from Supabase Auth `auth.users.id` |
+| `SUPABASE_ADMIN_KEY` | Server-only Supabase service-role/admin key used only for account deletion and scheduled purge |
+| `OPENROUTER_API_KEY` | Server-only OpenRouter key for selected-log diagnosis |
 
 Local example:
 
@@ -66,6 +68,8 @@ Local example:
 SUPABASE_URL=http://127.0.0.1:54321
 SUPABASE_KEY=<anon key from CLI output>
 AUTHORIZED_USER_ID=<owner auth.users.id>
+SUPABASE_ADMIN_KEY=<service-role key used only by server/admin flows>
+OPENROUTER_API_KEY=<openrouter api key>
 ```
 
 Hosted Supabase example:
@@ -74,6 +78,8 @@ Hosted Supabase example:
 SUPABASE_URL=https://<project-ref>.supabase.co
 SUPABASE_KEY=<anon-key>
 AUTHORIZED_USER_ID=<owner auth.users.id>
+SUPABASE_ADMIN_KEY=<service-role key used only by server/admin flows>
+OPENROUTER_API_KEY=<openrouter api key>
 ```
 
 To find `AUTHORIZED_USER_ID`, open Supabase dashboard -> Authentication -> Users, select the intended owner account, and copy its user ID. Use the user ID, not the email address.
@@ -110,7 +116,21 @@ Before production smoke testing, configure:
 - Cloudflare Worker runtime secrets: `SUPABASE_URL`, `SUPABASE_KEY`, `AUTHORIZED_USER_ID`
 - Cloudflare Workers Builds build variables/secrets: `SUPABASE_URL`, `SUPABASE_KEY`, `AUTHORIZED_USER_ID`
 - GitHub repository secrets for CI: `SUPABASE_URL`, `SUPABASE_KEY`, `AUTHORIZED_USER_ID`
+- Cloudflare Worker runtime secret: `SUPABASE_ADMIN_KEY` for account deletion and scheduled purge
+- Cloudflare Worker runtime secret: `OPENROUTER_API_KEY` for selected-log diagnosis
+- Cloudflare Cron Trigger matching `wrangler.jsonc` for the scheduled account-purge worker
 - Hosted Supabase public signup disabled
+
+## Account Deletion
+
+Account deletion is a two-step lifecycle:
+
+- The owner requests deletion from `/dashboard`.
+- The app disables the account immediately through Supabase Auth soft delete.
+- Access stays blocked during a 30-day retention window.
+- A scheduled Cloudflare Worker purge permanently hard-deletes the auth user after that window, and related `grow_logs` are removed by the existing `on delete cascade`.
+
+Local verification requires `SUPABASE_ADMIN_KEY`. Production verification also requires the Cloudflare Worker runtime secret plus the deployed Cron Trigger for the purge schedule.
 
 Manual fallback deploy command:
 

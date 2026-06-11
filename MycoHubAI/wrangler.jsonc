@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "myco-hub-ai",
-  "main": "@astrojs/cloudflare/entrypoints/server",
+  "main": "src/worker.ts",
   "compatibility_date": "2026-05-08",
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": true,
@@ -13,6 +13,9 @@
   },
   "observability": {
     "enabled": true,
+  },
+  "triggers": {
+    "crons": ["0 3 * * *"],
   },
   "secrets": {
     "required": ["SUPABASE_URL", "SUPABASE_KEY", "AUTHORIZED_USER_ID", "OPENROUTER_API_KEY"],
