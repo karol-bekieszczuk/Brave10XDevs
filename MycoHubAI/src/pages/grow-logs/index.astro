@@ -8,7 +8,6 @@ const { user } = Astro.locals;
 const supabase = createClient(Astro.request.headers, Astro.cookies);
 const logs = user && supabase ? await listOwnerGrowLogs(supabase, user.id) : [];
 const error = Astro.url.searchParams.get("error");
-const message = Astro.url.searchParams.get("message");
 ---
 
 <Layout title="Grow logs">
@@ -44,14 +43,6 @@ const message = Astro.url.searchParams.get("message");
       </div>
 
       {
-        message && (
-          <div class="mt-6 rounded-2xl border border-emerald-400/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
-            {message}
-          </div>
-        )
-      }
-
-      {
         error && (
           <div class="mt-6 rounded-2xl border border-amber-400/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
             {error}
@@ -81,31 +72,11 @@ const message = Astro.url.searchParams.get("message");
             </a>
           </div>
         ) : (
-          <form
-            class="mt-8 grid gap-5"
-            method="POST"
-            action="/api/grow-logs/bulk-delete"
-            onsubmit={
-              "const count = this.querySelectorAll('input[name=\"selectedLogIds\"]:checked').length; if (count === 0) { window.alert('Select at least one grow log.'); return false; } return window.confirm('Delete ' + count + ' selected grow log' + (count === 1 ? '' : 's') + ' permanently? This cannot be undone.');"
-            }
-          >
-            <div class="flex flex-col gap-3 rounded-3xl border border-red-400/20 bg-red-500/5 p-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p class="text-sm font-semibold text-white">Bulk delete</p>
-                <p class="mt-1 text-sm text-blue-100/75">Select grow logs to delete them permanently.</p>
-              </div>
-              <button
-                type="submit"
-                class="inline-flex items-center justify-center rounded-full border border-red-400/40 bg-red-500/10 px-5 py-3 text-sm font-semibold text-red-100 transition hover:border-red-300/70 hover:bg-red-500/20"
-              >
-                Delete selected
-              </button>
-            </div>
-
+          <div class="mt-8 grid gap-5">
             {logs.map((log) => (
               <GrowLogCard log={log} />
             ))}
-          </form>
+          </div>
         )
       }
     </div>
