@@ -39,10 +39,16 @@ function statusFor(response: DiagnosisApiResponse) {
 
 export const POST: APIRoute = async (context) => {
   try {
+    console.log("[selected-log] start");
+
     const user = context.locals.user;
     const supabase = createClient(context.request.headers, context.cookies);
 
+    console.log("[selected-log] auth checked", !!user, !!supabase);
+
     if (!user || !supabase) {
+      console.log("[selected-log] unauthorized");
+
       return json(
         {
           ok: false,
@@ -56,10 +62,17 @@ export const POST: APIRoute = async (context) => {
       );
     }
 
+    console.log("[selected-log] before request json");
+
     const body: unknown = await context.request.json();
+
+    console.log("[selected-log] after request json");
+
     const request = diagnosisRequestSchema.safeParse(body);
 
     if (!request.success) {
+      console.log("[selected-log] invalid request");
+
       return json(
         {
           ok: false,
@@ -73,27 +86,39 @@ export const POST: APIRoute = async (context) => {
       );
     }
 
-    const openRouterApiKey = getOpenRouterApiKey();
+    console.log("[selected-log] request parsed");
 
-    if (!openRouterApiKey) {
-      return json(
-        {
-          ok: false,
-          error: {
-            code: "provider_failed",
-            message: "Diagnosis provider is not configured.",
-            retryable: false,
-          },
-        },
-        502,
-      );
-    }
+    const apiKey = getOpenRouterApiKey();
+
+    console.log("[selected-log] api key exists", !!apiKey);
+    console.log("[selected-log] before diagnoseSelectedLog");
 
     const response = await diagnoseSelectedLog(supabase, user.id, request.data, {
-      createProvider: () => createDiagnosisProvider(openRouterApiKey),
+      createProvider: () => createDiagnosisProvider(apiKey),
     });
-    return json(response, statusFor(response));
-  } catch {
+
+    console.log("[selected-log] after diagnoseSelectedLog", response.ok);
+
+    if (!response.ok) {
+      console.log("[selected-log] diagnosis error code", response.error.code);
+      console.log("[selected-log] diagnosis error message", response.error.message);
+    }
+
+    const status = statusFor(response);
+
+    console.log("[selected-log] returning status", status);
+
+    return json(response, status);
+  } catch (error) {
+    console.error("[selected-log] caught error");
+
+    if (error instanceof Error) {
+      console.error("[selected-log] error name", error.name);
+      console.error("[selected-log] error message", error.message);
+    } else {
+      console.error("[selected-log] non-error thrown", String(error));
+    }
+
     return json(
       {
         ok: false,
