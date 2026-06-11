@@ -1,7 +1,7 @@
 ---
 change_id: bulk-grow-log-actions
 title: Bulk grow log actions
-status: new
+status: planned
 created: 2026-06-11
 updated: 2026-06-11
 archived_at: null
