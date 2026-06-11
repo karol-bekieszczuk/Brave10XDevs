@@ -60,7 +60,8 @@ const reactConfig = tseslint.config({
 });
 
 const astroConfig = tseslint.config({
-  files: ["**/*.astro"],
+  files: ["**/*.astro", "**/*.astro/*.js", "**/*.astro/*.ts"],
+  extends: [tseslint.configs.disableTypeChecked],
   rules: {
     "astro/no-set-html-directive": "error",
     "astro/no-unused-css-selector": "warn",

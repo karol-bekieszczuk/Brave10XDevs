@@ -1,8 +1,35 @@
 import { createServerClient, parseCookieHeader } from "@supabase/ssr";
 import type { AstroCookies } from "astro";
+import type { DiagnosisRetrievalClient } from "@/lib/diagnosis/retrieval";
 import { getSupabaseEnv } from "@/lib/runtime-env";
+import type { User } from "@supabase/supabase-js";
 
-export function createClient(requestHeaders: Headers, cookies: AstroCookies) {
+interface SupabaseAuthResult {
+  user: User | null;
+}
+
+interface SupabaseAuthClient {
+  getUser(): Promise<{ data: SupabaseAuthResult; error: Error | null }>;
+  signInWithPassword(credentials: { email: string; password: string }): Promise<{
+    data: SupabaseAuthResult;
+    error: Error | null;
+  }>;
+  signOut(): Promise<{ error: Error | null }>;
+}
+
+export interface SupabaseTableClientLike {
+  select(query: string): unknown;
+  insert(values: Record<string, unknown>): unknown;
+  update(values: Record<string, unknown>): unknown;
+  delete(): unknown;
+}
+
+export interface SupabaseServerClient extends DiagnosisRetrievalClient {
+  auth: SupabaseAuthClient;
+  from(table: string): SupabaseTableClientLike;
+}
+
+export function createClient(requestHeaders: Headers, cookies: AstroCookies): SupabaseServerClient | null {
   const { url, key } = getSupabaseEnv();
 
   if (!url || !key) {
@@ -22,5 +49,5 @@ export function createClient(requestHeaders: Headers, cookies: AstroCookies) {
         });
       },
     },
-  });
+  }) as unknown as SupabaseServerClient;
 }

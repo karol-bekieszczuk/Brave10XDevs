@@ -4,8 +4,8 @@ import { getAuthorizedUserId } from "@/lib/runtime-env";
 export const ACCESS_DENIED_ERROR = "Access denied";
 export const ACCESS_CONFIG_ERROR = "Authorized user is not configured";
 
-export function getAccessControlConfig() {
-  const authorizedUserId = getAuthorizedUserId().trim();
+export function getAccessControlConfig(): { authorizedUserId: string; isConfigured: boolean } {
+  const authorizedUserId = getAuthorizedUserId()?.trim() ?? "";
 
   return {
     authorizedUserId,
