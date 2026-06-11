@@ -19,7 +19,7 @@ export default defineConfig({
     schema: {
       SUPABASE_URL: envField.string({ context: "server", access: "secret" }),
       SUPABASE_KEY: envField.string({ context: "server", access: "secret" }),
-      SUPABASE_ADMIN_KEY: envField.string({ context: "server", access: "secret" }),
+      SUPABASE_ADMIN_KEY: envField.string({ context: "server", access: "secret", optional: true }),
       AUTHORIZED_USER_ID: envField.string({ context: "server", access: "secret" }),
       OPENROUTER_API_KEY: envField.string({ context: "server", access: "secret" }),
     },

@@ -107,6 +107,19 @@ describe("requestAccountDeletion", () => {
     expect(getAccountDeletionRequestByUserIdMock).not.toHaveBeenCalled();
   });
 
+  it("returns missing_admin_config when the configured admin key hits RLS instead of admin access", async () => {
+    getAccountDeletionRequestByUserIdMock.mockRejectedValue(
+      new Error('new row violates row-level security policy for table "account_deletion_requests"'),
+    );
+
+    const result = await requestAccountDeletion("owner-1", {
+      adminClient: {} as AccountDeletionAdminClient,
+    });
+
+    expect(result).toEqual({ status: "missing_admin_config" });
+    expect(upsertAccountDeletionRequestMock).not.toHaveBeenCalled();
+  });
+
   it("returns already_pending when the request already exists without an error", async () => {
     getAccountDeletionRequestByUserIdMock.mockResolvedValue({
       ...existingRequest,

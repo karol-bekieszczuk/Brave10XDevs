@@ -545,53 +545,53 @@ This change adds one database migration and one optional server-only secret. Exi
 
 #### Automated
 
-- [x] 3.1 Middleware blocks pending-deletion users and signs out their session.
-- [x] 3.2 Sign-in POST blocks pending-deletion users after successful credential verification.
-- [x] 3.3 Sign-in page supports neutral `message` rendering and keeps `error` rendering separate.
-- [x] 3.4 Non-owner access denial still behaves as before.
-- [x] 3.5 Unit tests pass: `npm run test:unit`.
-- [x] 3.6 Linting passes: `npm run lint`.
-- [x] 3.7 Production build passes: `npm run build`.
+- [x] 3.1 Middleware blocks pending-deletion users and signs out their session. - 75623a6
+- [x] 3.2 Sign-in POST blocks pending-deletion users after successful credential verification. - 75623a6
+- [x] 3.3 Sign-in page supports neutral `message` rendering and keeps `error` rendering separate. - 75623a6
+- [x] 3.4 Non-owner access denial still behaves as before. - 75623a6
+- [x] 3.5 Unit tests pass: `npm run test:unit`. - 75623a6
+- [x] 3.6 Linting passes: `npm run lint`. - 75623a6
+- [x] 3.7 Production build passes: `npm run build`. - 75623a6
 
 #### Manual
 
-- [x] 3.8 With a pending deletion request present, visit `/dashboard`, `/grow-logs`, and a grow-log detail URL; confirm redirect to sign-in and no private page render.
-- [x] 3.9 Try signing in again during the pending-deletion window; confirm the app signs out and shows a neutral pending-deletion message.
-- [x] 3.10 Confirm a normal owner account without pending deletion can still sign in and use `/dashboard`.
+- [x] 3.8 With a pending deletion request present, visit `/dashboard`, `/grow-logs`, and a grow-log detail URL; confirm redirect to sign-in and no private page render. - 75623a6
+- [x] 3.9 Try signing in again during the pending-deletion window; confirm the app signs out and shows a neutral pending-deletion message. - 75623a6
+- [x] 3.10 Confirm a normal owner account without pending deletion can still sign in and use `/dashboard`. - 75623a6
 
 ### Phase 4: Scheduled Purge
 
 #### Automated
 
-- [ ] 4.1 Purge service calls Supabase Admin delete with hard-delete mode for due requests.
-- [ ] 4.2 Purge service records failure metadata without deleting or hiding failed pending requests.
-- [ ] 4.3 Custom Worker entrypoint preserves the Astro fetch handler contract.
-- [ ] 4.4 `wrangler.jsonc` includes the cron trigger and custom `main` entrypoint.
-- [ ] 4.5 Unit tests pass: `npm run test:unit`.
-- [ ] 4.6 Linting passes: `npm run lint`.
-- [ ] 4.7 Production build passes: `npm run build`.
+- [x] 4.1 Purge service calls Supabase Admin delete with hard-delete mode for due requests.
+- [x] 4.2 Purge service records failure metadata without deleting or hiding failed pending requests.
+- [x] 4.3 Custom Worker entrypoint preserves the Astro fetch handler contract.
+- [x] 4.4 `wrangler.jsonc` includes the cron trigger and custom `main` entrypoint.
+- [x] 4.5 Unit tests pass: `npm run test:unit`.
+- [x] 4.6 Linting passes: `npm run lint`.
+- [x] 4.7 Production build passes: `npm run build`.
 
 #### Manual
 
-- [ ] 4.8 Run a local or staging purge test with a request whose `purge_after` is moved into the past; confirm the auth user is hard-deleted.
-- [ ] 4.9 Confirm the related grow-log rows are physically removed through `on delete cascade`.
-- [ ] 4.10 Confirm normal HTTP routes still render after switching to the custom Worker entrypoint.
-- [ ] 4.11 Confirm Cloudflare Cron Trigger is visible/configured in the deployed Worker settings after deployment.
+- [x] 4.8 Run a local or staging purge test with a request whose `purge_after` is moved into the past; confirm the auth user is hard-deleted.
+- [x] 4.9 Confirm the related grow-log rows are physically removed through `on delete cascade`.
+- [x] 4.10 Confirm normal HTTP routes still render after switching to the custom Worker entrypoint.
+- [x] 4.11 Confirm Cloudflare Cron Trigger is visible/configured in the deployed Worker settings after deployment.
 
 ### Phase 5: Config, Documentation, and End-to-End Verification
 
 #### Automated
 
-- [ ] 5.1 `.env.example` documents `SUPABASE_ADMIN_KEY` without real secrets.
-- [ ] 5.2 Deployment docs mention the Cloudflare secret and cron trigger.
-- [ ] 5.3 Manual verification checklist exists under `context/changes/delete-user-account/`.
-- [ ] 5.4 Change metadata remains consistent with plan state.
-- [ ] 5.5 Unit tests pass: `npm run test:unit`.
-- [ ] 5.6 Linting passes: `npm run lint`.
-- [ ] 5.7 Production build passes: `npm run build`.
+- [x] 5.1 `.env.example` documents `SUPABASE_ADMIN_KEY` without real secrets.
+- [x] 5.2 Deployment docs mention the Cloudflare secret and cron trigger.
+- [x] 5.3 Manual verification checklist exists under `context/changes/delete-user-account/`.
+- [x] 5.4 Change metadata remains consistent with plan state.
+- [x] 5.5 Unit tests pass: `npm run test:unit`.
+- [x] 5.6 Linting passes: `npm run lint`.
+- [x] 5.7 Production build passes: `npm run build`.
 
 #### Manual
 
-- [ ] 5.8 Follow `context/changes/delete-user-account/manual-verification.md` end to end using disposable local data.
-- [ ] 5.9 Confirm production setup instructions identify where `SUPABASE_ADMIN_KEY` and the Cron Trigger are configured.
-- [ ] 5.10 Confirm no user-facing screen offers cancellation or account reactivation.
+- [x] 5.8 Follow `context/changes/delete-user-account/manual-verification.md` end to end using disposable local data.
+- [x] 5.9 Confirm production setup instructions identify where `SUPABASE_ADMIN_KEY` and the Cron Trigger are configured.
+- [x] 5.10 Confirm no user-facing screen offers cancellation or account reactivation.
