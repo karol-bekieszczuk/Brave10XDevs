@@ -43,9 +43,21 @@ export function toDiagnosisError(error: unknown) {
     return error;
   }
 
-  const message = error instanceof Error ? error.message : String(error);
+  let message: string;
 
-  console.error("[diagnosis] raw error", message);
+  if (error instanceof Error) {
+    message = `${error.name}: ${error.message}`;
+    console.error("[diagnosis] raw error", message);
+    console.error("[diagnosis] stack", error.stack);
+  } else {
+    try {
+      message = JSON.stringify(error, null, 2);
+    } catch {
+      message = String(error);
+    }
+
+    console.error("[diagnosis] raw non-error", message);
+  }
 
   return new DiagnosisError("provider_failed", `Diagnosis generation failed: ${message}`);
 }
