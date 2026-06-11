@@ -324,72 +324,72 @@ No database migration is planned. This change consumes the existing `public.grow
 
 #### Automated
 
-- [x] 1.1 Bulk selection parser returns unique valid selected IDs.
-- [x] 1.2 Bulk selection parser fails when no valid selected IDs remain.
-- [x] 1.3 Repository bulk delete filters by authenticated owner ID.
-- [x] 1.4 Repository bulk delete filters by selected IDs.
-- [x] 1.5 Unit tests pass: `npm run test:unit`.
-- [x] 1.6 Linting passes: `npm run lint`.
-- [x] 1.7 Build passes: `npm run build`.
+- [x] 1.1 Bulk selection parser returns unique valid selected IDs. - 200891c
+- [x] 1.2 Bulk selection parser fails when no valid selected IDs remain. - 200891c
+- [x] 1.3 Repository bulk delete filters by authenticated owner ID. - 200891c
+- [x] 1.4 Repository bulk delete filters by selected IDs. - 200891c
+- [x] 1.5 Unit tests pass: `npm run test:unit`. - 200891c
+- [x] 1.6 Linting passes: `npm run lint`. - 200891c
+- [x] 1.7 Build passes: `npm run build`. - 200891c
 
 #### Manual
 
-- [x] 1.8 The new contract does not introduce schema fields, soft delete, undo state, export, sharing, diagnosis, image, or species behavior.
-- [x] 1.9 The bulk-delete helper is a sibling of the existing single-delete helper and does not change existing single-delete behavior.
+- [x] 1.8 The new contract does not introduce schema fields, soft delete, undo state, export, sharing, diagnosis, image, or species behavior. - 200891c
+- [x] 1.9 The bulk-delete helper is a sibling of the existing single-delete helper and does not change existing single-delete behavior. - 200891c
 
 ### Phase 2: Bulk Delete Route
 
 #### Automated
 
-- [x] 2.1 Bulk delete API route exports uppercase `POST`.
-- [x] 2.2 Bulk delete API route rejects empty effective selection before repository deletion.
-- [x] 2.3 Bulk delete API route uses `context.locals.user.id` for owner-scoped deletion.
-- [x] 2.4 Bulk delete API route does not expose selected IDs, titles, or body text in redirect URLs.
-- [x] 2.5 Unit tests pass: `npm run test:unit`.
-- [x] 2.6 Linting passes: `npm run lint`.
-- [x] 2.7 Build passes: `npm run build`.
+- [x] 2.1 Bulk delete API route exports uppercase `POST`. - 200891c
+- [x] 2.2 Bulk delete API route rejects empty effective selection before repository deletion. - 200891c
+- [x] 2.3 Bulk delete API route uses `context.locals.user.id` for owner-scoped deletion. - 200891c
+- [x] 2.4 Bulk delete API route does not expose selected IDs, titles, or body text in redirect URLs. - 200891c
+- [x] 2.5 Unit tests pass: `npm run test:unit`. - 200891c
+- [x] 2.6 Linting passes: `npm run lint`. - 200891c
+- [x] 2.7 Build passes: `npm run build`. - 200891c
 
 #### Manual
 
-- [x] 2.8 Direct empty POST to the bulk-delete route returns to `/grow-logs` with a generic selection error.
-- [x] 2.9 Tampered malformed ID values do not delete rows and do not reveal row existence.
-- [x] 2.10 The existing single-log delete route still works.
+- [x] 2.8 Direct empty POST to the bulk-delete route returns to `/grow-logs` with a generic selection error. - 200891c
+- [x] 2.9 Tampered malformed ID values do not delete rows and do not reveal row existence. - 200891c
+- [x] 2.10 The existing single-log delete route still works. - 200891c
 
 ### Phase 3: List Selection UI
 
 #### Automated
 
-- [x] 3.1 `/grow-logs` builds with the bulk-delete form only when logs exist.
-- [x] 3.2 Each rendered grow-log card includes one checkbox with the selected ID as its value.
-- [x] 3.3 The bulk action posts to `/api/grow-logs/bulk-delete`.
-- [x] 3.4 Existing view/edit/detail links remain present.
-- [x] 3.5 UI copy does not imply undo or recovery.
-- [x] 3.6 Unit tests pass: `npm run test:unit`.
-- [x] 3.7 Linting passes: `npm run lint`.
-- [x] 3.8 Build passes: `npm run build`.
+- [x] 3.1 `/grow-logs` builds with the bulk-delete form only when logs exist. - 200891c
+- [x] 3.2 Each rendered grow-log card includes one checkbox with the selected ID as its value. - 200891c
+- [x] 3.3 The bulk action posts to `/api/grow-logs/bulk-delete`. - 200891c
+- [x] 3.4 Existing view/edit/detail links remain present. - 200891c
+- [x] 3.5 UI copy does not imply undo or recovery. - 200891c
+- [x] 3.6 Unit tests pass: `npm run test:unit`. - 200891c
+- [x] 3.7 Linting passes: `npm run lint`. - 200891c
+- [x] 3.8 Build passes: `npm run build`. - 200891c
 
 #### Manual
 
-- [x] 3.9 Owner can select multiple visible logs and trigger one delete action.
-- [x] 3.10 Browser confirmation shows the selected count before deletion.
-- [x] 3.11 Canceling the confirmation does not delete rows.
-- [x] 3.12 Submitting with no selected logs shows a generic error and deletes nothing.
-- [x] 3.13 After confirmed deletion, selected logs disappear from `/grow-logs` and unselected logs remain.
-- [x] 3.14 The page still renders the empty state when all logs are deleted.
+- [x] 3.9 Owner can select multiple visible logs and trigger one delete action. - 200891c
+- [x] 3.10 Browser confirmation shows the selected count before deletion. - 200891c
+- [x] 3.11 Canceling the confirmation does not delete rows. - 200891c
+- [x] 3.12 Submitting with no selected logs shows a generic error and deletes nothing. - 200891c
+- [x] 3.13 After confirmed deletion, selected logs disappear from `/grow-logs` and unselected logs remain. - 200891c
+- [x] 3.14 The page still renders the empty state when all logs are deleted. - 200891c
 
 ### Phase 4: Verification and Scope Audit
 
 #### Automated
 
-- [x] 4.1 Unit tests pass: `npm run test:unit`.
-- [x] 4.2 Linting passes: `npm run lint`.
-- [x] 4.3 Build passes: `npm run build`.
-- [x] 4.4 Search confirms no `deleted_at`, undo storage, recovery queue, export, sharing, image/photo upload, species field, saved chat history, or diagnosis runtime change was added for this slice.
-- [x] 4.5 Search confirms no `/grow-logs` or bulk-delete path was added to middleware public routes.
+- [x] 4.1 Unit tests pass: `npm run test:unit`. - 200891c
+- [x] 4.2 Linting passes: `npm run lint`. - 200891c
+- [x] 4.3 Build passes: `npm run build`. - 200891c
+- [x] 4.4 Search confirms no `deleted_at`, undo storage, recovery queue, export, sharing, image/photo upload, species field, saved chat history, or diagnosis runtime change was added for this slice. - 200891c
+- [x] 4.5 Search confirms no `/grow-logs` or bulk-delete path was added to middleware public routes. - 200891c
 
 #### Manual
 
-- [x] 4.6 Full local smoke test covers selecting two or more logs, canceling confirmation, confirming deletion, empty selection, malformed/tampered selection, and preserving unselected logs.
-- [x] 4.7 Local Supabase data inspection confirms selected rows are physically deleted.
-- [x] 4.8 Missing/non-owned selected IDs do not expose private row contents or ownership details.
-- [x] 4.9 Production smoke testing is explicitly left for after deployment; do not claim production verification before a deploy exists.
+- [x] 4.6 Full local smoke test covers selecting two or more logs, canceling confirmation, confirming deletion, empty selection, malformed/tampered selection, and preserving unselected logs. - 200891c
+- [x] 4.7 Local Supabase data inspection confirms selected rows are physically deleted. - 200891c
+- [x] 4.8 Missing/non-owned selected IDs do not expose private row contents or ownership details. - 200891c
+- [x] 4.9 Production smoke testing is explicitly left for after deployment; do not claim production verification before a deploy exists. - 200891c
