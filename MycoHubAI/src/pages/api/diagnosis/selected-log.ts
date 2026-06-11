@@ -106,7 +106,23 @@ export const POST: APIRoute = async (context) => {
 
     const status = statusFor(response);
 
-    console.log("[selected-log] returning status", status);
+    console.error("[selected-log] returning status", status);
+
+    if (!response.ok) {
+      console.error("[selected-log] error code", response.error.code);
+      console.error("[selected-log] error message", response.error.message);
+
+      return json(
+        {
+          ...response,
+          error: {
+            ...response.error,
+            message: `[DEBUG] ${response.error.code}: ${response.error.message}`,
+          },
+        },
+        status,
+      );
+    }
 
     return json(response, status);
   } catch (error) {
