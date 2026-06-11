@@ -9,7 +9,7 @@ create table public.diagnosis_knowledge_chunks (
   content_hash text not null,
   chunk_index integer not null,
   embedding_model text not null,
-  embedding vector(1536) not null,
+  embedding extensions.vector(1536) not null,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   constraint diagnosis_knowledge_chunks_stage_check check (stage in ('agar', 'grain')),
@@ -45,7 +45,7 @@ revoke all on table public.diagnosis_knowledge_chunks from anon;
 revoke all on table public.diagnosis_knowledge_chunks from authenticated;
 
 create or replace function public.match_diagnosis_knowledge_chunks(
-  query_embedding vector(1536),
+  query_embedding extensions.vector(1536),
   stage_filter text,
   match_threshold float,
   match_count int
@@ -78,6 +78,6 @@ as $$
   limit least(greatest(match_count, 0), 20);
 $$;
 
-revoke all on function public.match_diagnosis_knowledge_chunks(vector(1536), text, float, int) from public;
-grant execute on function public.match_diagnosis_knowledge_chunks(vector(1536), text, float, int) to authenticated;
-grant execute on function public.match_diagnosis_knowledge_chunks(vector(1536), text, float, int) to service_role;
+revoke all on function public.match_diagnosis_knowledge_chunks(extensions.vector(1536), text, float, int) from public;
+grant execute on function public.match_diagnosis_knowledge_chunks(extensions.vector(1536), text, float, int) to authenticated;
+grant execute on function public.match_diagnosis_knowledge_chunks(extensions.vector(1536), text, float, int) to service_role;
