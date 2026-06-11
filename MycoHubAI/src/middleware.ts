@@ -3,12 +3,11 @@ import {
   ACCESS_CONFIG_ERROR,
   ACCESS_DENIED_ERROR,
   ACCOUNT_DELETION_PENDING_MESSAGE,
-  ACCOUNT_DELETION_CONFIG_ERROR,
   getAccessControlConfig,
   isAuthorizedUser,
 } from "@/lib/access-control";
-import { getAccountDeletionRequestByUserId } from "@/lib/account-deletion/repository";
-import { createAdminClient } from "@/lib/supabase-admin";
+import { getOwnerAccountDeletionRequest } from "@/lib/account-deletion/repository";
+import { safeSignOut } from "@/lib/auth-session";
 import { createClient } from "@/lib/supabase";
 
 const PUBLIC_ASSET_PATHS = ["/favicon.png", "/template.png"];
@@ -27,25 +26,26 @@ function isPublicRoute(pathname: string, method: string) {
 
 export const onRequest = defineMiddleware(async (context, next) => {
   const supabase = createClient(context.request.headers, context.cookies);
-
-  if (supabase) {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    context.locals.user = user ?? null;
-  } else {
-    context.locals.user = null;
-  }
+  context.locals.user = null;
 
   if (isPublicRoute(context.url.pathname, context.request.method)) {
     return next();
   }
 
+  if (supabase) {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      context.locals.user = user ?? null;
+    } catch {
+      context.locals.user = null;
+    }
+  }
+
   const accessConfig = getAccessControlConfig();
   if (!accessConfig.isConfigured) {
-    if (supabase) {
-      await supabase.auth.signOut();
-    }
+    await safeSignOut(supabase, context.request.headers, context.cookies);
     return context.redirect(`/auth/signin?error=${encodeURIComponent(ACCESS_CONFIG_ERROR)}`);
   }
 
@@ -54,21 +54,13 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   if (!isAuthorizedUser(context.locals.user)) {
-    if (supabase) {
-      await supabase.auth.signOut();
-    }
+    await safeSignOut(supabase, context.request.headers, context.cookies);
     return context.redirect(`/auth/signin?error=${encodeURIComponent(ACCESS_DENIED_ERROR)}`);
   }
 
-  const adminClient = createAdminClient();
-  if (!adminClient) {
-    await supabase.auth.signOut();
-    return context.redirect(`/auth/signin?error=${encodeURIComponent(ACCOUNT_DELETION_CONFIG_ERROR)}`);
-  }
-
-  const pendingDeletion = await getAccountDeletionRequestByUserId(adminClient, context.locals.user.id);
-  if (pendingDeletion?.softDeletedAt) {
-    await supabase.auth.signOut();
+  const pendingDeletion = await getOwnerAccountDeletionRequest(supabase, context.locals.user.id);
+  if (pendingDeletion) {
+    await safeSignOut(supabase, context.request.headers, context.cookies);
     return context.redirect(`/auth/signin?message=${encodeURIComponent(ACCOUNT_DELETION_PENDING_MESSAGE)}`);
   }
 

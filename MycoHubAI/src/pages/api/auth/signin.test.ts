@@ -1,19 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const createClientMock = vi.fn();
-const createAdminClientMock = vi.fn();
-const getAccountDeletionRequestByUserIdMock = vi.fn();
+const getOwnerAccountDeletionRequestMock = vi.fn();
 
 vi.mock("@/lib/supabase", () => ({
   createClient: createClientMock,
 }));
 
 vi.mock("@/lib/account-deletion/repository", () => ({
-  getAccountDeletionRequestByUserId: getAccountDeletionRequestByUserIdMock,
-}));
-
-vi.mock("@/lib/supabase-admin", () => ({
-  createAdminClient: createAdminClientMock,
+  getOwnerAccountDeletionRequest: getOwnerAccountDeletionRequestMock,
 }));
 
 vi.mock("@/lib/runtime-env", () => ({
@@ -36,13 +31,12 @@ function createContext() {
 describe("sign-in API route", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    createAdminClientMock.mockReturnValue({});
-    getAccountDeletionRequestByUserIdMock.mockResolvedValue(null);
+    getOwnerAccountDeletionRequestMock.mockResolvedValue(null);
   });
 
   it("redirects the owner to the app when there is no pending deletion", async () => {
     const signOut = vi.fn().mockResolvedValue(undefined);
-    createClientMock.mockReturnValue({
+    const supabaseClient = {
       auth: {
         signInWithPassword: vi.fn().mockResolvedValue({
           data: { user: { id: "owner-1" } },
@@ -50,12 +44,13 @@ describe("sign-in API route", () => {
         }),
         signOut,
       },
-    });
+    };
+    createClientMock.mockReturnValue(supabaseClient);
 
     const response = await POST(createContext() as never);
 
     expect(response.headers.get("location")).toBe("/");
-    expect(getAccountDeletionRequestByUserIdMock).toHaveBeenCalledWith({}, "owner-1");
+    expect(getOwnerAccountDeletionRequestMock).toHaveBeenCalledWith(supabaseClient, "owner-1");
     expect(signOut).not.toHaveBeenCalled();
   });
 
@@ -70,7 +65,7 @@ describe("sign-in API route", () => {
         signOut,
       },
     });
-    getAccountDeletionRequestByUserIdMock.mockResolvedValue({
+    getOwnerAccountDeletionRequestMock.mockResolvedValue({
       userId: "owner-1",
       softDeletedAt: "2026-06-11T10:00:00.000Z",
     });
@@ -97,6 +92,6 @@ describe("sign-in API route", () => {
 
     expect(signOut).toHaveBeenCalledTimes(1);
     expect(response.headers.get("location")).toBe("/auth/signin?error=Access%20denied");
-    expect(getAccountDeletionRequestByUserIdMock).not.toHaveBeenCalled();
+    expect(getOwnerAccountDeletionRequestMock).not.toHaveBeenCalled();
   });
 });

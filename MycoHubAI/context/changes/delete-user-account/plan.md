@@ -545,19 +545,19 @@ This change adds one database migration and one optional server-only secret. Exi
 
 #### Automated
 
-- [ ] 3.1 Middleware blocks pending-deletion users and signs out their session.
-- [ ] 3.2 Sign-in POST blocks pending-deletion users after successful credential verification.
-- [ ] 3.3 Sign-in page supports neutral `message` rendering and keeps `error` rendering separate.
-- [ ] 3.4 Non-owner access denial still behaves as before.
-- [ ] 3.5 Unit tests pass: `npm run test:unit`.
-- [ ] 3.6 Linting passes: `npm run lint`.
-- [ ] 3.7 Production build passes: `npm run build`.
+- [x] 3.1 Middleware blocks pending-deletion users and signs out their session.
+- [x] 3.2 Sign-in POST blocks pending-deletion users after successful credential verification.
+- [x] 3.3 Sign-in page supports neutral `message` rendering and keeps `error` rendering separate.
+- [x] 3.4 Non-owner access denial still behaves as before.
+- [x] 3.5 Unit tests pass: `npm run test:unit`.
+- [x] 3.6 Linting passes: `npm run lint`.
+- [x] 3.7 Production build passes: `npm run build`.
 
 #### Manual
 
-- [ ] 3.8 With a pending deletion request present, visit `/dashboard`, `/grow-logs`, and a grow-log detail URL; confirm redirect to sign-in and no private page render.
-- [ ] 3.9 Try signing in again during the pending-deletion window; confirm the app signs out and shows a neutral pending-deletion message.
-- [ ] 3.10 Confirm a normal owner account without pending deletion can still sign in and use `/dashboard`.
+- [x] 3.8 With a pending deletion request present, visit `/dashboard`, `/grow-logs`, and a grow-log detail URL; confirm redirect to sign-in and no private page render.
+- [x] 3.9 Try signing in again during the pending-deletion window; confirm the app signs out and shows a neutral pending-deletion message.
+- [x] 3.10 Confirm a normal owner account without pending deletion can still sign in and use `/dashboard`.
 
 ### Phase 4: Scheduled Purge
 

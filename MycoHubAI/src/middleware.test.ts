@@ -1,8 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const createClientMock = vi.fn();
-const createAdminClientMock = vi.fn();
-const getAccountDeletionRequestByUserIdMock = vi.fn();
+const getOwnerAccountDeletionRequestMock = vi.fn();
 
 vi.mock("astro:middleware", () => ({
   defineMiddleware: (handler: unknown) => handler,
@@ -13,11 +12,7 @@ vi.mock("@/lib/supabase", () => ({
 }));
 
 vi.mock("@/lib/account-deletion/repository", () => ({
-  getAccountDeletionRequestByUserId: getAccountDeletionRequestByUserIdMock,
-}));
-
-vi.mock("@/lib/supabase-admin", () => ({
-  createAdminClient: createAdminClientMock,
+  getOwnerAccountDeletionRequest: getOwnerAccountDeletionRequestMock,
 }));
 
 vi.mock("@/lib/runtime-env", () => ({
@@ -39,8 +34,7 @@ function createContext(pathname: string) {
 describe("middleware pending deletion handling", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    createAdminClientMock.mockReturnValue({});
-    getAccountDeletionRequestByUserIdMock.mockResolvedValue(null);
+    getOwnerAccountDeletionRequestMock.mockResolvedValue(null);
   });
 
   it("blocks pending-deletion users on protected routes and signs them out", async () => {
@@ -51,7 +45,7 @@ describe("middleware pending deletion handling", () => {
         signOut,
       },
     });
-    getAccountDeletionRequestByUserIdMock.mockResolvedValue({
+    getOwnerAccountDeletionRequestMock.mockResolvedValue({
       userId: "owner-1",
       softDeletedAt: "2026-06-11T10:00:00.000Z",
     });
@@ -80,5 +74,39 @@ describe("middleware pending deletion handling", () => {
 
     expect(response).toBe(nextResponse);
     expect(next).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not call getUser for the public sign-in route", async () => {
+    const getUser = vi.fn();
+    createClientMock.mockReturnValue({
+      auth: {
+        getUser,
+        signOut: vi.fn().mockResolvedValue(undefined),
+      },
+    });
+    const context = createContext("/auth/signin");
+    const nextResponse = new Response("ok");
+    const next = vi.fn(() => Promise.resolve(nextResponse));
+
+    const response = (await onRequest(context as never, next)) as Response;
+
+    expect(response).toBe(nextResponse);
+    expect(getUser).not.toHaveBeenCalled();
+  });
+
+  it("treats getUser failures as unauthenticated instead of throwing", async () => {
+    createClientMock.mockReturnValue({
+      auth: {
+        getUser: vi.fn().mockRejectedValue(new Error("Expected 3 parts in JWT; got 1")),
+        signOut: vi.fn().mockResolvedValue(undefined),
+      },
+    });
+    const context = createContext("/dashboard");
+    const next = vi.fn(() => Promise.resolve(new Response("ok")));
+
+    const response = (await onRequest(context as never, next)) as Response;
+
+    expect(response.headers.get("location")).toBe("/auth/signin");
+    expect(next).not.toHaveBeenCalled();
   });
 });

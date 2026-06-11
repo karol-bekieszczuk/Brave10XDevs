@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const createClientMock = vi.fn();
 const createAdminClientMock = vi.fn();
 const requestAccountDeletionMock = vi.fn();
+const safeSignOutMock = vi.fn();
 
 vi.mock("cloudflare:workers", () => ({
   env: {},
@@ -26,6 +27,10 @@ vi.mock("@/lib/supabase-admin", () => ({
 
 vi.mock("@/lib/account-deletion/service", () => ({
   requestAccountDeletion: requestAccountDeletionMock,
+}));
+
+vi.mock("@/lib/auth-session", () => ({
+  safeSignOut: safeSignOutMock,
 }));
 
 const { POST } = await import("./delete");
@@ -80,7 +85,8 @@ describe("account deletion API route", () => {
     const response = await POST(context as never);
 
     expect(requestAccountDeletionMock).toHaveBeenCalledWith("owner-1", { adminClient: {} });
-    expect(signOut).toHaveBeenCalledTimes(1);
+    expect(signOut).not.toHaveBeenCalled();
+    expect(safeSignOutMock).toHaveBeenCalledWith({ auth: { signOut } }, context.request.headers, context.cookies);
     expect(response.headers.get("location")).toBe("/auth/signin?message=Account%20deletion%20requested");
   });
 
@@ -97,6 +103,7 @@ describe("account deletion API route", () => {
     const response = await POST(context as never);
 
     expect(signOut).not.toHaveBeenCalled();
+    expect(safeSignOutMock).not.toHaveBeenCalled();
     expect(response.headers.get("location")).toBe("/dashboard?error=Unable%20to%20request%20account%20deletion");
   });
 });

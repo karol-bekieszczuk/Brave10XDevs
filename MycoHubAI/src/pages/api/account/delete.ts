@@ -5,6 +5,7 @@ import {
   ACCOUNT_DELETION_REQUEST_ERROR,
 } from "@/lib/access-control";
 import { requestAccountDeletion } from "@/lib/account-deletion/service";
+import { safeSignOut } from "@/lib/auth-session";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { createClient } from "@/lib/supabase";
 
@@ -32,6 +33,6 @@ export const POST: APIRoute = async (context) => {
     return redirectToDashboard(context, ACCOUNT_DELETION_REQUEST_ERROR);
   }
 
-  await supabase.auth.signOut();
+  await safeSignOut(supabase, context.request.headers, context.cookies);
   return context.redirect(`/auth/signin?message=${encodeURIComponent(ACCOUNT_DELETION_REQUESTED_MESSAGE)}`);
 };
