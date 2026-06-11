@@ -1,4 +1,4 @@
-import { defineMiddleware } from "astro:middleware";
+import type { MiddlewareHandler } from "astro";
 import {
   ACCESS_CONFIG_ERROR,
   ACCESS_DENIED_ERROR,
@@ -21,7 +21,7 @@ function isPublicRoute(pathname: string, method: string) {
   return pathname.startsWith("/_astro/") || PUBLIC_ASSET_PATHS.includes(pathname);
 }
 
-export const onRequest = defineMiddleware(async (context, next) => {
+export const onRequest: MiddlewareHandler = async (context, next) => {
   const supabase = createClient(context.request.headers, context.cookies);
 
   if (supabase) {
@@ -57,4 +57,4 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   return next();
-});
+};

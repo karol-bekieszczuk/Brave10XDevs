@@ -3,11 +3,13 @@ import type { GrowLogClient, GrowLogRecord } from "./repository";
 import {
   createGrowLog,
   deleteGrowLog,
+  deleteOwnerGrowLogs,
   getOwnerGrowLog,
   listOwnerGrowLogs,
   mapGrowLogRow,
   updateGrowLog,
 } from "./repository";
+import type { SupabaseServerClient } from "@/lib/supabase";
 
 interface QueryResult {
   data: GrowLogRecord | GrowLogRecord[] | null;
@@ -44,6 +46,11 @@ class MockQueryBuilder {
     return this;
   }
 
+  in(...args: unknown[]) {
+    this.actions.push({ type: "in", args });
+    return this;
+  }
+
   order(...args: unknown[]) {
     this.actions.push({ type: "order", args });
     return this;
@@ -67,15 +74,21 @@ class MockQueryBuilder {
   }
 }
 
-function createMockClient(result: QueryResult) {
+function createMockClient(result: QueryResult): { builder: MockQueryBuilder; client: GrowLogClient } {
   const builder = new MockQueryBuilder(result);
 
-  const client = {
+  const client: SupabaseServerClient = {
+    auth: {
+      getUser: () => Promise.resolve({ data: { user: null }, error: null }),
+      signInWithPassword: () => Promise.resolve({ data: { user: null }, error: null }),
+      signOut: () => Promise.resolve({ error: null }),
+    },
     from(table: string) {
       builder.actions.push({ type: "from", args: [table] });
       return builder;
     },
-  } as unknown as GrowLogClient;
+    rpc: () => Promise.resolve({ data: null, error: null }),
+  };
 
   return { builder, client };
 }
@@ -200,6 +213,20 @@ describe("grow-log repository", () => {
       { type: "delete", args: [] },
       { type: "eq", args: ["id", "log-1"] },
       { type: "eq", args: ["owner_id", "owner-1"] },
+    ]);
+  });
+
+  it("filters bulk deletes by both owner_id and selected ids", async () => {
+    const { builder, client } = createMockClient({ data: null, error: null });
+    const ids = ["550e8400-e29b-41d4-a716-446655440000", "550e8400-e29b-41d4-a716-446655440001"];
+
+    await deleteOwnerGrowLogs(client, ids, "owner-1");
+
+    expect(builder.actions).toEqual([
+      { type: "from", args: ["grow_logs"] },
+      { type: "delete", args: [] },
+      { type: "eq", args: ["owner_id", "owner-1"] },
+      { type: "in", args: ["id", ids] },
     ]);
   });
 });

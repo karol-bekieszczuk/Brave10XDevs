@@ -73,8 +73,24 @@ export const POST: APIRoute = async (context) => {
       );
     }
 
+    const openRouterApiKey = getOpenRouterApiKey();
+
+    if (!openRouterApiKey) {
+      return json(
+        {
+          ok: false,
+          error: {
+            code: "provider_failed",
+            message: "Diagnosis provider is not configured.",
+            retryable: false,
+          },
+        },
+        502,
+      );
+    }
+
     const response = await diagnoseSelectedLog(supabase, user.id, request.data, {
-      createProvider: () => createDiagnosisProvider(getOpenRouterApiKey()),
+      createProvider: () => createDiagnosisProvider(openRouterApiKey),
     });
     return json(response, statusFor(response));
   } catch {

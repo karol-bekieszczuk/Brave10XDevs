@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { validateGrowLogInput } from "./validation";
+import { validateBulkSelectedGrowLogIds, validateGrowLogInput } from "./validation";
 
 describe("validateGrowLogInput", () => {
   it("accepts the supported stages and trims text fields", () => {
@@ -55,6 +55,38 @@ describe("validateGrowLogInput", () => {
         { field: "title", message: "Title is required." },
         { field: "body", message: "Body is required." },
       ],
+    });
+  });
+});
+
+describe("validateBulkSelectedGrowLogIds", () => {
+  it("returns unique valid ids in insertion order", () => {
+    const result = validateBulkSelectedGrowLogIds([
+      "550e8400-e29b-41d4-a716-446655440000",
+      "550e8400-e29b-41d4-a716-446655440001",
+      "550e8400-e29b-41d4-a716-446655440000",
+    ]);
+
+    expect(result).toEqual({
+      success: true,
+      data: ["550e8400-e29b-41d4-a716-446655440000", "550e8400-e29b-41d4-a716-446655440001"],
+    });
+  });
+
+  it("ignores empty and malformed values", () => {
+    const result = validateBulkSelectedGrowLogIds(["", "not-a-uuid", " 550e8400-e29b-41d4-a716-446655440002 ", null]);
+
+    expect(result).toEqual({
+      success: true,
+      data: ["550e8400-e29b-41d4-a716-446655440002"],
+    });
+  });
+
+  it("fails when no valid ids remain", () => {
+    const result = validateBulkSelectedGrowLogIds(["", "still-not-a-uuid", undefined]);
+
+    expect(result).toEqual({
+      success: false,
     });
   });
 });

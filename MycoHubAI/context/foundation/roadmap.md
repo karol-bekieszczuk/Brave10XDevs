@@ -135,7 +135,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Prerequisites:** F-01, S-01
 - **Parallel with:** S-02
 - **Blockers:** -
-- **Unknowns:** Supabase auth-user deletion ownership and whether deletion must be dashboard-assisted for the MVP.
+- **Unknowns:** Supabase auth-user deletion ownership and whether deletion must be dashboard-assisted for the MVP. Soft delete to be compliant with 30 days retention of RODO(eng. GDPR).
 - **Risk:** Without an account deletion path, the private single-user data contract has no user-owned exit.
 - **Status:** proposed
 
