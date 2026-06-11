@@ -2,9 +2,13 @@ import type { APIRoute } from "astro";
 import {
   ACCESS_CONFIG_ERROR,
   ACCESS_DENIED_ERROR,
+  ACCOUNT_DELETION_PENDING_MESSAGE,
+  ACCOUNT_DELETION_CONFIG_ERROR,
   getAccessControlConfig,
   isAuthorizedUser,
 } from "@/lib/access-control";
+import { getAccountDeletionRequestByUserId } from "@/lib/account-deletion/repository";
+import { createAdminClient } from "@/lib/supabase-admin";
 import { createClient } from "@/lib/supabase";
 
 export const POST: APIRoute = async (context) => {
@@ -31,6 +35,18 @@ export const POST: APIRoute = async (context) => {
   if (!isAuthorizedUser(data.user)) {
     await supabase.auth.signOut();
     return context.redirect(`/auth/signin?error=${encodeURIComponent(ACCESS_DENIED_ERROR)}`);
+  }
+
+  const adminClient = createAdminClient();
+  if (!adminClient) {
+    await supabase.auth.signOut();
+    return context.redirect(`/auth/signin?error=${encodeURIComponent(ACCOUNT_DELETION_CONFIG_ERROR)}`);
+  }
+
+  const pendingDeletion = await getAccountDeletionRequestByUserId(adminClient, data.user.id);
+  if (pendingDeletion?.softDeletedAt) {
+    await supabase.auth.signOut();
+    return context.redirect(`/auth/signin?message=${encodeURIComponent(ACCOUNT_DELETION_PENDING_MESSAGE)}`);
   }
 
   return context.redirect("/");

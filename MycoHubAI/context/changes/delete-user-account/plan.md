@@ -509,19 +509,19 @@ This change adds one database migration and one optional server-only secret. Exi
 
 #### Automated
 
-- [ ] 1.1 Migration file exists and defines `public.account_deletion_requests`.
-- [ ] 1.2 Migration keeps `user_id` tied to `auth.users(id)` and cascades on final user deletion.
-- [ ] 1.3 RLS is enabled and owner select is the only authenticated-user table policy.
-- [ ] 1.4 `SUPABASE_ADMIN_KEY` is optional and server-secret only in Astro env schema.
-- [ ] 1.5 Repository/admin-client unit tests cover mapping, query shape, due purge lookup, and missing admin-key behavior.
-- [ ] 1.6 Unit tests pass: `npm run test:unit`.
-- [ ] 1.7 Linting passes: `npm run lint`.
-- [ ] 1.8 Production build passes: `npm run build`.
+- [x] 1.1 Migration file exists and defines `public.account_deletion_requests`.
+- [x] 1.2 Migration keeps `user_id` tied to `auth.users(id)` and cascades on final user deletion.
+- [x] 1.3 RLS is enabled and owner select is the only authenticated-user table policy.
+- [x] 1.4 `SUPABASE_ADMIN_KEY` is optional and server-secret only in Astro env schema.
+- [x] 1.5 Repository/admin-client unit tests cover mapping, query shape, due purge lookup, and missing admin-key behavior.
+- [x] 1.6 Unit tests pass: `npm run test:unit`.
+- [x] 1.7 Linting passes: `npm run lint`.
+- [x] 1.8 Production build passes: `npm run build`.
 
 #### Manual
 
-- [ ] 1.9 Inspect the migration and confirm it retains deletion request state until the auth user is hard-deleted.
-- [ ] 1.10 Confirm no committed file contains a real Supabase admin key or service-role value.
+- [x] 1.9 Inspect the migration and confirm it retains deletion request state until the auth user is hard-deleted.
+- [x] 1.10 Confirm no committed file contains a real Supabase admin key or service-role value.
 
 ### Phase 2: Request Deletion UX and API
 
