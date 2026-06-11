@@ -1,7 +1,7 @@
 ---
 change_id: delete-user-account
 title: Delete user account
-status: implemented
+status: planned
 created: 2026-06-11
 updated: 2026-06-11
 archived_at: null

@@ -2,7 +2,6 @@ import { env } from "cloudflare:workers";
 import {
   AUTHORIZED_USER_ID as ASTRO_AUTHORIZED_USER_ID,
   OPENROUTER_API_KEY as ASTRO_OPENROUTER_API_KEY,
-  SUPABASE_ADMIN_KEY as ASTRO_SUPABASE_ADMIN_KEY,
   SUPABASE_KEY as ASTRO_SUPABASE_KEY,
   SUPABASE_URL as ASTRO_SUPABASE_URL,
 } from "astro:env/server";
@@ -26,8 +25,4 @@ export function getAuthorizedUserId(): string | undefined {
 
 export function getOpenRouterApiKey(): string | undefined {
   return readOptionalString(cloudflareEnv.OPENROUTER_API_KEY) ?? readOptionalString(ASTRO_OPENROUTER_API_KEY);
-}
-
-export function getSupabaseAdminKey() {
-  return cloudflareEnv.SUPABASE_ADMIN_KEY ?? ASTRO_SUPABASE_ADMIN_KEY;
 }
