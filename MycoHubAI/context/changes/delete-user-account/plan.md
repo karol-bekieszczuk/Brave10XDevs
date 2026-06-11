@@ -37,7 +37,7 @@ The owner sees a small account deletion danger action in the authenticated app. 
 
 ## Implementation Approach
 
-Use a narrow account-deletion state table plus a server-only account deletion service. The request path writes a pending deletion record, soft-deletes the auth user through Supabase Admin, signs the current session out, and redirects to sign-in. Middleware and sign-in checks consult the pending deletion state before allowing access. The scheduled purge uses the same admin boundary to hard-delete due auth users; the existing `grow_logs` foreign key cascade performs final grow-log cleanup.
+Use a narrow account-deletion state table plus a server-only account deletion service. The request path writes a deletion request record, soft-deletes the auth user through Supabase Admin, marks the request as disabled with `soft_deleted_at`, signs the current session out, and redirects to sign-in. Middleware and sign-in checks consult only successfully disabled deletion state before allowing access. The scheduled purge uses the same admin boundary to hard-delete due auth users; the existing `grow_logs` foreign key cascade performs final grow-log cleanup.
 
 ## Critical Implementation Details
 
@@ -47,7 +47,7 @@ The Supabase admin key is not the existing browser/session key. Add a separate o
 
 ### Deletion sequencing
 
-The request flow is intentionally not a single database transaction because Supabase Auth Admin deletion is an external admin API call. The account deletion service should make the operation idempotent by upserting a pending deletion request for the current user, attempting `auth.admin.deleteUser(user.id, true)`, and preserving enough error metadata to retry or diagnose failures without creating duplicate requests.
+The request flow is intentionally not a single database transaction because Supabase Auth Admin deletion is an external admin API call. The account deletion service should make the operation idempotent by upserting a deletion request for the current user, attempting `auth.admin.deleteUser(user.id, true)`, setting `soft_deleted_at` only after that admin call succeeds, and preserving enough error metadata to retry or diagnose failures without creating duplicate requests. A row with `last_error` but no `soft_deleted_at` is a failed request attempt, not a pending disabled account.
 
 ### Custom Worker entrypoint
 
@@ -67,7 +67,7 @@ Add the database and TypeScript foundation for pending account deletion requests
 
 **Intent**: Add durable state for requested account deletion and the 30-day purge deadline.
 
-**Contract**: Create `public.account_deletion_requests` with one row per user. Include `user_id uuid primary key references auth.users(id) on delete cascade`, `requested_at timestamptz not null default now()`, `purge_after timestamptz not null`, `last_attempt_at timestamptz`, `attempt_count integer not null default 0`, and `last_error text`. The insertion contract sets `purge_after` to `requested_at + interval '30 days'`. Enable RLS. Authenticated users may select only their own row. Authenticated users do not insert, update, or delete rows directly; server admin code owns mutations.
+**Contract**: Create `public.account_deletion_requests` with one row per user. Include `user_id uuid primary key references auth.users(id) on delete cascade`, `requested_at timestamptz not null default now()`, `purge_after timestamptz not null`, `soft_deleted_at timestamptz`, `last_attempt_at timestamptz`, `attempt_count integer not null default 0`, and `last_error text`. The insertion contract sets `purge_after` to `requested_at + interval '30 days'`. `soft_deleted_at` is null until Supabase Auth Admin soft delete succeeds. Enable RLS. Authenticated users may select only their own row. Authenticated users do not insert, update, or delete rows directly; server admin code owns mutations.
 
 #### 2. Account deletion types and repository
 
@@ -75,13 +75,13 @@ Add the database and TypeScript foundation for pending account deletion requests
 
 **Intent**: Define the app-level account deletion request shape and keep database snake_case mapping out of route handlers.
 
-**Contract**: Export an `AccountDeletionRequest` type with camelCase fields for `userId`, `requestedAt`, `purgeAfter`, `lastAttemptAt`, `attemptCount`, and `lastError`.
+**Contract**: Export an `AccountDeletionRequest` type with camelCase fields for `userId`, `requestedAt`, `purgeAfter`, `softDeletedAt`, `lastAttemptAt`, `attemptCount`, and `lastError`.
 
 **File**: `src/lib/account-deletion/repository.ts`
 
 **Intent**: Centralize query contracts for checking pending deletion state and listing due purge candidates.
 
-**Contract**: Export functions to get a deletion request by owner user ID using the normal SSR Supabase client, upsert/read/delete/update deletion request state using an admin client, and list due requests where `purge_after <= now()`. The normal-client check must filter by `user_id`; admin-client mutations must never trust user-supplied IDs without caller authorization.
+**Contract**: Export functions to get a successfully disabled deletion request by owner user ID using the normal SSR Supabase client, upsert/read/delete/update deletion request state using an admin client, mark a request as soft-deleted after Auth Admin success, and list due requests where `purge_after <= now()` and `soft_deleted_at is not null`. The normal-client check must filter by `user_id` and require `soft_deleted_at is not null`; admin-client mutations must never trust user-supplied IDs without caller authorization.
 
 #### 3. Admin Supabase client
 
@@ -155,7 +155,7 @@ Add the owner-facing account deletion action and the POST endpoint that records 
 
 **Intent**: Orchestrate the deletion request so route handlers do not directly juggle admin client, database state, and auth soft delete.
 
-**Contract**: Export a request function that accepts the authenticated user ID and necessary clients/dependencies. It must return structured outcomes for success, missing admin configuration, already pending deletion, and unexpected failure. On success it records or reuses the pending deletion request with a 30-day `purge_after`, then calls `supabase.auth.admin.deleteUser(userId, true)`. On soft-delete failure, it preserves failure metadata and returns a failure outcome without pretending the account was deleted.
+**Contract**: Export a request function that accepts the authenticated user ID and necessary clients/dependencies. It must return structured outcomes for success, missing admin configuration, already pending deletion, and unexpected failure. On success it records or reuses the deletion request with a 30-day `purge_after`, calls `supabase.auth.admin.deleteUser(userId, true)`, then marks the request with `soft_deleted_at`. On soft-delete failure, it preserves failure metadata, leaves `soft_deleted_at` null, and returns a failure outcome without pretending the account was deleted.
 
 #### 2. Delete account API route
 
@@ -231,7 +231,7 @@ Block pending-deletion accounts from using the app while the 30-day retention wi
 
 **Intent**: Deny product access for users who have requested deletion even if a JWT remains valid until expiry.
 
-**Contract**: After the normal user load and owner authorization check, query pending deletion state for `context.locals.user.id`. If present, call `supabase.auth.signOut()` and redirect to `/auth/signin?message=Account%20deletion%20is%20pending` or equivalent neutral wording. Public route allowlist behavior must remain intact.
+**Contract**: After the normal user load and owner authorization check, query successfully disabled deletion state for `context.locals.user.id` by requiring `soft_deleted_at is not null`. If present, call `supabase.auth.signOut()` and redirect to `/auth/signin?message=Account%20deletion%20is%20pending` or equivalent neutral wording. Public route allowlist behavior must remain intact.
 
 #### 3. Sign-in route pending-deletion check
 
@@ -239,7 +239,7 @@ Block pending-deletion accounts from using the app while the 30-day retention wi
 
 **Intent**: Prevent a pending-deletion account from re-entering the app if Supabase still accepts credentials during the retention window.
 
-**Contract**: After Supabase sign-in succeeds and owner authorization passes, check pending deletion state. If present, sign out and redirect to `/auth/signin?message=Account%20deletion%20is%20pending`. Keep access-denied behavior for non-owner accounts unchanged.
+**Contract**: After Supabase sign-in succeeds and owner authorization passes, check successfully disabled deletion state by requiring `soft_deleted_at is not null`. If present, sign out and redirect to `/auth/signin?message=Account%20deletion%20is%20pending`. Keep access-denied behavior for non-owner accounts unchanged.
 
 #### 4. Sign-in page message UI
 
@@ -305,7 +305,7 @@ Add the Cloudflare Cron Trigger and custom Worker entrypoint that permanently de
 
 **Intent**: Encapsulate scheduled purge logic so the Worker handler is thin and testable.
 
-**Contract**: Export a function that uses the admin client to list due deletion requests, calls `supabase.auth.admin.deleteUser(userId, false)` for each due user, and records `last_attempt_at`, `attempt_count`, and `last_error` when a purge attempt fails. Successful hard delete should remove the auth user; the deletion request and grow logs should disappear through database cascades.
+**Contract**: Export a function that uses the admin client to list due deletion requests where `soft_deleted_at is not null`, calls `supabase.auth.admin.deleteUser(userId, false)` for each due user, and records `last_attempt_at`, `attempt_count`, and `last_error` when a purge attempt fails. Successful hard delete should remove the auth user; the deletion request and grow logs should disappear through database cascades.
 
 #### 2. Custom Cloudflare Worker entrypoint
 
