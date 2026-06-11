@@ -509,37 +509,37 @@ This change adds one database migration and one optional server-only secret. Exi
 
 #### Automated
 
-- [x] 1.1 Migration file exists and defines `public.account_deletion_requests`.
-- [x] 1.2 Migration keeps `user_id` tied to `auth.users(id)` and cascades on final user deletion.
-- [x] 1.3 RLS is enabled and owner select is the only authenticated-user table policy.
-- [x] 1.4 `SUPABASE_ADMIN_KEY` is optional and server-secret only in Astro env schema.
-- [x] 1.5 Repository/admin-client unit tests cover mapping, query shape, due purge lookup, and missing admin-key behavior.
-- [x] 1.6 Unit tests pass: `npm run test:unit`.
-- [x] 1.7 Linting passes: `npm run lint`.
-- [x] 1.8 Production build passes: `npm run build`.
+- [x] 1.1 Migration file exists and defines `public.account_deletion_requests`. — 1ba93bc
+- [x] 1.2 Migration keeps `user_id` tied to `auth.users(id)` and cascades on final user deletion. — 1ba93bc
+- [x] 1.3 RLS is enabled and owner select is the only authenticated-user table policy. — 1ba93bc
+- [x] 1.4 `SUPABASE_ADMIN_KEY` is optional and server-secret only in Astro env schema. — 1ba93bc
+- [x] 1.5 Repository/admin-client unit tests cover mapping, query shape, due purge lookup, and missing admin-key behavior. — 1ba93bc
+- [x] 1.6 Unit tests pass: `npm run test:unit`. — 1ba93bc
+- [x] 1.7 Linting passes: `npm run lint`. — 1ba93bc
+- [x] 1.8 Production build passes: `npm run build`. — 1ba93bc
 
 #### Manual
 
-- [x] 1.9 Inspect the migration and confirm it retains deletion request state until the auth user is hard-deleted.
-- [x] 1.10 Confirm no committed file contains a real Supabase admin key or service-role value.
+- [x] 1.9 Inspect the migration and confirm it retains deletion request state until the auth user is hard-deleted. — 1ba93bc
+- [x] 1.10 Confirm no committed file contains a real Supabase admin key or service-role value. — 1ba93bc
 
 ### Phase 2: Request Deletion UX and API
 
 #### Automated
 
-- [ ] 2.1 Account deletion service calls Supabase Admin delete with soft-delete mode enabled.
-- [ ] 2.2 API route requires an authenticated owner from `context.locals.user`.
-- [ ] 2.3 API route signs out only after successful deletion request and soft delete.
-- [ ] 2.4 Dashboard contains a single-confirm account deletion form and does not add broad account-management UI.
-- [ ] 2.5 Unit tests pass: `npm run test:unit`.
-- [ ] 2.6 Linting passes: `npm run lint`.
-- [ ] 2.7 Production build passes: `npm run build`.
+- [x] 2.1 Account deletion service calls Supabase Admin delete with soft-delete mode enabled.
+- [x] 2.2 API route requires an authenticated owner from `context.locals.user`.
+- [x] 2.3 API route signs out only after successful deletion request and soft delete.
+- [x] 2.4 Dashboard contains a single-confirm account deletion form and does not add broad account-management UI.
+- [x] 2.5 Unit tests pass: `npm run test:unit`.
+- [x] 2.6 Linting passes: `npm run lint`.
+- [x] 2.7 Production build passes: `npm run build`.
 
 #### Manual
 
-- [ ] 2.8 As the owner with `SUPABASE_ADMIN_KEY` configured, click the dashboard delete action, accept the confirmation, and confirm redirect to sign-in with a neutral deletion-requested message.
-- [ ] 2.9 As the owner with `SUPABASE_ADMIN_KEY` missing, submit the action and confirm no deletion request is completed and the dashboard shows a clear configuration error.
-- [ ] 2.10 Inspect Supabase locally and confirm the account has a pending deletion request with `purge_after` 30 days after `requested_at`.
+- [x] 2.8 As the owner with `SUPABASE_ADMIN_KEY` configured, click the dashboard delete action, accept the confirmation, and confirm redirect to sign-in with a neutral deletion-requested message.
+- [x] 2.9 As the owner with `SUPABASE_ADMIN_KEY` missing, submit the action and confirm no deletion request is completed and the dashboard shows a clear configuration error.
+- [x] 2.10 Inspect Supabase locally and confirm the account has a pending deletion request with `purge_after` 30 days after `requested_at`.
 
 ### Phase 3: Access Blocking and Sign-In Messaging
 
