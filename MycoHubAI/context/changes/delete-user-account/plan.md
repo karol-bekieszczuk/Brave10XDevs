@@ -563,35 +563,35 @@ This change adds one database migration and one optional server-only secret. Exi
 
 #### Automated
 
-- [x] 4.1 Purge service calls Supabase Admin delete with hard-delete mode for due requests.
-- [x] 4.2 Purge service records failure metadata without deleting or hiding failed pending requests.
-- [x] 4.3 Custom Worker entrypoint preserves the Astro fetch handler contract.
-- [x] 4.4 `wrangler.jsonc` includes the cron trigger and custom `main` entrypoint.
-- [x] 4.5 Unit tests pass: `npm run test:unit`.
-- [x] 4.6 Linting passes: `npm run lint`.
-- [x] 4.7 Production build passes: `npm run build`.
+- [x] 4.1 Purge service calls Supabase Admin delete with hard-delete mode for due requests. - d861c53
+- [x] 4.2 Purge service records failure metadata without deleting or hiding failed pending requests. - d861c53
+- [x] 4.3 Custom Worker entrypoint preserves the Astro fetch handler contract. - d861c53
+- [x] 4.4 `wrangler.jsonc` includes the cron trigger and custom `main` entrypoint. - d861c53
+- [x] 4.5 Unit tests pass: `npm run test:unit`. - d861c53
+- [x] 4.6 Linting passes: `npm run lint`. - d861c53
+- [x] 4.7 Production build passes: `npm run build`. - d861c53
 
 #### Manual
 
-- [x] 4.8 Run a local or staging purge test with a request whose `purge_after` is moved into the past; confirm the auth user is hard-deleted.
-- [x] 4.9 Confirm the related grow-log rows are physically removed through `on delete cascade`.
-- [x] 4.10 Confirm normal HTTP routes still render after switching to the custom Worker entrypoint.
-- [x] 4.11 Confirm Cloudflare Cron Trigger is visible/configured in the deployed Worker settings after deployment.
+- [x] 4.8 Run a local or staging purge test with a request whose `purge_after` is moved into the past; confirm the auth user is hard-deleted. - d861c53
+- [x] 4.9 Confirm the related grow-log rows are physically removed through `on delete cascade`. - d861c53
+- [x] 4.10 Confirm normal HTTP routes still render after switching to the custom Worker entrypoint. - d861c53
+- [x] 4.11 Confirm Cloudflare Cron Trigger is visible/configured in the deployed Worker settings after deployment. - d861c53
 
 ### Phase 5: Config, Documentation, and End-to-End Verification
 
 #### Automated
 
-- [x] 5.1 `.env.example` documents `SUPABASE_ADMIN_KEY` without real secrets.
-- [x] 5.2 Deployment docs mention the Cloudflare secret and cron trigger.
-- [x] 5.3 Manual verification checklist exists under `context/changes/delete-user-account/`.
-- [x] 5.4 Change metadata remains consistent with plan state.
-- [x] 5.5 Unit tests pass: `npm run test:unit`.
-- [x] 5.6 Linting passes: `npm run lint`.
-- [x] 5.7 Production build passes: `npm run build`.
+- [x] 5.1 `.env.example` documents `SUPABASE_ADMIN_KEY` without real secrets. - d861c53
+- [x] 5.2 Deployment docs mention the Cloudflare secret and cron trigger. - d861c53
+- [x] 5.3 Manual verification checklist exists under `context/changes/delete-user-account/`. - d861c53
+- [x] 5.4 Change metadata remains consistent with plan state. - d861c53
+- [x] 5.5 Unit tests pass: `npm run test:unit`. - d861c53
+- [x] 5.6 Linting passes: `npm run lint`. - d861c53
+- [x] 5.7 Production build passes: `npm run build`. - d861c53
 
 #### Manual
 
-- [x] 5.8 Follow `context/changes/delete-user-account/manual-verification.md` end to end using disposable local data.
-- [x] 5.9 Confirm production setup instructions identify where `SUPABASE_ADMIN_KEY` and the Cron Trigger are configured.
-- [x] 5.10 Confirm no user-facing screen offers cancellation or account reactivation.
+- [x] 5.8 Follow `context/changes/delete-user-account/manual-verification.md` end to end using disposable local data. - d861c53
+- [x] 5.9 Confirm production setup instructions identify where `SUPABASE_ADMIN_KEY` and the Cron Trigger are configured. - d861c53
+- [x] 5.10 Confirm no user-facing screen offers cancellation or account reactivation. - d861c53
