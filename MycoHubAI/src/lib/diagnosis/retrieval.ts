@@ -47,7 +47,7 @@ export function mapDiagnosisKnowledgeChunk(row: DiagnosisKnowledgeRpcRow): Diagn
 // TODO - dial in matchThreshold
 export async function matchDiagnosisKnowledgeChunks(
   client: DiagnosisRetrievalClient,
-  { queryEmbedding, stage, matchThreshold = 0, matchCount = 5 }: MatchDiagnosisKnowledgeParams,
+  { queryEmbedding, stage, matchThreshold = 20, matchCount = 5 }: MatchDiagnosisKnowledgeParams,
 ): Promise<DiagnosisKnowledgeChunk[]> {
   const { data, error } = await client.rpc("match_diagnosis_knowledge_chunks", {
     query_embedding: queryEmbedding,
