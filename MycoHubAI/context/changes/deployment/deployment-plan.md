@@ -19,6 +19,7 @@ Keep the same Supabase names everywhere:
 - `SUPABASE_URL`
 - `SUPABASE_KEY`
 - `AUTHORIZED_USER_ID`
+- `SUPABASE_ADMIN_KEY`
 
 Local development uses either `.dev.vars` for Worker-style local runtime checks or `.env` for Node/Astro tooling. If `.dev.vars` exists, Wrangler prefers it for local development, so keep it aligned with `.env.example`.
 
@@ -140,6 +141,7 @@ Set runtime secrets for the deployed Worker in Cloudflare:
    - `SUPABASE_URL`
    - `SUPABASE_KEY`
    - `AUTHORIZED_USER_ID`
+   - `SUPABASE_ADMIN_KEY`
 
 CLI equivalent for local/manual setup:
 
@@ -149,6 +151,7 @@ npx wrangler whoami
 npx wrangler secret put SUPABASE_URL
 npx wrangler secret put SUPABASE_KEY
 npx wrangler secret put AUTHORIZED_USER_ID
+npx wrangler secret put SUPABASE_ADMIN_KEY
 npx wrangler secret list
 ```
 
@@ -285,8 +288,19 @@ Check Cloudflare dashboard before relying on auto deploy:
 - Build command is `npm run build`.
 - Deploy command is `npx wrangler deploy`.
 - Runtime secrets include `SUPABASE_URL`, `SUPABASE_KEY`, and `AUTHORIZED_USER_ID`.
+- Runtime secrets include `SUPABASE_ADMIN_KEY` for account deletion and scheduled purge.
 - Build secrets or variables include `SUPABASE_URL`, `SUPABASE_KEY`, and `AUTHORIZED_USER_ID`.
+- Cron Trigger is configured for the custom Worker entrypoint that runs scheduled account purge.
 - Hosted Supabase public signup is disabled.
+
+### S-03 Account Deletion Runtime Note
+
+The `delete-user-account` slice adds a scheduled purge path on the custom Worker entrypoint in `src/worker.ts`. After deploy:
+
+1. Confirm `SUPABASE_ADMIN_KEY` is present in Cloudflare Worker runtime secrets.
+2. Confirm the Worker uses the custom `main` entrypoint from `wrangler.jsonc`.
+3. Confirm the Cron Trigger from `wrangler.jsonc` is visible in Worker settings.
+4. Use disposable data for any forced due-purge verification.
 
 After merge, Cloudflare Workers Builds should trigger on the push to `master` and deploy the Worker. GitHub Actions should only report validation status.
 

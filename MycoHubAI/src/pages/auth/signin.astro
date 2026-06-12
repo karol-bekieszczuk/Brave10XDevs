@@ -3,6 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import SignInForm from "@/components/auth/SignInForm";
 
 const error = Astro.url.searchParams.get("error");
+const message = Astro.url.searchParams.get("message");
 ---
 
 <Layout title="Sign in">
@@ -13,6 +14,14 @@ const error = Astro.url.searchParams.get("error");
       >
         Sign in
       </h1>
+      {
+        message && (
+          <p class="mb-4 flex items-center gap-2 rounded-lg border border-sky-400/30 bg-sky-950/30 px-3 py-2 text-sm text-sky-100">
+            <span aria-hidden="true">i</span>
+            {message}
+          </p>
+        )
+      }
       <SignInForm serverError={error} client:load />
     </div>
   </div>

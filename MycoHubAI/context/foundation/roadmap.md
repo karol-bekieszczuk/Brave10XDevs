@@ -129,13 +129,13 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ### S-03: Delete user account
 
-- **Outcome:** user can permanently delete their own account and grow-log data.
+- **Outcome:** user can request account deletion now, lose access now, and have their account plus grow-log data permanently purged after 30 days.
 - **Change ID:** delete-user-account
 - **PRD refs:** FR-005, Access Control
 - **Prerequisites:** F-01, S-01
 - **Parallel with:** S-02
 - **Blockers:** -
-- **Unknowns:** Supabase auth-user deletion ownership and whether deletion must be dashboard-assisted for the MVP. Soft delete to be compliant with 30 days retention of RODO(eng. GDPR).
+- **Unknowns:** Supabase auth-user deletion ownership and whether deletion must be dashboard-assisted for the MVP.
 - **Risk:** Without an account deletion path, the private single-user data contract has no user-owned exit.
 - **Status:** proposed
 

@@ -277,6 +277,7 @@ async function main() {
     }
   }
 
+  // eslint-disable-next-line no-console
   console.log(`Ingested ${rows.length} diagnosis knowledge chunk(s).`);
 }
 
