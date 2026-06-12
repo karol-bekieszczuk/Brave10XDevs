@@ -15,9 +15,9 @@
     "enabled": true,
   },
   "triggers": {
-    "crons": ["0 3 * * *"],
+    "crons": ["0 3 1 * *"],
   },
   "secrets": {
-    "required": ["SUPABASE_URL", "SUPABASE_KEY", "AUTHORIZED_USER_ID", "OPENROUTER_API_KEY"],
+    "required": ["SUPABASE_URL", "SUPABASE_KEY", "AUTHORIZED_USER_ID", "SUPABASE_ADMIN_KEY", "OPENROUTER_API_KEY"],
   },
 }
