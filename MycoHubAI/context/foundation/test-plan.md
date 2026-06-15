@@ -67,7 +67,7 @@ orchestrator updates Status as artifacts appear on disk.
 
 | # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
 |---|---|---|---|---|---|---|
-| 1 | Diagnosis Contract Hardening | Prove diagnosis confidence, selected-log binding, malformed provider handling, and scope outcomes at the cheapest deterministic layers. | #1, #2, #3 | unit, integration, contract/evaluation | not started | — |
+| 1 | Diagnosis Contract Hardening | Prove diagnosis confidence, selected-log binding, malformed provider handling, and scope outcomes at the cheapest deterministic layers. | #1, #2, #3 | unit, integration, contract/evaluation | change opened | context/changes/testing-diagnosis-contract-hardening/ |
 | 2 | Ownership And Mutation Boundaries | Prove owner-scoped access and side effects for diagnosis, account deletion, and bulk/grow-log APIs. | #4, #6 | integration, RLS/manual smoke | not started | — |
 | 3 | Runtime Failure And Smoke Layer | Prove env/provider/runtime failures are visible, controlled, and covered by focused smoke checks. | #5, cross-cutting | targeted smoke, limited browser/manual | not started | — |
 | 4 | Quality Gates And Cookbook | Lock the current floor in CI/docs and write cookbook patterns for future tests. | cross-cutting | gates, documentation | not started | — |
