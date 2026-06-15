@@ -33,6 +33,11 @@ Hot-spot scope used for likelihood weighting: `MycoHubAI/src`,
 
 ## 2. Risk Map
 
+Because this product has authentication, private grow-log data, user-provided
+questions, server-side provider calls, and secrets, the risk map includes an
+abuse/security scenario. This is not a separate framework; it is scored and
+phased like the other product risks.
+
 The top failure scenarios this project must protect against, ordered by
 risk = impact × likelihood. Risks are failure scenarios in user / business
 terms, not test names. The Source column cites the evidence that surfaced
@@ -47,6 +52,7 @@ research's job, see §1 principle #3).
 | 4 | Owner/privacy boundaries regress across grow-log, diagnosis, account deletion, or bulk deletion flows. | High | Medium | PRD Access Control/FR-005; AGENTS privacy rule; roadmap S-03/S-04; hot-spot dirs `MycoHubAI/src/pages/api`, `MycoHubAI/src/lib/account-deletion` |
 | 5 | Runtime/env/provider failure works in tests but fails locally or on Cloudflare. | Medium | High | roadmap observability partial; stack Cloudflare/OpenRouter; hot-spot runtime/config/auth areas |
 | 6 | Server-side validation/RLS parity drifts as API surfaces expand. | High | Medium | PRD FR-001/FR-005; roadmap grow-log/account/bulk surfaces; hot-spot dirs `MycoHubAI/src/lib/grow-logs`, `MycoHubAI/supabase/migrations` |
+| 7 | Abuse of authenticated/API/provider surfaces bypasses ownership, trusts hostile input, leaks secrets/private data, or triggers costly provider work repeatedly. | High | Medium | mandatory abuse lens for auth + user input + server-side provider calls; AGENTS privacy rule; PRD Access Control/FR-005; stack Cloudflare/OpenRouter; hot-spot dirs `MycoHubAI/src/pages/api`, `MycoHubAI/src/lib/diagnosis`, `MycoHubAI/src/lib/runtime-env` |
 
 ### Risk Response Guidance
 
@@ -58,6 +64,7 @@ research's job, see §1 principle #3).
 | #4 | Non-owner/missing IDs cannot trigger diagnosis, data access, deletion, or side effects. | Authentication implies ownership. | owner checks, persisted state, API/resource boundary | integration | over-mocking internals |
 | #5 | Missing secrets/provider failures surface controlled failure and do not persist bad state. | Build success proves runtime readiness. | env contract, Cloudflare/runtime boundary, failure mode | unit + manual smoke | local-only assurance |
 | #6 | Invalid stage/body/owner inputs are rejected server-side and by DB/RLS where applicable. | UI validation equals product contract. | server validation, migration/RLS source, API side effects | integration + migration smoke | testing only client forms |
+| #7 | Hostile or repeated requests cannot cross owner boundaries, bypass server validation, leak secrets/private data, or start unbounded expensive provider work. | "Signed in" means safe, client validation is enough, and provider calls are cheap/harmless, but cannot be repeatedly sent as can generate higher costs. | auth/resource boundary, input parsing, error/log redaction, provider-call ordering, rate/cost control surface | integration + abuse/security contract tests | happy-path auth tests, testing only one benign request, or exposing debug details as assertions |
 
 ## 3. Phased Rollout
 
@@ -68,7 +75,7 @@ orchestrator updates Status as artifacts appear on disk.
 | # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
 |---|---|---|---|---|---|---|
 | 1 | Diagnosis Contract Hardening | Prove diagnosis confidence, selected-log binding, malformed provider handling, and scope outcomes at the cheapest deterministic layers. | #1, #2, #3 | unit, integration, contract/evaluation | change opened | context/changes/testing-diagnosis-contract-hardening/ |
-| 2 | Ownership And Mutation Boundaries | Prove owner-scoped access and side effects for diagnosis, account deletion, and bulk/grow-log APIs. | #4, #6 | integration, RLS/manual smoke | not started | — |
+| 2 | Ownership, Abuse, And Mutation Boundaries | Prove owner-scoped access, hostile-input rejection, secret/private-data redaction, side-effect boundaries, and costly-operation controls for diagnosis, account deletion, and bulk/grow-log APIs. | #4, #6, #7 | integration, abuse/security, RLS/manual smoke | not started | — |
 | 3 | Runtime Failure And Smoke Layer | Prove env/provider/runtime failures are visible, controlled, and covered by focused smoke checks. | #5, cross-cutting | targeted smoke, limited browser/manual | not started | — |
 | 4 | Quality Gates And Cookbook | Lock the current floor in CI/docs and write cookbook patterns for future tests. | cross-cutting | gates, documentation | not started | — |
 
@@ -122,6 +129,7 @@ phase lands; before that, the gate is `planned`.
 | lint + typecheck | local + CI | required | syntactic / type drift |
 | unit + integration | local + CI | required after §3 Phase 1 | logic regressions |
 | e2e on critical flows | CI on PR | required after §3 Phase 2 only if still needed | broken critical user paths |
+| abuse/security contracts | local + CI | required after §3 Phase 2 | owner bypass, hostile input, secret/private-data leak, unbounded costly operations |
 | post-edit hook | local (agent loop) | recommended after §3 Phase 3 | regressions at edit time |
 | visual diff (deterministic) | CI on PR | optional | rendering regressions |
 | multimodal visual review | CI on PR | optional | visual issues classic diff misses |
@@ -158,11 +166,18 @@ the relevant rollout phase ships; before that, the sub-section reads
 - **Reference test**: `src/pages/api/grow-logs/[id]/delete.test.ts`.
 - **When to add e2e instead**: only if the endpoint's failure mode requires the full deployed shape and integration cannot catch the risk cheaply.
 
-### 6.5 Adding a test for a new content-build rule
+### 6.5 Adding an abuse/security test
+
+- **Test type**: integration or contract test at the smallest boundary that proves the abuse scenario.
+- **Pattern**: assert the hostile or repeated request fails before data access, mutation, secret exposure, or costly provider work.
+- **Required checks**: ownership/resource ID, server-side input validation, error/log redaction, provider-call ordering, and rate/cost behavior where the surface exists.
+- **Anti-pattern**: do not reuse only a happy-path authenticated request as proof that abuse is blocked.
+
+### 6.6 Adding a test for a new content-build rule
 
 - TBD - see §3 Phase 1.
 
-### 6.6 Per-rollout-phase notes
+### 6.7 Per-rollout-phase notes
 
 (Optional. After each phase lands, `/10x-implement` appends a 2-3 line note
 here capturing anything surprising the rollout phase taught - e.g., "Phase
