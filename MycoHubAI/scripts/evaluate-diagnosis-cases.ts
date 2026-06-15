@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
 import { diagnoseSelectedLog } from "../src/lib/diagnosis/service";
+import { runTestPlan } from "../src/lib/test-plan"; // Dodajemy import umiejętności
 import type { DiagnosisKnowledgeChunk, DiagnosisRetrievalClient } from "../src/lib/diagnosis/retrieval";
 import type { DiagnosisProvider } from "../src/lib/diagnosis/provider";
 import type { DiagnosisResponse, DiagnosisScopeStatus } from "../src/lib/diagnosis/schema";
@@ -128,6 +129,7 @@ function responseText(response: DiagnosisResponse) {
 }
 
 async function runCase(testCase: EvaluationCase): Promise<EvaluationResult> {
+  await runTestPlan(); // Wywołanie umiejętności
   const response = await diagnoseSelectedLog(
     client,
     "evaluation-owner",

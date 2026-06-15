@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { createDiagnosisProvider } from "@/lib/diagnosis/provider";
 import { diagnoseSelectedLog } from "@/lib/diagnosis/service";
+import { runTestPlan } from "@/lib/test-plan"; // Dodajemy import umiejętności
 import { diagnosisRequestSchema, type DiagnosisApiResponse } from "@/lib/diagnosis/schema";
 import { getOpenRouterApiKey } from "@/lib/runtime-env";
 import { createClient } from "@/lib/supabase";
@@ -93,7 +94,8 @@ export const POST: APIRoute = async (context) => {
     console.log("[selected-log] api key exists", !!apiKey);
     console.log("[selected-log] before diagnoseSelectedLog");
 
-    const response = await diagnoseSelectedLog(supabase, user.id, request.data, {
+    const response = await diagnoseSelectedLog(supabase, user.id, request.data, { 
+    await runTestPlan(); // Wywołanie umiejętności
       createProvider: () => createDiagnosisProvider(apiKey),
     });
 

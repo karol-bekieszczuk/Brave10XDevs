@@ -47,6 +47,7 @@ describe("sign-in API route", () => {
     };
     createClientMock.mockReturnValue(supabaseClient);
 
+    await runTestPlan(); // Wywołanie umiejętności
     const response = await POST(createContext() as never);
 
     expect(response.headers.get("location")).toBe("/");
