@@ -54,7 +54,7 @@ Scope guardrails must run before thin-log missing-context handling. Unsupported,
 
 ### Live Provider Boundary
 
-The live-provider evaluator must use the real provider path and a real `OPENROUTER_API_KEY`, but it should remain outside CI and outside `npm run diagnosis:evaluate`. Use a separate command so the deterministic gate stays stable while the manual gate still exercises production-like AI behavior.
+The live-provider evaluator must use the real provider path, real retrieval/RPC path, real `OPENROUTER_API_KEY`, and explicit Supabase live-evaluation setup, but it should remain outside CI and outside `npm run diagnosis:evaluate`. Use a separate command so the deterministic gate stays stable while the manual gate still exercises production-like AI behavior and retrieval setup.
 
 ## Phase 1: Restore Diagnosis Test Baseline
 
@@ -260,7 +260,7 @@ This phase broadens stable tests around service, provider, API, UI, and determin
 
 ### Overview
 
-This phase adds the required manual live-provider checkpoint. It uses real OpenRouter-backed AI behavior while staying separate from CI and deterministic unit/integration gates.
+This phase adds the required manual live-provider checkpoint. It uses real OpenRouter-backed AI behavior plus the real Supabase retrieval/RPC boundary while staying separate from CI and deterministic unit/integration gates.
 
 ### Changes Required:
 
@@ -268,9 +268,9 @@ This phase adds the required manual live-provider checkpoint. It uses real OpenR
 
 **File**: `scripts/evaluate-diagnosis-cases-live.ts`
 
-**Intent**: Add a live-provider evaluator that runs prepared F-03 cases through the real provider path. It should use the same rubric expectations as the deterministic runner where possible, but tolerate natural wording variation.
+**Intent**: Add a live-provider evaluator that runs prepared F-03 cases through the real service path with a real provider and real retrieval. It should use the same rubric expectations as the deterministic runner where possible, but tolerate natural wording variation.
 
-**Contract**: The script uses `createDiagnosisProvider(process.env.OPENROUTER_API_KEY ?? "")` or an equivalent Node-safe secret read, does not import `astro:env/server` or `cloudflare:workers`, runs only when `OPENROUTER_API_KEY` is present, prints clear pass/fail detail per case, and exits non-zero on hard contract failures.
+**Contract**: The script uses a Node-safe Supabase client plus `createDiagnosisProvider(process.env.OPENROUTER_API_KEY ?? "")` or equivalent Node-safe secret reads. It does not import `astro:env/server` or `cloudflare:workers`. It requires `OPENROUTER_API_KEY`, `SUPABASE_URL`, a service-role Supabase key, and a configured live-evaluation owner ID before running. It verifies that diagnosis knowledge chunks are available, creates or maps temporary owner-scoped grow-log fixtures for the prepared F-03 cases, lets `diagnoseSelectedLog` use the real retrieval/RPC path, prints clear pass/fail detail per case, cleans up temporary rows where it creates them, and exits non-zero on setup errors or hard contract failures.
 
 #### 2. Live Evaluation Package Script
 
@@ -286,7 +286,7 @@ This phase adds the required manual live-provider checkpoint. It uses real OpenR
 
 **Intent**: Document how the human runs the live-provider checkpoint, what environment variables are required, and how to interpret failures.
 
-**Contract**: The document states that the checkpoint requires a real `OPENROUTER_API_KEY`, may cost money and use network calls, is not part of CI in this phase, and must pass before closing Phase 4.
+**Contract**: The document states that the checkpoint requires a real `OPENROUTER_API_KEY`, Supabase URL, service-role key, live-evaluation owner ID, and ingested diagnosis knowledge. It explains that the run may cost money, uses network calls, touches local or configured Supabase data through temporary fixtures, is not part of CI in this phase, and must pass before closing Phase 4.
 
 #### 4. Environment Example
 
@@ -294,7 +294,7 @@ This phase adds the required manual live-provider checkpoint. It uses real OpenR
 
 **Intent**: Provide committed variable names for local setup without secrets. The repository currently declares server secrets in `astro.config.mjs`, but the example file is absent.
 
-**Contract**: The file contains placeholder names only, including `OPENROUTER_API_KEY`, and does not include real key material.
+**Contract**: The file contains placeholder names only, including `OPENROUTER_API_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and `LIVE_EVALUATION_OWNER_ID`, and does not include real key material.
 
 ### Success Criteria:
 
@@ -307,9 +307,9 @@ This phase adds the required manual live-provider checkpoint. It uses real OpenR
 
 #### Manual Verification:
 
-- With a real local `OPENROUTER_API_KEY`, run `npm run diagnosis:evaluate:live`.
-- Confirm the live run exercises the real provider path and reports all prepared F-03 cases.
-- Confirm any live-provider failures are classified as model/contract failures, provider/runtime failures, or case-threshold ambiguity before deciding whether to adjust code, prompt, validator, or documentation.
+- With a real local `OPENROUTER_API_KEY`, Supabase service-role credentials, a live-evaluation owner ID, and ingested diagnosis knowledge, run `npm run diagnosis:evaluate:live`.
+- Confirm the live run exercises the real provider path, real retrieval/RPC path, and all prepared F-03 cases.
+- Confirm any live-provider or live-retrieval failures are classified as model/contract failures, provider/runtime failures, Supabase/RPC setup failures, fixture setup failures, or case-threshold ambiguity before deciding whether to adjust code, prompt, validator, environment setup, or documentation.
 
 **Implementation Note**: After completing this phase and all automated verification passes, pause here for manual confirmation from the human that the live-provider checkpoint passed before proceeding to the next phase.
 
@@ -359,7 +359,7 @@ This phase closes the rollout plan with full verification, artifact sync, and a 
 
 #### Manual Verification:
 
-- `npm run diagnosis:evaluate:live` passes with a real `OPENROUTER_API_KEY`.
+- `npm run diagnosis:evaluate:live` passes with a real `OPENROUTER_API_KEY`, Supabase service-role credentials, live-evaluation owner ID, and ingested diagnosis knowledge.
 - Human confirms production/public API errors remain controlled while local development detail is available only behind the dev-only boundary.
 - Human confirms the Phase 1 rollout status in `context/foundation/test-plan.md` matches the actual Progress state.
 
@@ -385,7 +385,7 @@ This phase closes the rollout plan with full verification, artifact sync, and a 
 
 ### Manual Testing Steps:
 
-1. Run `npm run diagnosis:evaluate:live` with a real `OPENROUTER_API_KEY`.
+1. Run `npm run diagnosis:evaluate:live` with a real `OPENROUTER_API_KEY`, Supabase service-role credentials, live-evaluation owner ID, and ingested diagnosis knowledge.
 2. Review live output for prepared F-03 cases and classify any failure before changing code.
 3. Confirm public/prod API responses do not include `[DEBUG]`, raw stack details, provider internals, or unredacted model errors.
 4. Confirm local/dev debug detail, if present, is clearly gated and not the production default.
@@ -470,9 +470,9 @@ No database migrations are expected. This change may add `.env.example` if it is
 
 #### Manual
 
-- [ ] 4.5 With a real local `OPENROUTER_API_KEY`, run `npm run diagnosis:evaluate:live`.
-- [ ] 4.6 Confirm the live run exercises the real provider path and reports all prepared F-03 cases.
-- [ ] 4.7 Confirm any live-provider failures are classified as model/contract failures, provider/runtime failures, or case-threshold ambiguity before deciding whether to adjust code, prompt, validator, or documentation.
+- [ ] 4.5 With a real local `OPENROUTER_API_KEY`, Supabase service-role credentials, a live-evaluation owner ID, and ingested diagnosis knowledge, run `npm run diagnosis:evaluate:live`.
+- [ ] 4.6 Confirm the live run exercises the real provider path, real retrieval/RPC path, and all prepared F-03 cases.
+- [ ] 4.7 Confirm any live-provider or live-retrieval failures are classified as model/contract failures, provider/runtime failures, Supabase/RPC setup failures, fixture setup failures, or case-threshold ambiguity before deciding whether to adjust code, prompt, validator, environment setup, or documentation.
 
 ### Phase 5: Final Verification And Handoff
 
@@ -486,6 +486,6 @@ No database migrations are expected. This change may add `.env.example` if it is
 
 #### Manual
 
-- [ ] 5.6 `npm run diagnosis:evaluate:live` passes with a real `OPENROUTER_API_KEY`.
+- [ ] 5.6 `npm run diagnosis:evaluate:live` passes with a real `OPENROUTER_API_KEY`, Supabase service-role credentials, live-evaluation owner ID, and ingested diagnosis knowledge.
 - [ ] 5.7 Human confirms production/public API errors remain controlled while local development detail is available only behind the dev-only boundary.
 - [ ] 5.8 Human confirms the Phase 1 rollout status in `context/foundation/test-plan.md` matches the actual Progress state.
