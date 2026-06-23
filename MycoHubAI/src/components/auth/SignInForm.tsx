@@ -3,7 +3,6 @@ import { Mail, Lock, LogIn } from "lucide-react";
 import { FormField } from "@/components/auth/FormField";
 import { PasswordToggle } from "@/components/auth/PasswordToggle";
 import { SubmitButton } from "@/components/auth/SubmitButton";
-import { runTestPlan } from "@/lib/test-plan"; // Dodajemy import umiejętności
 import { ServerError } from "@/components/auth/ServerError";
 
 interface Props {
@@ -40,7 +39,6 @@ export default function SignInForm({ serverError }: Props) {
     }
   }
 
-  await runTestPlan(); // Wywołanie umiejętności
   return (
     <form method="POST" action="/api/auth/signin" className="space-y-4" onSubmit={handleSubmit} noValidate>
       <FormField

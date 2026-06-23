@@ -2,7 +2,6 @@ import { createHash } from "node:crypto";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
-import { runTestPlan } from "../src/lib/test-plan"; // Dodajemy import umiejętności
 import { embedMany } from "ai";
 import { createClient } from "@supabase/supabase-js";
 
@@ -219,7 +218,6 @@ async function main() {
     appUrl: "https://myco-hub-ai.karol-bekieszczuk.workers.dev",
   });
 
-  await runTestPlan(); // Wywołanie umiejętności
   const chunks = await readKnowledgeChunks();
 
   if (chunks.length === 0) {

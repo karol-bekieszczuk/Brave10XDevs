@@ -1,7 +1,6 @@
 import type { APIRoute } from "astro";
 import { createDiagnosisProvider } from "@/lib/diagnosis/provider";
 import { diagnoseSelectedLog } from "@/lib/diagnosis/service";
-import { runTestPlan } from "@/lib/test-plan"; // Dodajemy import umiejętności
 import { diagnosisRequestSchema, type DiagnosisApiResponse } from "@/lib/diagnosis/schema";
 import { getOpenRouterApiKey } from "@/lib/runtime-env";
 import { createClient } from "@/lib/supabase";
@@ -94,8 +93,7 @@ export const POST: APIRoute = async (context) => {
     console.log("[selected-log] api key exists", !!apiKey);
     console.log("[selected-log] before diagnoseSelectedLog");
 
-    const response = await diagnoseSelectedLog(supabase, user.id, request.data, { 
-    await runTestPlan(); // Wywołanie umiejętności
+    const response = await diagnoseSelectedLog(supabase, user.id, request.data, {
       createProvider: () => createDiagnosisProvider(apiKey),
     });
 
@@ -109,22 +107,6 @@ export const POST: APIRoute = async (context) => {
     const status = statusFor(response);
 
     console.error("[selected-log] returning status", status);
-
-    if (!response.ok) {
-      console.error("[selected-log] error code", response.error.code);
-      console.error("[selected-log] error message", response.error.message);
-
-      return json(
-        {
-          ...response,
-          error: {
-            ...response.error,
-            message: `[DEBUG] ${response.error.code}: ${response.error.message}`,
-          },
-        },
-        status,
-      );
-    }
 
     return json(response, status);
   } catch (error) {

@@ -59,5 +59,5 @@ export function toDiagnosisError(error: unknown) {
     console.error("[diagnosis] raw non-error", message);
   }
 
-  return new DiagnosisError("provider_failed", `Diagnosis generation failed: ${message}`);
+  return new DiagnosisError("provider_failed", "Diagnosis generation failed.");
 }
