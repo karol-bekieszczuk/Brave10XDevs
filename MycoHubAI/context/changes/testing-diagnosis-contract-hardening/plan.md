@@ -433,17 +433,17 @@ No database migrations are expected. This change may add `.env.example` if it is
 
 #### Automated
 
-- [ ] 2.1 Service tests prove schema-valid guarantee/certainty wording returns `invalid_model_output`.
-- [ ] 2.2 Service tests prove source labels not present in retrieved chunks return `invalid_model_output`.
-- [ ] 2.3 Service tests prove high-confidence responses without supporting sources return `invalid_model_output`.
-- [ ] 2.4 Service tests prove smell-based advice is rejected by the validator.
-- [ ] 2.5 Service tests prove out-of-scope and mixed-scope prompts beat thin-log `missing_context`.
-- [ ] 2.6 Service tests prove F-03 non-goal prompts short-circuit before embedding, retrieval, or provider generation.
+- [x] 2.1 Service tests prove schema-valid guarantee/certainty wording returns `invalid_model_output`.
+- [x] 2.2 Service tests prove source labels not present in retrieved chunks return `invalid_model_output`.
+- [x] 2.3 Service tests prove high-confidence responses without supporting sources return `invalid_model_output`.
+- [x] 2.4 Service tests prove smell-based advice is rejected by the validator.
+- [x] 2.5 Service tests prove out-of-scope and mixed-scope prompts beat thin-log `missing_context`.
+- [x] 2.6 Service tests prove F-03 non-goal prompts short-circuit before embedding, retrieval, or provider generation.
 
 #### Manual
 
-- [ ] 2.7 Review validator patterns for false positives against the prepared F-03 in-scope cases.
-- [ ] 2.8 Confirm no validator rule asks the user to check agar or grain by smell.
+- [x] 2.7 Review validator patterns for false positives against the prepared F-03 in-scope cases.
+- [x] 2.8 Confirm no validator rule asks the user to check agar or grain by smell.
 
 ### Phase 3: Expand Deterministic Contract Coverage
 

@@ -1,4 +1,5 @@
 import { DiagnosisError, toDiagnosisError } from "@/lib/diagnosis/errors";
+import { validateGeneratedDiagnosisContract } from "@/lib/diagnosis/contract";
 import type { DiagnosisProvider } from "@/lib/diagnosis/provider";
 import {
   matchDiagnosisKnowledgeChunks,
@@ -34,6 +35,25 @@ const unsupportedScopePatterns = [
   /\bobraz/i,
   /\budost[eę]pn/i,
   /\bshare\b/i,
+  /\bsocial\b/i,
+  /\bcommunity\b/i,
+  /\bforum\b/i,
+  /\bchat\b/i,
+  /\bhistory\b/i,
+  /\bconversation\b/i,
+  /\bexport\b/i,
+  /\bdownload\b/i,
+  /\bcsv\b/i,
+  /\bpdf\b/i,
+  /\bcompare\b/i,
+  /\bcomparison\b/i,
+  /\bmultiple logs?\b/i,
+  /\bacross logs?\b/i,
+  /\banother user\b/i,
+  /\bother users?\b/i,
+  /\bmulti[- ]user\b/i,
+  /\bmanage this grow log\b/i,
+  /\bteam\b/i,
 ];
 
 const supportedScopePatterns = [
@@ -197,14 +217,14 @@ export async function diagnoseSelectedLog(
     return new DiagnosisError("unsupported_stage", "Diagnosis is only supported for agar and grain logs.").toResponse();
   }
 
-  if (lacksCriticalSelectedLogContext(growLog)) {
-    return missingContextResponse();
-  }
-
   const scopedGuardrailResponse = guardrailResponse(request.data.question);
 
   if (scopedGuardrailResponse) {
     return scopedGuardrailResponse;
+  }
+
+  if (lacksCriticalSelectedLogContext(growLog)) {
+    return missingContextResponse();
   }
 
   try {
@@ -242,7 +262,7 @@ export async function diagnoseSelectedLog(
 
     return {
       ok: true,
-      diagnosis: parsed.data,
+      diagnosis: validateGeneratedDiagnosisContract(growLog, chunks, parsed.data),
     };
   } catch (error) {
     if (error instanceof DiagnosisError) {

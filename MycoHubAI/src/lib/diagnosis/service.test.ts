@@ -189,6 +189,95 @@ describe("selected-log diagnosis service", () => {
     expect(dependencies.retrieveChunks).not.toHaveBeenCalled();
   });
 
+  it("rejects schema-valid guarantee wording from the provider", async () => {
+    const dependencies = createDependencies({
+      provider: {
+        createQueryEmbedding: vi.fn().mockResolvedValue([0.1, 0.2, 0.3]),
+        generateDiagnosis: vi.fn().mockResolvedValue({
+          ...diagnosis,
+          uncertainty: "This definitely means contamination.",
+        }),
+      },
+    });
+
+    const response = await diagnoseSelectedLog(
+      client,
+      "owner-1",
+      { growLogId: "log-1", question: "Is this plate contaminated?" },
+      dependencies,
+    );
+
+    expect(response.ok).toBe(false);
+    expect(response.ok ? null : response.error.code).toBe("invalid_model_output");
+  });
+
+  it("rejects provider sources that were not retrieved for the diagnosis", async () => {
+    const dependencies = createDependencies({
+      provider: {
+        createQueryEmbedding: vi.fn().mockResolvedValue([0.1, 0.2, 0.3]),
+        generateDiagnosis: vi.fn().mockResolvedValue({
+          ...diagnosis,
+          sources: [{ sourcePath: "lib/diagnosis/knowledge/grain-wet-jar.md", sourceHeading: "Wet grain jars" }],
+        }),
+      },
+    });
+
+    const response = await diagnoseSelectedLog(
+      client,
+      "owner-1",
+      { growLogId: "log-1", question: "Is this plate contaminated?" },
+      dependencies,
+    );
+
+    expect(response.ok).toBe(false);
+    expect(response.ok ? null : response.error.code).toBe("invalid_model_output");
+  });
+
+  it("rejects high-confidence diagnoses that cite no retrieved sources", async () => {
+    const dependencies = createDependencies({
+      provider: {
+        createQueryEmbedding: vi.fn().mockResolvedValue([0.1, 0.2, 0.3]),
+        generateDiagnosis: vi.fn().mockResolvedValue({
+          ...diagnosis,
+          confidenceBand: "high",
+          sources: [],
+        }),
+      },
+    });
+
+    const response = await diagnoseSelectedLog(
+      client,
+      "owner-1",
+      { growLogId: "log-1", question: "Is this plate contaminated?" },
+      dependencies,
+    );
+
+    expect(response.ok).toBe(false);
+    expect(response.ok ? null : response.error.code).toBe("invalid_model_output");
+  });
+
+  it("rejects smell-based advice returned by the provider", async () => {
+    const dependencies = createDependencies({
+      provider: {
+        createQueryEmbedding: vi.fn().mockResolvedValue([0.1, 0.2, 0.3]),
+        generateDiagnosis: vi.fn().mockResolvedValue({
+          ...diagnosis,
+          suggestedActions: ["Smell the jar before deciding what to do next."],
+        }),
+      },
+    });
+
+    const response = await diagnoseSelectedLog(
+      client,
+      "owner-1",
+      { growLogId: "log-1", question: "Why is this jar stalled?" },
+      dependencies,
+    );
+
+    expect(response.ok).toBe(false);
+    expect(response.ok ? null : response.error.code).toBe("invalid_model_output");
+  });
+
   it("returns mixed_scope for questions that combine selected grain diagnosis with fruiting scope", async () => {
     const dependencies = createDependencies({
       getGrowLog: vi.fn().mockResolvedValue({
@@ -212,6 +301,33 @@ describe("selected-log diagnosis service", () => {
     expect(response.ok).toBe(true);
     expect(response.ok ? response.diagnosis.scopeStatus : null).toBe("mixed_scope");
     expect(response.ok ? response.diagnosis.uncertainty : "").toContain("unsupported scope");
+    expect(dependencies.provider.createQueryEmbedding).not.toHaveBeenCalled();
+    expect(dependencies.retrieveChunks).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    {
+      name: "out_of_scope prompts",
+      question: "Can you identify this species from a photo?",
+      expectedScope: "out_of_scope",
+    },
+    {
+      name: "mixed_scope prompts",
+      question: "What does this agar log suggest, and how should I improve fruiting conditions?",
+      expectedScope: "mixed_scope",
+    },
+  ])("routes $name before thin-log missing_context", async ({ question, expectedScope }) => {
+    const dependencies = createDependencies({
+      getGrowLog: vi.fn().mockResolvedValue({
+        ...growLog,
+        body: "Agar plate started this week. No details recorded about appearance, timing, transfer source, growth pattern, or contamination signs.",
+      }),
+    });
+
+    const response = await diagnoseSelectedLog(client, "owner-1", { growLogId: "log-1", question }, dependencies);
+
+    expect(response.ok).toBe(true);
+    expect(response.ok ? response.diagnosis.scopeStatus : null).toBe(expectedScope);
     expect(dependencies.provider.createQueryEmbedding).not.toHaveBeenCalled();
     expect(dependencies.retrieveChunks).not.toHaveBeenCalled();
   });
@@ -277,6 +393,43 @@ describe("selected-log diagnosis service", () => {
     expect(response.ok ? response.diagnosis.suggestedActions.join(" ") : "").toContain("Do not use smell");
     expect(dependencies.provider.createQueryEmbedding).not.toHaveBeenCalled();
     expect(dependencies.retrieveChunks).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    {
+      question: "Can you remember this chat history for later and diagnose the agar plate?",
+      expectedScope: "mixed_scope",
+    },
+    {
+      question: "Diagnose this grain jar and share the log with another grower for me.",
+      expectedScope: "mixed_scope",
+    },
+    {
+      question: "Diagnose this grain jar and compare it with my other logs.",
+      expectedScope: "mixed_scope",
+    },
+    {
+      question: "Diagnose this grain jar and export the report as a PDF.",
+      expectedScope: "mixed_scope",
+    },
+    {
+      question: "How do I export all of my diagnosis history?",
+      expectedScope: "out_of_scope",
+    },
+    {
+      question: "Can another user manage this grow log for me?",
+      expectedScope: "out_of_scope",
+    },
+  ])("short-circuits unsupported F-03 non-goals: $question", async ({ question, expectedScope }) => {
+    const dependencies = createDependencies();
+
+    const response = await diagnoseSelectedLog(client, "owner-1", { growLogId: "log-1", question }, dependencies);
+
+    expect(response.ok).toBe(true);
+    expect(response.ok ? response.diagnosis.scopeStatus : null).toBe(expectedScope);
+    expect(dependencies.provider.createQueryEmbedding).not.toHaveBeenCalled();
+    expect(dependencies.retrieveChunks).not.toHaveBeenCalled();
+    expect(dependencies.provider.generateDiagnosis).not.toHaveBeenCalled();
   });
 
   it("returns a controlled retryable provider error without diagnosis content", async () => {
