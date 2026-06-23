@@ -28,6 +28,6 @@ export function getOpenRouterApiKey(): string | undefined {
   return readOptionalString(cloudflareEnv.OPENROUTER_API_KEY) ?? readOptionalString(ASTRO_OPENROUTER_API_KEY);
 }
 
-export function getSupabaseAdminKey() {
-  return cloudflareEnv.SUPABASE_ADMIN_KEY ?? ASTRO_SUPABASE_ADMIN_KEY;
+export function getSupabaseAdminKey(): string | undefined {
+  return readOptionalString(cloudflareEnv.SUPABASE_ADMIN_KEY) ?? readOptionalString(ASTRO_SUPABASE_ADMIN_KEY);
 }

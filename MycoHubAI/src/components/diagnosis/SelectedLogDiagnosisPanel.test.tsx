@@ -102,6 +102,26 @@ describe("SelectedLogDiagnosisPanel", () => {
     } satisfies Partial<DiagnosisPanelError>);
   });
 
+  it("rejects malformed success payloads with the generic unexpected-response error", async () => {
+    const fetcher: DiagnosisFetch = () =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            ok: true,
+            diagnosis: {
+              scopeStatus: "in_scope",
+              possibleCauses: [],
+            },
+          }),
+      });
+
+    await expect(requestSelectedLogDiagnosis("log-1", "Why is growth slow?", fetcher)).rejects.toMatchObject({
+      message: "Diagnosis returned an unexpected response.",
+      retryable: true,
+    } satisfies Partial<DiagnosisPanelError>);
+  });
+
   it("renders loading and retry controls", () => {
     const loadingMarkup = renderView({ status: "loading" });
     expect(loadingMarkup).toContain("Diagnosing...");

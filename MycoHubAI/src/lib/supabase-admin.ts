@@ -3,8 +3,8 @@ import { getSupabaseAdminKey, getSupabaseEnv } from "@/lib/runtime-env";
 
 export function getSupabaseAdminConfig() {
   const { url } = getSupabaseEnv();
-  const trimmedUrl = url.trim();
-  const adminKey = getSupabaseAdminKey().trim();
+  const trimmedUrl = url?.trim() ?? "";
+  const adminKey = getSupabaseAdminKey()?.trim() ?? "";
 
   return {
     url: trimmedUrl,

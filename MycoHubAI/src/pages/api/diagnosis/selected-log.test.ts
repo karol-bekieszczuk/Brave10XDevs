@@ -100,4 +100,41 @@ describe("selected-log diagnosis API route", () => {
     });
     expect(diagnoseSelectedLogMock).not.toHaveBeenCalled();
   });
+
+  it.each([
+    {
+      code: "invalid_model_output",
+      message: "Diagnosis provider returned invalid structured output.",
+    },
+    {
+      code: "provider_failed",
+      message: "Diagnosis generation failed.",
+    },
+    {
+      code: "provider_timeout",
+      message: "Diagnosis provider timed out.",
+    },
+  ])("maps $code to a controlled 502 response", async ({ code, message }) => {
+    diagnoseSelectedLogMock.mockResolvedValue({
+      ok: false,
+      error: {
+        code,
+        message,
+        retryable: true,
+      },
+    });
+
+    const response = await POST(createContext({ growLogId: "log-1", question: "Is this okay?" }) as never);
+
+    expect(response.status).toBe(502);
+    const body: unknown = await response.json();
+    expect(body).toMatchObject({
+      ok: false,
+      error: {
+        code,
+        retryable: true,
+      },
+    });
+    expect((body as { error: { message: string } }).error.message).toContain("Diagnosis");
+  });
 });

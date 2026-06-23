@@ -236,10 +236,16 @@ export async function diagnoseSelectedLog(
 
     const queryEmbedding = await provider.createQueryEmbedding(growLog, request.data.question);
     const retrieve = dependencies.retrieveChunks ?? matchDiagnosisKnowledgeChunks;
-    const chunks = await retrieve(client, {
-      queryEmbedding,
-      stage: growLog.stage,
-    });
+    let chunks: DiagnosisKnowledgeChunk[];
+
+    try {
+      chunks = await retrieve(client, {
+        queryEmbedding,
+        stage: growLog.stage,
+      });
+    } catch {
+      return new DiagnosisError("retrieval_failed", "Diagnosis knowledge retrieval failed.").toResponse();
+    }
 
     if (chunks.length === 0) {
       return missingContextResponse();
@@ -269,9 +275,6 @@ export async function diagnoseSelectedLog(
       return error.toResponse();
     }
 
-    const code = error instanceof Error && error.message ? "retrieval_failed" : "provider_failed";
-    return code === "retrieval_failed"
-      ? new DiagnosisError("retrieval_failed", "Diagnosis knowledge retrieval failed.").toResponse()
-      : toDiagnosisError(error).toResponse();
+    return toDiagnosisError(error).toResponse();
   }
 }

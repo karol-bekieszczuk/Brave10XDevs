@@ -81,6 +81,47 @@ describe("diagnosis provider", () => {
     expect(generateOptions.abortSignal).toBeInstanceOf(AbortSignal);
   });
 
+  it("rejects partial structured output from generateText", async () => {
+    embedMock.mockResolvedValue({ embedding: [0.1, 0.2, 0.3] });
+    generateTextMock.mockResolvedValue({
+      output: {
+        scopeStatus: "in_scope",
+        possibleCauses: ["Maybe"],
+      },
+    });
+
+    const provider = createDiagnosisProvider("test-key");
+
+    await expect(
+      provider.generateDiagnosis({
+        growLog,
+        question: "Is this plate stalled?",
+        chunks: [chunk],
+      }),
+    ).rejects.toMatchObject({
+      code: "invalid_model_output",
+    } satisfies Partial<DiagnosisError>);
+  });
+
+  it("rejects wrong-shaped structured output from generateText", async () => {
+    embedMock.mockResolvedValue({ embedding: [0.1, 0.2, 0.3] });
+    generateTextMock.mockResolvedValue({
+      output: ["not", "an", "object"],
+    });
+
+    const provider = createDiagnosisProvider("test-key");
+
+    await expect(
+      provider.generateDiagnosis({
+        growLog,
+        question: "Is this plate stalled?",
+        chunks: [chunk],
+      }),
+    ).rejects.toMatchObject({
+      code: "invalid_model_output",
+    } satisfies Partial<DiagnosisError>);
+  });
+
   it("maps provider timeout errors to the controlled provider_timeout category", async () => {
     embedMock.mockRejectedValue(Object.assign(new Error("request timeout"), { name: "TimeoutError" }));
 

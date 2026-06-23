@@ -457,6 +457,31 @@ describe("selected-log diagnosis service", () => {
     });
   });
 
+  it("redacts raw provider exceptions into the controlled provider_failed message", async () => {
+    const dependencies = createDependencies({
+      provider: {
+        createQueryEmbedding: vi.fn().mockResolvedValue([0.1, 0.2, 0.3]),
+        generateDiagnosis: vi.fn().mockRejectedValue(new Error("raw provider stack")),
+      },
+    });
+
+    const response = await diagnoseSelectedLog(
+      client,
+      "owner-1",
+      { growLogId: "log-1", question: "Is this okay?" },
+      dependencies,
+    );
+
+    expect(response).toEqual({
+      ok: false,
+      error: {
+        code: "provider_failed",
+        message: "Diagnosis generation failed.",
+        retryable: true,
+      },
+    });
+  });
+
   it("rejects invalid structured output from a mocked provider", async () => {
     const dependencies = createDependencies({
       provider: {
