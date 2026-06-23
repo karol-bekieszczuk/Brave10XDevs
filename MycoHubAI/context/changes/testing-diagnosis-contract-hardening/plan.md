@@ -419,15 +419,15 @@ No database migrations are expected. This change may add `.env.example` if it is
 
 #### Automated
 
-- [x] 1.1 `rg -n "runTestPlan" src scripts` returns no matches.
-- [x] 1.2 `npm run test:unit` reaches actual test execution without transform errors from `runTestPlan`.
-- [x] 1.3 `npm run diagnosis:evaluate` starts without `src/lib/test-plan` module resolution errors.
-- [x] 1.4 `src/lib/diagnosis/errors.test.ts` passes the controlled redaction expectation.
-- [x] 1.5 `src/lib/diagnosis/retrieval.test.ts` expects the current `match_threshold: 20` default.
+- [x] 1.1 `rg -n "runTestPlan" src scripts` returns no matches. — a7ce5ce
+- [x] 1.2 `npm run test:unit` reaches actual test execution without transform errors from `runTestPlan`. — a7ce5ce
+- [x] 1.3 `npm run diagnosis:evaluate` starts without `src/lib/test-plan` module resolution errors. — a7ce5ce
+- [x] 1.4 `src/lib/diagnosis/errors.test.ts` passes the controlled redaction expectation. — a7ce5ce
+- [x] 1.5 `src/lib/diagnosis/retrieval.test.ts` expects the current `match_threshold: 20` default. — a7ce5ce
 
 #### Manual
 
-- [x] 1.6 Review the API route response contract and confirm production responses no longer include `[DEBUG]` by default.
+- [x] 1.6 Review the API route response contract and confirm production responses no longer include `[DEBUG]` by default. — a7ce5ce
 
 ### Phase 2: Add Runtime Contract Guardrails
 
