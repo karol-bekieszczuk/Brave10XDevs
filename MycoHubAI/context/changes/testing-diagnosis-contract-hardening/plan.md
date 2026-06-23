@@ -449,30 +449,30 @@ No database migrations are expected. This change may add `.env.example` if it is
 
 #### Automated
 
-- [x] 3.1 `npm run test:unit` passes.
-- [x] 3.2 `npm run diagnosis:evaluate` passes deterministically without network/provider calls.
-- [x] 3.3 `npm run lint` passes.
-- [x] 3.4 `npm run build` passes.
+- [x] 3.1 `npm run test:unit` passes. — 1838f67
+- [x] 3.2 `npm run diagnosis:evaluate` passes deterministically without network/provider calls. — 1838f67
+- [x] 3.3 `npm run lint` passes. — 1838f67
+- [x] 3.4 `npm run build` passes. — 1838f67
 
 #### Manual
 
-- [x] 3.5 Review deterministic tests and confirm they do not assert copied production prose as exact expected answers.
-- [x] 3.6 Review negative guardrail tests and confirm they test refusal behavior without endorsing unsupported features.
+- [x] 3.5 Review deterministic tests and confirm they do not assert copied production prose as exact expected answers. — 1838f67
+- [x] 3.6 Review negative guardrail tests and confirm they test refusal behavior without endorsing unsupported features. — 1838f67
 
 ### Phase 4: Add Live Provider Evaluation Gate
 
 #### Automated
 
-- [ ] 4.1 `npm run diagnosis:evaluate` still uses deterministic evaluation and does not require `OPENROUTER_API_KEY`.
-- [ ] 4.2 `npm run test:unit` passes after adding the live script and docs.
-- [ ] 4.3 `npm run lint` passes.
-- [ ] 4.4 `npm run build` passes.
+- [x] 4.1 `npm run diagnosis:evaluate` still uses deterministic evaluation and does not require `OPENROUTER_API_KEY`.
+- [x] 4.2 `npm run test:unit` passes after adding the live script and docs.
+- [x] 4.3 `npm run lint` passes.
+- [x] 4.4 `npm run build` passes.
 
 #### Manual
 
-- [ ] 4.5 With a real local `OPENROUTER_API_KEY`, Supabase service-role credentials, a live-evaluation owner ID, and ingested diagnosis knowledge, run `npm run diagnosis:evaluate:live`.
-- [ ] 4.6 Confirm the live run exercises the real provider path, real retrieval/RPC path, and all prepared F-03 cases.
-- [ ] 4.7 Confirm any live-provider or live-retrieval failures are classified as model/contract failures, provider/runtime failures, Supabase/RPC setup failures, fixture setup failures, or case-threshold ambiguity before deciding whether to adjust code, prompt, validator, environment setup, or documentation.
+- [x] 4.5 With a real local `OPENROUTER_API_KEY`, Supabase service-role credentials, a live-evaluation owner ID, and ingested diagnosis knowledge, run `npm run diagnosis:evaluate:live`.
+- [x] 4.6 Confirm the live run exercises the real provider path, real retrieval/RPC path, and all prepared F-03 cases.
+- [x] 4.7 Confirm any live-provider or live-retrieval failures are classified as model/contract failures, provider/runtime failures, Supabase/RPC setup failures, fixture setup failures, or case-threshold ambiguity before deciding whether to adjust code, prompt, validator, environment setup, or documentation.
 
 ### Phase 5: Final Verification And Handoff
 

@@ -47,6 +47,8 @@ describe("diagnosis prompt", () => {
     expect(prompt).toContain("Do not give species-specific advice");
     expect(prompt).toContain("Do not rely on saved chat history");
     expect(prompt).toContain("Do not compare across multiple grow logs");
+    expect(prompt).toContain("return scopeStatus in_scope with low or medium confidence instead of missing_context");
+    expect(prompt).toContain("copy only exact Path and Heading pairs");
     expect(prompt).toContain("lib/diagnosis/knowledge/agar-slow-growth.md");
   });
 });

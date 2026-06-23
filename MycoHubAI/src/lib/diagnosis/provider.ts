@@ -9,7 +9,7 @@ import type { GrowLogRow } from "@/lib/grow-logs/types";
 const EMBEDDING_MODEL = "openai/text-embedding-3-small";
 const DIAGNOSIS_MODEL = "qwen/qwen3-32b";
 const QUERY_EMBEDDING_TIMEOUT_MS = 15_000;
-const DIAGNOSIS_GENERATION_TIMEOUT_MS = 45_000;
+const DIAGNOSIS_GENERATION_TIMEOUT_MS = 90_000;
 type TextEmbeddingModel = Parameters<typeof embed>[0]["model"];
 
 interface OpenRouterRuntimeEmbeddings {
@@ -30,6 +30,18 @@ export interface DiagnosisProvider {
 function toProviderError(error: unknown): DiagnosisError {
   if (error instanceof DiagnosisError) {
     return error;
+  }
+
+  if (error instanceof Error) {
+    // eslint-disable-next-line no-console
+    console.error("[diagnosis-provider] raw error", `${error.name}: ${error.message}`);
+    // eslint-disable-next-line no-console
+    console.error("[diagnosis-provider] raw error details", JSON.stringify(error, Object.getOwnPropertyNames(error)));
+    // eslint-disable-next-line no-console
+    console.error("[diagnosis-provider] stack", error.stack);
+  } else {
+    // eslint-disable-next-line no-console
+    console.error("[diagnosis-provider] raw non-error", error);
   }
 
   if (
