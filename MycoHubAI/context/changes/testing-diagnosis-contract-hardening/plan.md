@@ -463,16 +463,16 @@ No database migrations are expected. This change may add `.env.example` if it is
 
 #### Automated
 
-- [x] 4.1 `npm run diagnosis:evaluate` still uses deterministic evaluation and does not require `OPENROUTER_API_KEY`.
-- [x] 4.2 `npm run test:unit` passes after adding the live script and docs.
-- [x] 4.3 `npm run lint` passes.
-- [x] 4.4 `npm run build` passes.
+- [x] 4.1 `npm run diagnosis:evaluate` still uses deterministic evaluation and does not require `OPENROUTER_API_KEY`. — a969c47
+- [x] 4.2 `npm run test:unit` passes after adding the live script and docs. — a969c47
+- [x] 4.3 `npm run lint` passes. — a969c47
+- [x] 4.4 `npm run build` passes. — a969c47
 
 #### Manual
 
-- [x] 4.5 With a real local `OPENROUTER_API_KEY`, Supabase service-role credentials, a live-evaluation owner ID, and ingested diagnosis knowledge, run `npm run diagnosis:evaluate:live`.
-- [x] 4.6 Confirm the live run exercises the real provider path, real retrieval/RPC path, and all prepared F-03 cases.
-- [x] 4.7 Confirm any live-provider or live-retrieval failures are classified as model/contract failures, provider/runtime failures, Supabase/RPC setup failures, fixture setup failures, or case-threshold ambiguity before deciding whether to adjust code, prompt, validator, environment setup, or documentation.
+- [x] 4.5 With a real local `OPENROUTER_API_KEY`, Supabase service-role credentials, a live-evaluation owner ID, and ingested diagnosis knowledge, run `npm run diagnosis:evaluate:live`. — a969c47
+- [x] 4.6 Confirm the live run exercises the real provider path, real retrieval/RPC path, and all prepared F-03 cases. — a969c47
+- [x] 4.7 Confirm any live-provider or live-retrieval failures are classified as model/contract failures, provider/runtime failures, Supabase/RPC setup failures, fixture setup failures, or case-threshold ambiguity before deciding whether to adjust code, prompt, validator, environment setup, or documentation. — a969c47
 
 ### Phase 5: Final Verification And Handoff
 

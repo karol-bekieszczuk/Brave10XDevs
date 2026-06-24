@@ -3,7 +3,7 @@ project: MycoHubAI
 version: 1
 status: draft
 created: 2026-05-27
-updated: 2026-06-04
+updated: 2026-06-24
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -33,7 +33,7 @@ The MVP must stay single-user-first, text-only, and constrained to agar and grai
 | F-02 | grow-log-data-contract | (foundation) grow-log persistence has the minimum staged text-log contract needed by the MVP | - | FR-001, FR-005, Access Control | ready |
 | F-03 | diagnosis-quality-rubric | (foundation) diagnosis quality and safety checks are explicit enough to verify scoped uncertain answers | - | Success Criteria, NFRs, FR-003, FR-004 | done |
 | S-01 | staged-grow-log-crud | user can create, view, edit, and delete their own text grow logs with an agar/grain stage | F-02 | FR-001, FR-005 | done |
-| S-02 | selected-log-diagnosis | user can ask about one selected agar or grain grow log and receive scoped causes, actions, uncertainty, or a follow-up question | S-01, F-03 | US-01, FR-002, FR-003, FR-004 | proposed |
+| S-02 | selected-log-diagnosis | user can ask about one selected agar or grain grow log and receive scoped causes, actions, uncertainty, or a follow-up question | S-01, F-03 | US-01, FR-002, FR-003, FR-004 | done |
 | S-03 | delete-user-account | user can permanently delete their own account and grow-log data | F-01, S-01 | FR-005, Access Control | proposed |
 | S-04 | bulk-grow-log-actions | user can select and delete multiple grow logs in one action | F-01 | FR-001, FR-005 | planned |
 
@@ -125,7 +125,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** -
 - **Unknowns:** -
 - **Risk:** This is the product proof point; delaying it behind non-essential surfaces would optimize the shell instead of the diagnosis value.
-- **Status:** proposed
+- **Status:** done
 
 ### S-03: Delete user account
 
