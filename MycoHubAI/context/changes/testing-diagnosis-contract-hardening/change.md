@@ -1,7 +1,7 @@
 ---
 change_id: testing-diagnosis-contract-hardening
 title: Testing diagnosis contract hardening
-status: implementing
+status: implemented
 created: 2026-06-15
 updated: 2026-06-24
 archived_at: null
