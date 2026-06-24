@@ -478,14 +478,14 @@ No database migrations are expected. This change may add `.env.example` if it is
 
 #### Automated
 
-- [ ] 5.1 `npm run test:unit` passes.
-- [ ] 5.2 `npm run lint` passes.
-- [ ] 5.3 `npm run build` passes.
-- [ ] 5.4 `npm run diagnosis:evaluate` passes.
-- [ ] 5.5 `rg -n "runTestPlan" src scripts` returns no matches.
+- [x] 5.1 `npm run test:unit` passes.
+- [x] 5.2 `npm run lint` passes.
+- [x] 5.3 `npm run build` passes.
+- [x] 5.4 `npm run diagnosis:evaluate` passes.
+- [x] 5.5 `rg -n "runTestPlan" src scripts` returns no matches.
 
 #### Manual
 
-- [ ] 5.6 `npm run diagnosis:evaluate:live` passes with a real `OPENROUTER_API_KEY`, Supabase service-role credentials, live-evaluation owner ID, and ingested diagnosis knowledge.
-- [ ] 5.7 Human confirms production/public API errors remain controlled while local development detail is available only behind the dev-only boundary.
-- [ ] 5.8 Human confirms the Phase 1 rollout status in `context/foundation/test-plan.md` matches the actual Progress state.
+- [x] 5.6 `npm run diagnosis:evaluate:live` passes with a real `OPENROUTER_API_KEY`, Supabase service-role credentials, live-evaluation owner ID, and ingested diagnosis knowledge.
+- [x] 5.7 Human confirms production/public API errors remain controlled while local development detail is available only behind the dev-only boundary.
+- [x] 5.8 Human confirms the Phase 1 rollout status in `context/foundation/test-plan.md` matches the actual Progress state.
