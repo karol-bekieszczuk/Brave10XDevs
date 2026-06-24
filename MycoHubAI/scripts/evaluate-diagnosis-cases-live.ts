@@ -357,16 +357,14 @@ function classifyErrorCode(code: DiagnosisApiResponse["error"]["code"]): LiveFai
 }
 
 async function verifyKnowledgeChunks(client: SupabaseClient) {
-  const { data, error } = await client.from("diagnosis_knowledge_chunks").select("stage").limit(20);
-
-  if (error) {
-    throw new Error(`Supabase/RPC setup failure while reading diagnosis_knowledge_chunks: ${error.message}`);
-  }
-
-  const stages = new Set(data.map((row) => String(row.stage)));
-
   for (const stage of REQUIRED_STAGE_SET) {
-    if (!stages.has(stage)) {
+    const { data, error } = await client.from("diagnosis_knowledge_chunks").select("id").eq("stage", stage).limit(1);
+
+    if (error) {
+      throw new Error(`Supabase/RPC setup failure while reading ${stage} diagnosis_knowledge_chunks: ${error.message}`);
+    }
+
+    if (data.length === 0) {
       throw new Error(`Supabase/RPC setup failure: diagnosis knowledge is missing ${stage} chunks.`);
     }
   }
@@ -403,12 +401,12 @@ async function insertFixtures(client: SupabaseClient, ownerId: string, cases: Ev
   return new Map(cases.map((testCase, index) => [testCase.id, fixtures[index].id]));
 }
 
-async function cleanupFixtures(client: SupabaseClient, fixtureIds: string[]) {
+async function cleanupFixtures(client: SupabaseClient, ownerId: string, fixtureIds: string[]) {
   if (fixtureIds.length === 0) {
     return;
   }
 
-  const { error } = await client.from("grow_logs").delete().in("id", fixtureIds);
+  const { error } = await client.from("grow_logs").delete().eq("owner_id", ownerId).in("id", fixtureIds);
 
   if (error) {
     throw new Error(`Fixture setup failure while deleting live evaluation grow logs: ${error.message}`);
@@ -553,7 +551,7 @@ async function main() {
       process.exitCode = 1;
     }
   } finally {
-    await cleanupFixtures(client, [...fixtureIdsByCase.values()]);
+    await cleanupFixtures(client, ownerId, [...fixtureIdsByCase.values()]);
   }
 }
 

@@ -24,7 +24,7 @@ export function buildDiagnosisPrompt({ growLog, question, chunks }: BuildDiagnos
             [
               `Source ${index + 1}`,
               `Path: ${chunk.sourcePath}`,
-              `Heading: ${chunk.sourceHeading ?? "Untitled"}`,
+              `Heading: ${chunk.sourceHeading ?? "null"}`,
               `Stage: ${chunk.stage}`,
               `Content: ${chunk.content}`,
             ].join("\n"),
@@ -58,7 +58,7 @@ export function buildDiagnosisPrompt({ growLog, question, chunks }: BuildDiagnos
     "- Do not give species-specific advice.",
     "- Do not rely on saved chat history or imply that chat history is stored.",
     "- Do not compare across multiple grow logs; use only this selected log.",
-    "- When filling sources, copy only exact Path and Heading pairs from the retrieved same-stage knowledge above. Do not invent source labels, headings, paths, or citations.",
+    "- When filling sources, copy only exact Path and Heading pairs from the retrieved same-stage knowledge above. Use sourceHeading null when the retrieved Heading is null. Do not invent source labels, headings, paths, or citations.",
     "",
     "Return a structured diagnosis object that matches the provided schema exactly.",
   ].join("\n");

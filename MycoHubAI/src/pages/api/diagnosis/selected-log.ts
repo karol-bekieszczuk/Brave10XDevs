@@ -102,7 +102,7 @@ export const POST: APIRoute = async (context) => {
     console.log("[selected-log] before diagnoseSelectedLog");
 
     const response = await diagnoseSelectedLog(supabase, user.id, request.data, {
-      createProvider: () => createDiagnosisProvider(apiKey),
+      createProvider: () => createDiagnosisProvider(apiKey, { debugErrors: import.meta.env.DEV }),
     });
 
     console.log("[selected-log] after diagnoseSelectedLog", response.ok);

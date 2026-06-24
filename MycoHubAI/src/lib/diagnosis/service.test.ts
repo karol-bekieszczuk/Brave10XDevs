@@ -211,6 +211,28 @@ describe("selected-log diagnosis service", () => {
     expect(response.ok ? null : response.error.code).toBe("invalid_model_output");
   });
 
+  it("allows negated guarantee wording as uncertainty instead of certainty", async () => {
+    const dependencies = createDependencies({
+      provider: {
+        createQueryEmbedding: vi.fn().mockResolvedValue([0.1, 0.2, 0.3]),
+        generateDiagnosis: vi.fn().mockResolvedValue({
+          ...diagnosis,
+          uncertainty: "This recovery signal is not guaranteed and should be checked against the next visible update.",
+        }),
+      },
+    });
+
+    const response = await diagnoseSelectedLog(
+      client,
+      "owner-1",
+      { growLogId: "log-1", question: "Is this plate recovering?" },
+      dependencies,
+    );
+
+    expect(response.ok).toBe(true);
+    expect(response.ok ? response.diagnosis.uncertainty : "").toContain("not guaranteed");
+  });
+
   it("rejects provider sources that were not retrieved for the diagnosis", async () => {
     const dependencies = createDependencies({
       provider: {
@@ -231,6 +253,32 @@ describe("selected-log diagnosis service", () => {
 
     expect(response.ok).toBe(false);
     expect(response.ok ? null : response.error.code).toBe("invalid_model_output");
+  });
+
+  it("accepts placeholder heading labels only when the retrieved source heading is null", async () => {
+    const headinglessChunk: DiagnosisKnowledgeChunk = {
+      ...chunk,
+      sourceHeading: null,
+    };
+    const dependencies = createDependencies({
+      retrieveChunks: vi.fn().mockResolvedValue([headinglessChunk]),
+      provider: {
+        createQueryEmbedding: vi.fn().mockResolvedValue([0.1, 0.2, 0.3]),
+        generateDiagnosis: vi.fn().mockResolvedValue({
+          ...diagnosis,
+          sources: [{ sourcePath: headinglessChunk.sourcePath, sourceHeading: "Untitled" }],
+        }),
+      },
+    });
+
+    const response = await diagnoseSelectedLog(
+      client,
+      "owner-1",
+      { growLogId: "log-1", question: "Is this plate contaminated?" },
+      dependencies,
+    );
+
+    expect(response.ok).toBe(true);
   });
 
   it("rejects high-confidence diagnoses that cite no retrieved sources", async () => {

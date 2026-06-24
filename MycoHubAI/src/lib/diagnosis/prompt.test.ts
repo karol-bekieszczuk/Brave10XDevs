@@ -51,4 +51,15 @@ describe("diagnosis prompt", () => {
     expect(prompt).toContain("copy only exact Path and Heading pairs");
     expect(prompt).toContain("lib/diagnosis/knowledge/agar-slow-growth.md");
   });
+
+  it("represents missing source headings as null for structured output", () => {
+    const prompt = buildDiagnosisPrompt({
+      growLog,
+      question: "Is this plate stalled?",
+      chunks: [{ ...chunk, sourceHeading: null }],
+    });
+
+    expect(prompt).toContain("Heading: null");
+    expect(prompt).toContain("Use sourceHeading null when the retrieved Heading is null");
+  });
 });

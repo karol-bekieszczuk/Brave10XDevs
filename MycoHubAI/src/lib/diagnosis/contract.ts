@@ -13,6 +13,16 @@ const certaintyPatterns = [
   /\bna pewno\b/i,
 ];
 
+const allowedUncertaintyPhrases = [
+  /\bnot guaranteed\b/gi,
+  /\bnot a guarantee\b/gi,
+  /\bno guarantee\b/gi,
+  /\bcannot guarantee\b/gi,
+  /\bcan't guarantee\b/gi,
+  /\bnot certain\b/gi,
+  /\bnot for sure\b/gi,
+];
+
 const smellAdvicePatterns = [
   /\bsmell\b/i,
   /\bodou?r\b/i,
@@ -25,6 +35,37 @@ const smellAdvicePatterns = [
 
 function matchesAny(value: string | null, patterns: RegExp[]) {
   return value !== null && patterns.some((pattern) => pattern.test(value));
+}
+
+function hasUnsupportedCertainty(value: string | null) {
+  if (value === null) {
+    return false;
+  }
+
+  const withoutAllowedUncertainty = allowedUncertaintyPhrases.reduce(
+    (text, pattern) => text.replace(pattern, ""),
+    value,
+  );
+
+  return certaintyPatterns.some((pattern) => pattern.test(withoutAllowedUncertainty));
+}
+
+function normalizeSourceHeading(heading: string | null) {
+  if (heading === null) {
+    return "";
+  }
+
+  const normalized = heading.trim().toLowerCase();
+
+  if (["untitled", "null", "none", "no heading"].includes(normalized)) {
+    return "";
+  }
+
+  return heading;
+}
+
+function sourceKey(sourcePath: string, sourceHeading: string | null) {
+  return `${sourcePath}::${normalizeSourceHeading(sourceHeading)}`;
 }
 
 function invalidOutput(message: string) {
@@ -43,7 +84,7 @@ export function validateGeneratedDiagnosisContract(
     diagnosis.followUpQuestion,
   ];
 
-  if (narrativeFields.some((field) => matchesAny(field, certaintyPatterns))) {
+  if (narrativeFields.some(hasUnsupportedCertainty)) {
     throw invalidOutput("Diagnosis provider used unsupported certainty wording.");
   }
 
@@ -60,7 +101,7 @@ export function validateGeneratedDiagnosisContract(
   const allowedSources = new Set(
     chunks
       .filter((chunk) => chunk.stage === growLog.stage)
-      .map((chunk) => `${chunk.sourcePath}::${chunk.sourceHeading ?? ""}`),
+      .map((chunk) => sourceKey(chunk.sourcePath, chunk.sourceHeading)),
   );
 
   if (allowedSources.size !== chunks.length) {
@@ -68,7 +109,7 @@ export function validateGeneratedDiagnosisContract(
   }
 
   const hasUnknownSource = diagnosis.sources.some(
-    (source) => !allowedSources.has(`${source.sourcePath}::${source.sourceHeading ?? ""}`),
+    (source) => !allowedSources.has(sourceKey(source.sourcePath, source.sourceHeading)),
   );
 
   if (hasUnknownSource) {

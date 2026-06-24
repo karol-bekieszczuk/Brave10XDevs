@@ -27,11 +27,11 @@ export interface DiagnosisProvider {
   generateDiagnosis(input: DiagnosisGenerationInput): Promise<DiagnosisResponse>;
 }
 
-function toProviderError(error: unknown): DiagnosisError {
-  if (error instanceof DiagnosisError) {
-    return error;
-  }
+export interface DiagnosisProviderOptions {
+  debugErrors?: boolean;
+}
 
+function logRawProviderError(error: unknown) {
   if (error instanceof Error) {
     // eslint-disable-next-line no-console
     console.error("[diagnosis-provider] raw error", `${error.name}: ${error.message}`);
@@ -42,6 +42,16 @@ function toProviderError(error: unknown): DiagnosisError {
   } else {
     // eslint-disable-next-line no-console
     console.error("[diagnosis-provider] raw non-error", error);
+  }
+}
+
+function toProviderError(error: unknown, { debugErrors = false }: DiagnosisProviderOptions = {}): DiagnosisError {
+  if (error instanceof DiagnosisError) {
+    return error;
+  }
+
+  if (debugErrors) {
+    logRawProviderError(error);
   }
 
   if (
@@ -58,7 +68,7 @@ function createTextEmbeddingModel(provider: unknown, modelId: string) {
   return (provider as OpenRouterRuntimeEmbeddings).textEmbeddingModel(modelId);
 }
 
-export function createDiagnosisProvider(apiKey: string): DiagnosisProvider {
+export function createDiagnosisProvider(apiKey: string, options: DiagnosisProviderOptions = {}): DiagnosisProvider {
   if (!apiKey) {
     throw new DiagnosisError("provider_failed", "OpenRouter API key is not configured.");
   }
@@ -80,7 +90,7 @@ export function createDiagnosisProvider(apiKey: string): DiagnosisProvider {
 
         return embedding;
       } catch (error) {
-        throw toProviderError(error);
+        throw toProviderError(error, options);
       }
     },
 
@@ -103,7 +113,7 @@ export function createDiagnosisProvider(apiKey: string): DiagnosisProvider {
 
         return parsed.data;
       } catch (error) {
-        throw toProviderError(error);
+        throw toProviderError(error, options);
       }
     },
   };

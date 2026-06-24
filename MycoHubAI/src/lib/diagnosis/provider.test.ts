@@ -131,4 +131,34 @@ describe("diagnosis provider", () => {
       code: "provider_timeout",
     } satisfies Partial<DiagnosisError>);
   });
+
+  it("does not log raw provider errors unless debug logging is enabled", async () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    embedMock.mockRejectedValue(new Error("provider included sensitive request detail"));
+
+    const provider = createDiagnosisProvider("test-key");
+
+    await expect(provider.createQueryEmbedding(growLog, "Is this plate stalled?")).rejects.toMatchObject({
+      code: "provider_failed",
+    } satisfies Partial<DiagnosisError>);
+
+    expect(consoleError).not.toHaveBeenCalled();
+
+    consoleError.mockRestore();
+  });
+
+  it("logs raw provider errors when debug logging is enabled", async () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    embedMock.mockRejectedValue(new Error("debug detail"));
+
+    const provider = createDiagnosisProvider("test-key", { debugErrors: true });
+
+    await expect(provider.createQueryEmbedding(growLog, "Is this plate stalled?")).rejects.toMatchObject({
+      code: "provider_failed",
+    } satisfies Partial<DiagnosisError>);
+
+    expect(consoleError).toHaveBeenCalledWith("[diagnosis-provider] raw error", "Error: debug detail");
+
+    consoleError.mockRestore();
+  });
 });
