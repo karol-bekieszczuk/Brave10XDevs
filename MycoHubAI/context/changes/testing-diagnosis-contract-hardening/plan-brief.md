@@ -22,7 +22,7 @@ The deterministic gate passes through `npm run test:unit`, `npm run lint`, `npm 
 | Baseline cleanup | Remove all stray `runTestPlan` drift under `src` and `scripts` | The full unit gate cannot be trusted while unrelated transform/runtime failures remain | Plan |
 | Runtime validator | Add a minimal post-generation contract validator | Zod catches shape, but not guarantee language, source mismatch, high-confidence misuse, or smell advice | Plan |
 | Guardrail ordering | Scope guardrails run before thin-log `missing_context` | Unsupported prompts should not be reclassified as missing context because the selected log is thin | Plan |
-| Retrieval default | Keep `matchThreshold = 20` for now | The value may need future calibration, but this phase should not churn retrieval quality tuning | Plan |
+| Retrieval default | Keep `matchThreshold = 0` for now | The SQL RPC threshold is a `0..1` similarity cutoff; the earlier `20` assumption blocked all live matches and caused false `missing_context` outcomes | Plan / live gate |
 | Test strategy | Keep deterministic tests plus required live-provider checkpoint | Stable gates prove technical contracts; real AI verifies production-like behavior manually | Plan |
 | Live-provider gate | Manual required gate, not CI | Real provider calls need secrets, network, cost control, and failure triage | Plan |
 | Unsupported non-goals | Add deterministic refusals for full F-03 non-goals | This avoids paying provider calls for known unsupported product scope | Plan |
@@ -45,7 +45,7 @@ The deterministic gate passes through `npm run test:unit`, `npm run lint`, `npm 
 - Supporting photos, image analysis, saved chat history, sharing, multi-user behavior, export/download, or multi-log comparison.
 - Making live-provider checks part of CI.
 - Replacing deterministic contract tests with live AI tests.
-- Calibrating retrieval threshold beyond keeping `20` as the current default.
+- Calibrating retrieval threshold beyond keeping `0` as the current recall-first default.
 
 ## Architecture / Approach
 
@@ -67,7 +67,7 @@ The plan keeps the existing diagnosis separation: `service.ts` owns orchestratio
 
 ## Open Risks & Assumptions
 
-- `matchThreshold = 20` is preserved as the current default, not treated as calibrated retrieval quality.
+- `matchThreshold = 0` is preserved as the current recall-first default, not treated as calibrated retrieval quality. The threshold should only move upward after measuring real same-stage retrieval quality on the MVP corpus.
 - The validator must stay narrow enough to catch hard contract violations without blocking reasonable natural language.
 - Live-provider evaluation may fail due to provider/runtime conditions; failures need classification before code changes.
 - CI remains deterministic in this phase; live CI is a future decision.

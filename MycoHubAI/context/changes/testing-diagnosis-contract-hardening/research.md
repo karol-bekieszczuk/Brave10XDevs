@@ -121,7 +121,7 @@ Commands run during this research:
 
 - `src/pages/api/diagnosis/selected-log.test.ts` cannot run because `src/pages/api/diagnosis/selected-log.ts:98` has a transform error from inserted `await runTestPlan()`.
 - `src/lib/diagnosis/errors.test.ts` fails because `toDiagnosisError` exposes raw provider error details.
-- `src/lib/diagnosis/retrieval.test.ts` fails because the test expects default `match_threshold: 0`, while `matchDiagnosisKnowledgeChunks` now defaults to `matchThreshold = 20` (`src/lib/diagnosis/retrieval.ts:50`, `src/lib/diagnosis/retrieval.test.ts:86`).
+- `src/lib/diagnosis/retrieval.test.ts` failed during baseline research because the test expected default `match_threshold: 0`, while `matchDiagnosisKnowledgeChunks` had drifted to `matchThreshold = 20` (`src/lib/diagnosis/retrieval.ts:50`, `src/lib/diagnosis/retrieval.test.ts:86`). This was later resolved back to `0`: the RPC uses `1 - (embedding <=> query_embedding) >= match_threshold`, so the threshold is a `0..1` similarity cutoff and `20` blocks all matches.
 - `src/pages/api/auth/signin.test.ts` also fails because of an unrelated stray `runTestPlan` call in the test.
 
 `npm.cmd run diagnosis:evaluate` result:
@@ -190,6 +190,6 @@ Prior plan-review memory for `testing-diagnosis-contract-hardening` recorded a `
 
 - Should Phase 1 add a dedicated post-generation contract validator, or keep semantic checks only in tests/evaluation runner for now?
 - Should `guardrailResponse(question)` run before `lacksCriticalSelectedLogContext(growLog)` so unsupported scope wins over thin-log fallback when both are true?
-- Should the retrieval default be `matchThreshold = 0` as the existing test expects, or `20` as the current implementation uses?
+- Resolved after the live-provider gate: retrieval should default to `matchThreshold = 0`. Treat this as a recall-first MVP default, not as final quality calibration.
 - Which unsupported wording classes should become deterministic prechecks versus prompt-only guardrails: saved chat history, multi-log comparison, export/download, social sharing, and multi-user requests?
 - Should API error messages always be generic for provider failures, with detailed provider errors logged only server-side?

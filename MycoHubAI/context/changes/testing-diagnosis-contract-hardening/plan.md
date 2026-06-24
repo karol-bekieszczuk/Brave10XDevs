@@ -24,7 +24,7 @@ The runtime behavior should reject or narrow unsupported prompts before calling 
 - Public API errors currently add `[DEBUG]` to response messages in `src/pages/api/diagnosis/selected-log.ts:122`.
 - Unknown provider errors currently include raw details in the serialized message in `src/lib/diagnosis/errors.ts:62`, despite the test expecting `Diagnosis generation failed.` in `src/lib/diagnosis/errors.test.ts:30`.
 - `runTestPlan` drift appears in diagnosis scripts/routes and unrelated auth surfaces, including `scripts/evaluate-diagnosis-cases.ts:5`, `scripts/evaluate-diagnosis-cases.ts:132`, `src/pages/api/diagnosis/selected-log.ts:4`, `src/pages/api/diagnosis/selected-log.ts:98`, `src/components/auth/SignInForm.tsx:6`, `src/components/auth/SignInForm.tsx:43`, and `src/pages/api/auth/signin.test.ts:50`.
-- Retrieval now defaults to `matchThreshold = 20` in `src/lib/diagnosis/retrieval.ts:50`; the plan keeps this value for now and updates the default contract accordingly.
+- Retrieval currently defaults to `matchThreshold = 0` in `src/lib/diagnosis/retrieval.ts:50`. Earlier Phase 1 planning temporarily preserved `20`, but the live-provider gate proved that value was wrong for this RPC because `match_threshold` is a similarity value on the `0..1` scale; `20` blocked all matches and caused in-scope cases to fall through to `missing_context`.
 - The F-03 rubric names unsupported non-goals such as saved chat history, sharing/social features, multi-user behavior, export/download, and image/photo scope in `context/changes/diagnosis-quality-rubric/reference/diagnosis-quality-rubric.md:152`, `context/changes/diagnosis-quality-rubric/reference/diagnosis-quality-rubric.md:175`, and `context/changes/diagnosis-quality-rubric/reference/diagnosis-quality-rubric.md:177`.
 - The UI already schema-parses API payloads and converts malformed responses into a generic retryable error in `src/components/diagnosis/SelectedLogDiagnosisPanel.tsx:88`.
 
@@ -34,7 +34,7 @@ The runtime behavior should reject or narrow unsupported prompts before calling 
 - Not adding support for photos, image analysis, saved chat history, sharing/social features, multi-user workflows, local export/download behavior, or cross-log comparison.
 - Not making live-provider checks part of CI in this phase.
 - Not replacing deterministic unit/integration tests with live AI calls.
-- Not calibrating retrieval quality beyond preserving the current `matchThreshold = 20` default.
+- Not calibrating retrieval quality beyond preserving the current recall-first `matchThreshold = 0` default.
 - Not adding a broad browser/e2e suite for this risk slice.
 - Not reading or committing real local secrets.
 
@@ -92,9 +92,9 @@ This phase makes the current checkout testable again and removes accidental scaf
 
 **File**: `src/lib/diagnosis/retrieval.ts`
 
-**Intent**: Keep the current `matchThreshold = 20` default and make the test contract match that decision. Do not treat this value as final quality calibration.
+**Intent**: Keep the current `matchThreshold = 0` default and make the test contract match that decision. Do not treat this value as final quality calibration.
 
-**Contract**: Default RPC args include `match_threshold: 20` and `match_count: 5`; explicit overrides still pass through unchanged.
+**Contract**: Default RPC args include `match_threshold: 0` and `match_count: 5`; explicit overrides still pass through unchanged. The threshold is a SQL similarity cutoff computed as `1 - (embedding <=> query_embedding)`, so valid values are similarity-scale values, not counts or scores like `20`.
 
 #### 5. Existing Test Alignment
 
@@ -112,7 +112,7 @@ This phase makes the current checkout testable again and removes accidental scaf
 - `npm run test:unit` reaches actual test execution without transform errors from `runTestPlan`.
 - `npm run diagnosis:evaluate` starts without `src/lib/test-plan` module resolution errors.
 - `src/lib/diagnosis/errors.test.ts` passes the controlled redaction expectation.
-- `src/lib/diagnosis/retrieval.test.ts` expects the current `match_threshold: 20` default.
+- `src/lib/diagnosis/retrieval.test.ts` expects the current `match_threshold: 0` default.
 
 #### Manual Verification:
 
@@ -423,7 +423,7 @@ No database migrations are expected. This change may add `.env.example` if it is
 - [x] 1.2 `npm run test:unit` reaches actual test execution without transform errors from `runTestPlan`. — a7ce5ce
 - [x] 1.3 `npm run diagnosis:evaluate` starts without `src/lib/test-plan` module resolution errors. — a7ce5ce
 - [x] 1.4 `src/lib/diagnosis/errors.test.ts` passes the controlled redaction expectation. — a7ce5ce
-- [x] 1.5 `src/lib/diagnosis/retrieval.test.ts` expects the current `match_threshold: 20` default. — a7ce5ce
+- [x] 1.5 `src/lib/diagnosis/retrieval.test.ts` expects the current `match_threshold: 0` default. supersedes the earlier Phase 1 `20` assumption after the Phase 4 live retrieval gate — a7ce5ce
 
 #### Manual
 
