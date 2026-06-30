@@ -47,6 +47,8 @@ npm run dev
 - `npm run lint` - Run ESLint
 - `npm run lint:fix` - Auto-fix ESLint issues
 - `npm run format` - Run Prettier
+- `npm run diagnosis:evaluate` - Run the deterministic offline diagnosis contract checks
+- `npm run diagnosis:evaluate:live` - Run the live-provider diagnosis checkpoint against real retrieval/RPC
 
 ## Supabase Configuration
 
