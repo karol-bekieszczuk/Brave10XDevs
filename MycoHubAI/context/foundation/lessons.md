@@ -29,3 +29,10 @@
 - **Problem**: AI-generated cultivation advice often suggests judging agar or grain by smell, which is unreliable and exactly the kind of low-quality guidance this product must avoid.
 - **Rule**: Never ask or suggest that the user check agar or grain by smell. Use grow-log facts and direct visual observations instead.
 - **Applies to**: research, plan, plan-review, implement, impl-review
+
+## Persist Stryker Mutant Output
+
+- **Context**: every call to use stryker
+- **Problem**: statistic only stryker call is useless as it doesnt show what exactly was checked/mutated.
+- **Rule**: When asked to run Stryker, never leave the output at console statistics only. always show output from stryker in CLI which should be in HTML, JSON or at minimum markdown. Don't save report to file unless explicitly asked to.
+- **Applies to**: external library
