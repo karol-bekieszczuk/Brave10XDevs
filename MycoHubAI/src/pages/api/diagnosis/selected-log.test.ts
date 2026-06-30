@@ -103,38 +103,74 @@ describe("selected-log diagnosis API route", () => {
 
   it.each([
     {
+      code: "invalid_request",
+      message: "Invalid diagnosis request.",
+      status: 400,
+      retryable: false,
+    },
+    {
+      code: "unsupported_stage",
+      message: "Diagnosis supports agar and grain logs only.",
+      status: 400,
+      retryable: false,
+    },
+    {
+      code: "unauthorized",
+      message: "Sign in to diagnose a grow log.",
+      status: 401,
+      retryable: false,
+    },
+    {
+      code: "grow_log_not_found",
+      message: "Grow log not found.",
+      status: 404,
+      retryable: false,
+    },
+    {
+      code: "retrieval_failed",
+      message: "Diagnosis retrieval failed.",
+      status: 502,
+      retryable: true,
+    },
+    {
       code: "invalid_model_output",
       message: "Diagnosis provider returned invalid structured output.",
+      status: 502,
+      retryable: true,
     },
     {
       code: "provider_failed",
       message: "Diagnosis generation failed.",
+      status: 502,
+      retryable: true,
     },
     {
       code: "provider_timeout",
       message: "Diagnosis provider timed out.",
+      status: 502,
+      retryable: true,
     },
-  ])("maps $code to a controlled 502 response", async ({ code, message }) => {
+  ])("maps $code service errors to a controlled $status response", async ({ code, message, status, retryable }) => {
     diagnoseSelectedLogMock.mockResolvedValue({
       ok: false,
       error: {
         code,
         message,
-        retryable: true,
+        retryable,
       },
     });
 
     const response = await POST(createContext({ growLogId: "log-1", question: "Is this okay?" }) as never);
 
-    expect(response.status).toBe(502);
+    expect(response.status).toBe(status);
     const body: unknown = await response.json();
-    expect(body).toMatchObject({
+    expect(body).toEqual({
       ok: false,
       error: {
         code,
-        retryable: true,
+        message,
+        retryable,
       },
     });
-    expect((body as { error: { message: string } }).error.message).toContain("Diagnosis");
   });
 });

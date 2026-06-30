@@ -152,6 +152,14 @@ describe("SelectedLogDiagnosisPanel", () => {
     expect(markup).not.toContain("possibleCauses");
   });
 
+  it("omits the sources section when the diagnosis has no cited sources", () => {
+    const markup = renderToStaticMarkup(<DiagnosisResult diagnosis={{ ...diagnosis, sources: [] }} />);
+
+    expect(markup).not.toContain("Sources");
+    expect(markup).toContain("Possible causes");
+    expect(markup).toContain("Suggested actions");
+  });
+
   it("formats source labels from headings or file names", () => {
     expect(sourceLabel(diagnosis.sources[0])).toBe("Agar surface observations (agar-contamination)");
     expect(sourceLabel({ sourcePath: "lib/diagnosis/knowledge/grain-moisture.md", sourceHeading: null })).toBe(
