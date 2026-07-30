@@ -37,11 +37,7 @@ function statusFor(response: DiagnosisApiResponse) {
   }
 }
 
-function errorMessageForEnvironment(error: unknown) {
-  if (import.meta.env.DEV && error instanceof Error) {
-    return `Diagnosis request failed. ${error.name}: ${error.message}`;
-  }
-
+function publicUnexpectedErrorMessage() {
   return "Diagnosis request failed.";
 }
 
@@ -132,7 +128,7 @@ export const POST: APIRoute = async (context) => {
         ok: false,
         error: {
           code: "provider_failed",
-          message: errorMessageForEnvironment(error),
+          message: publicUnexpectedErrorMessage(),
           retryable: true,
         },
       },

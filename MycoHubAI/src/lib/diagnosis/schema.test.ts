@@ -37,13 +37,22 @@ describe("diagnosis schemas", () => {
   it("trims and validates diagnosis requests", () => {
     expect(
       diagnosisRequestSchema.parse({
-        growLogId: " log-1 ",
+        growLogId: " 550e8400-e29b-41d4-a716-446655440000 ",
         question: " Is this agar plate stalling? ",
       }),
     ).toEqual({
+      growLogId: "550e8400-e29b-41d4-a716-446655440000",
+      question: "Is this agar plate stalling?",
+    });
+  });
+
+  it("rejects malformed grow-log UUIDs", () => {
+    const result = diagnosisRequestSchema.safeParse({
       growLogId: "log-1",
       question: "Is this agar plate stalling?",
     });
+
+    expect(result.success).toBe(false);
   });
 
   it("rejects blank request fields", () => {

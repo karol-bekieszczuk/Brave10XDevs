@@ -2,13 +2,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const diagnoseSelectedLogMock = vi.fn<(...args: unknown[]) => Promise<unknown>>();
 const createClientMock = vi.fn<() => unknown>();
+const createDiagnosisProviderMock = vi.fn();
 
 vi.mock("@/lib/diagnosis/service", () => ({
   diagnoseSelectedLog: diagnoseSelectedLogMock,
 }));
 
 vi.mock("@/lib/diagnosis/provider", () => ({
-  createDiagnosisProvider: vi.fn(() => ({
+  createDiagnosisProvider: createDiagnosisProviderMock.mockImplementation(() => ({
     createQueryEmbedding: vi.fn(),
     generateDiagnosis: vi.fn(),
   })),
@@ -56,7 +57,9 @@ describe("selected-log diagnosis API route", () => {
       },
     });
 
-    const response = await POST(createContext({ growLogId: "log-1", question: "Is this okay?" }) as never);
+    const response = await POST(
+      createContext({ growLogId: "550e8400-e29b-41d4-a716-446655440000", question: "Is this okay?" }) as never,
+    );
 
     expect(response.status).toBe(200);
     expect(response.headers.get("content-type")).toBe("application/json");
@@ -67,7 +70,7 @@ describe("selected-log diagnosis API route", () => {
     expect(diagnoseSelectedLogMock.mock.calls[0]?.slice(0, 3)).toEqual([
       {},
       "owner-1",
-      { growLogId: "log-1", question: "Is this okay?" },
+      { growLogId: "550e8400-e29b-41d4-a716-446655440000", question: "Is this okay?" },
     ]);
     const dependenciesArg = diagnoseSelectedLogMock.mock.calls[0]?.[3] as { createProvider?: unknown };
     expect(typeof dependenciesArg.createProvider).toBe("function");
@@ -88,8 +91,42 @@ describe("selected-log diagnosis API route", () => {
     expect(diagnoseSelectedLogMock).not.toHaveBeenCalled();
   });
 
+  it("returns controlled invalid_request for malformed UUIDs before service or provider work", async () => {
+    const response = await POST(createContext({ growLogId: "not-a-uuid", question: "Is this okay?" }) as never);
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({
+      ok: false,
+      error: {
+        code: "invalid_request",
+        message: "Invalid diagnosis request.",
+        retryable: false,
+      },
+    });
+    expect(diagnoseSelectedLogMock).not.toHaveBeenCalled();
+    expect(createDiagnosisProviderMock).not.toHaveBeenCalled();
+  });
+
+  it("redacts private sentinel text from unexpected HTTP errors", async () => {
+    const context = createContext({
+      growLogId: "550e8400-e29b-41d4-a716-446655440000",
+      question: "Is this okay?",
+    });
+    vi.spyOn(context.request, "json").mockRejectedValue(
+      new Error("PRIVATE_GROW_LOG SECRET_API_KEY DEBUG_STACK provider detail"),
+    );
+
+    const response = await POST(context as never);
+    const serialized = JSON.stringify(await response.json());
+
+    expect(response.status).toBe(502);
+    expect(serialized).not.toMatch(/PRIVATE_GROW_LOG|SECRET_API_KEY|DEBUG_STACK|provider detail/);
+  });
+
   it("returns unauthorized JSON before service execution", async () => {
-    const response = await POST(createContext({ growLogId: "log-1", question: "Is this okay?" }, null) as never);
+    const response = await POST(
+      createContext({ growLogId: "550e8400-e29b-41d4-a716-446655440000", question: "Is this okay?" }, null) as never,
+    );
 
     expect(response.status).toBe(401);
     expect(await response.json()).toMatchObject({
@@ -160,7 +197,9 @@ describe("selected-log diagnosis API route", () => {
       },
     });
 
-    const response = await POST(createContext({ growLogId: "log-1", question: "Is this okay?" }) as never);
+    const response = await POST(
+      createContext({ growLogId: "550e8400-e29b-41d4-a716-446655440000", question: "Is this okay?" }) as never,
+    );
 
     expect(response.status).toBe(status);
     const body: unknown = await response.json();

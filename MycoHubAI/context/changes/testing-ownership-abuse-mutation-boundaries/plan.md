@@ -486,17 +486,17 @@ The account-deletion owner-select migration grants authenticated `SELECT` only. 
 
 #### Automated
 
-- [ ] 1.1 Focused ID/ordering route and service tests pass with malformed, missing, non-owner, and spoofed-owner cases.
-- [ ] 1.2 Malformed diagnosis UUID returns controlled `invalid_request`/400 before Supabase lookup or provider construction.
-- [ ] 1.3 Missing/non-owner single-delete leaves the delete operation uncalled and returns the generic not-found behavior.
-- [ ] 1.4 Account deletion ignores client target fields and forwards only the authenticated user ID.
-- [ ] 1.5 Production-shaped HTTP errors contain none of the sentinel private/secret/debug values.
-- [ ] 1.6 Focused test command passes: `npm.cmd run test:unit -- src/lib/diagnosis/schema.test.ts src/lib/diagnosis/service.test.ts src/pages/api/diagnosis/selected-log.test.ts "src/pages/api/grow-logs/[id]/delete.test.ts" "src/pages/api/grow-logs/[id]/update.test.ts" src/pages/api/grow-logs/create.test.ts src/pages/api/account/delete.test.ts`.
+- [x] 1.1 Focused ID/ordering route and service tests pass with malformed, missing, non-owner, and spoofed-owner cases.
+- [x] 1.2 Malformed diagnosis UUID returns controlled `invalid_request`/400 before Supabase lookup or provider construction.
+- [x] 1.3 Missing/non-owner single-delete leaves the delete operation uncalled and returns the generic not-found behavior.
+- [x] 1.4 Account deletion ignores client target fields and forwards only the authenticated user ID.
+- [x] 1.5 Production-shaped HTTP errors contain none of the sentinel private/secret/debug values.
+- [x] 1.6 Focused test command passes: `npm.cmd run test:unit -- src/lib/diagnosis/schema.test.ts src/lib/diagnosis/service.test.ts src/pages/api/diagnosis/selected-log.test.ts "src/pages/api/grow-logs/[id]/delete.test.ts" "src/pages/api/grow-logs/[id]/update.test.ts" src/pages/api/grow-logs/create.test.ts src/pages/api/account/delete.test.ts`.
 
 #### Manual
 
-- [ ] 1.7 Review the response matrix and confirm valid missing and non-owner resources remain publicly indistinguishable.
-- [ ] 1.8 Confirm the account-deletion route has no client-selected target-ID contract.
+- [x] 1.7 Review the response matrix and confirm valid missing and non-owner resources remain publicly indistinguishable.
+- [x] 1.8 Confirm the account-deletion route has no client-selected target-ID contract.
 
 ### Phase 2: Bound Server And Database Inputs
 

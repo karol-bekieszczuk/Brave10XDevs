@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import { updateGrowLog } from "@/lib/grow-logs/repository";
-import { validateGrowLogInput } from "@/lib/grow-logs/validation";
+import { isValidGrowLogId, validateGrowLogInput } from "@/lib/grow-logs/validation";
 import { createClient } from "@/lib/supabase";
 
 function getFailureRedirect(id: string, form: FormData, message: string) {
@@ -29,6 +29,10 @@ export const POST: APIRoute = async (context) => {
       return context.redirect("/auth/signin?error=Unable to update grow log");
     }
 
+    if (!isValidGrowLogId(id)) {
+      return context.redirect("/grow-logs?error=Grow log not found");
+    }
+
     form = await context.request.formData();
     const validation = validateGrowLogInput({
       stage: form.get("stage"),
@@ -49,9 +53,7 @@ export const POST: APIRoute = async (context) => {
     return context.redirect(`/grow-logs/${updated.id}`);
   } catch {
     return context.redirect(
-      form
-        ? getFailureRedirect(id, form, "Unable to update grow log")
-        : `/grow-logs/${id}/edit?error=Unable to update grow log`,
+      form ? getFailureRedirect(id, form, "Unable to update grow log") : "/grow-logs?error=Unable to update grow log",
     );
   }
 };

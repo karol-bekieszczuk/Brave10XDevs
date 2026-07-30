@@ -5,7 +5,7 @@ export const diagnosisScopeStatusSchema = z.enum(["in_scope", "missing_context",
 export const diagnosisConfidenceBandSchema = z.enum(["low", "medium", "high"]);
 
 export const diagnosisRequestSchema = z.object({
-  growLogId: z.string().trim().min(1, "Grow log id is required."),
+  growLogId: z.string().trim().pipe(z.uuid("Grow log id must be a UUID.")),
   question: z.string().trim().min(1, "Question is required.").max(2000, "Question is too long."),
 });
 

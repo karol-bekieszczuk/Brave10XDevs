@@ -44,6 +44,10 @@ function isUuidLike(value: string) {
   return UUID_PATTERN.test(value);
 }
 
+export function isValidGrowLogId(value: unknown) {
+  return isUuidLike(normalizeText(value));
+}
+
 export function validateGrowLogInput(input: RawGrowLogInput): GrowLogValidationResult {
   const title = normalizeText(input.title);
   const body = normalizeText(input.body);

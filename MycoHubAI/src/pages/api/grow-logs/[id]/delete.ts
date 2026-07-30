@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { deleteGrowLog, getOwnerGrowLog } from "@/lib/grow-logs/repository";
+import { isValidGrowLogId } from "@/lib/grow-logs/validation";
 import { createClient } from "@/lib/supabase";
 
 export const POST: APIRoute = async (context) => {
@@ -13,6 +14,10 @@ export const POST: APIRoute = async (context) => {
       return context.redirect("/auth/signin?error=Unable to delete grow log");
     }
 
+    if (!isValidGrowLogId(id)) {
+      return context.redirect("/grow-logs?error=Grow log not found");
+    }
+
     const existing = await getOwnerGrowLog(supabase, id, user.id);
 
     if (!existing) {
@@ -22,6 +27,6 @@ export const POST: APIRoute = async (context) => {
     await deleteGrowLog(supabase, id, user.id);
     return context.redirect("/grow-logs");
   } catch {
-    return context.redirect(`/grow-logs/${id}?error=Unable to delete grow log`);
+    return context.redirect("/grow-logs?error=Unable to delete grow log");
   }
 };

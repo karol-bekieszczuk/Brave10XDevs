@@ -9,7 +9,7 @@ import type { GrowLogRow } from "@/lib/grow-logs/types";
 const client = {} as GrowLogClient & DiagnosisRetrievalClient;
 
 const growLog: GrowLogRow = {
-  id: "log-1",
+  id: "550e8400-e29b-41d4-a716-446655440000",
   ownerId: "owner-1",
   stage: "agar",
   title: "Plate A",
@@ -69,6 +69,32 @@ describe("selected-log diagnosis service", () => {
     expect(dependencies.provider.createQueryEmbedding).not.toHaveBeenCalled();
   });
 
+  it("rejects malformed grow-log UUIDs before lookup or provider construction", async () => {
+    const createProvider = vi.fn(() => createDependencies().provider);
+    const dependencies = createDependencies({
+      provider: undefined,
+      createProvider,
+    });
+
+    const response = await diagnoseSelectedLog(
+      client,
+      "owner-1",
+      { growLogId: "not-a-uuid", question: "Is this plate stalled?" },
+      dependencies,
+    );
+
+    expect(response).toEqual({
+      ok: false,
+      error: {
+        code: "invalid_request",
+        message: "Invalid diagnosis request.",
+        retryable: false,
+      },
+    });
+    expect(dependencies.getGrowLog).not.toHaveBeenCalled();
+    expect(createProvider).not.toHaveBeenCalled();
+  });
+
   it("loads the owner-scoped grow log before embedding, retrieval, or generation", async () => {
     const order: string[] = [];
     const dependencies = createDependencies({
@@ -99,12 +125,12 @@ describe("selected-log diagnosis service", () => {
     const response = await diagnoseSelectedLog(
       client,
       "owner-1",
-      { growLogId: "log-1", question: "Is this plate stalled?" },
+      { growLogId: "550e8400-e29b-41d4-a716-446655440000", question: "Is this plate stalled?" },
       dependencies,
     );
 
     expect(response).toEqual({ ok: true, diagnosis });
-    expect(dependencies.getGrowLog).toHaveBeenCalledWith(client, "log-1", "owner-1");
+    expect(dependencies.getGrowLog).toHaveBeenCalledWith(client, "550e8400-e29b-41d4-a716-446655440000", "owner-1");
     expect(order).toEqual([
       "getGrowLog",
       "createProvider",
@@ -122,7 +148,7 @@ describe("selected-log diagnosis service", () => {
     const response = await diagnoseSelectedLog(
       client,
       "owner-1",
-      { growLogId: "missing", question: "Is this okay?" },
+      { growLogId: "7f6c9a4e-308b-4a17-a0e3-ff2d6d912345", question: "Is this okay?" },
       dependencies,
     );
 
@@ -143,7 +169,7 @@ describe("selected-log diagnosis service", () => {
     const response = await diagnoseSelectedLog(
       client,
       "owner-1",
-      { growLogId: "missing", question: "Is this okay?" },
+      { growLogId: "7f6c9a4e-308b-4a17-a0e3-ff2d6d912345", question: "Is this okay?" },
       dependencies,
     );
 
@@ -160,7 +186,7 @@ describe("selected-log diagnosis service", () => {
     const response = await diagnoseSelectedLog(
       client,
       "owner-1",
-      { growLogId: "log-1", question: "Is this okay?" },
+      { growLogId: "550e8400-e29b-41d4-a716-446655440000", question: "Is this okay?" },
       dependencies,
     );
 
@@ -180,7 +206,7 @@ describe("selected-log diagnosis service", () => {
     const response = await diagnoseSelectedLog(
       client,
       "owner-1",
-      { growLogId: "log-1", question: "What is wrong with my plate?" },
+      { growLogId: "550e8400-e29b-41d4-a716-446655440000", question: "What is wrong with my plate?" },
       dependencies,
     );
 
@@ -203,7 +229,7 @@ describe("selected-log diagnosis service", () => {
     const response = await diagnoseSelectedLog(
       client,
       "owner-1",
-      { growLogId: "log-1", question: "Is this plate contaminated?" },
+      { growLogId: "550e8400-e29b-41d4-a716-446655440000", question: "Is this plate contaminated?" },
       dependencies,
     );
 
@@ -225,7 +251,7 @@ describe("selected-log diagnosis service", () => {
     const response = await diagnoseSelectedLog(
       client,
       "owner-1",
-      { growLogId: "log-1", question: "Is this plate recovering?" },
+      { growLogId: "550e8400-e29b-41d4-a716-446655440000", question: "Is this plate recovering?" },
       dependencies,
     );
 
@@ -247,7 +273,7 @@ describe("selected-log diagnosis service", () => {
     const response = await diagnoseSelectedLog(
       client,
       "owner-1",
-      { growLogId: "log-1", question: "Is this plate contaminated?" },
+      { growLogId: "550e8400-e29b-41d4-a716-446655440000", question: "Is this plate contaminated?" },
       dependencies,
     );
 
@@ -274,7 +300,7 @@ describe("selected-log diagnosis service", () => {
     const response = await diagnoseSelectedLog(
       client,
       "owner-1",
-      { growLogId: "log-1", question: "Is this plate contaminated?" },
+      { growLogId: "550e8400-e29b-41d4-a716-446655440000", question: "Is this plate contaminated?" },
       dependencies,
     );
 
@@ -296,7 +322,7 @@ describe("selected-log diagnosis service", () => {
     const response = await diagnoseSelectedLog(
       client,
       "owner-1",
-      { growLogId: "log-1", question: "Is this plate contaminated?" },
+      { growLogId: "550e8400-e29b-41d4-a716-446655440000", question: "Is this plate contaminated?" },
       dependencies,
     );
 
@@ -318,7 +344,7 @@ describe("selected-log diagnosis service", () => {
     const response = await diagnoseSelectedLog(
       client,
       "owner-1",
-      { growLogId: "log-1", question: "Why is this jar stalled?" },
+      { growLogId: "550e8400-e29b-41d4-a716-446655440000", question: "Why is this jar stalled?" },
       dependencies,
     );
 
@@ -340,7 +366,7 @@ describe("selected-log diagnosis service", () => {
       client,
       "owner-1",
       {
-        growLogId: "log-1",
+        growLogId: "550e8400-e29b-41d4-a716-446655440000",
         question: "What does this grain log suggest, and how should I improve fruiting conditions?",
       },
       dependencies,
@@ -372,7 +398,12 @@ describe("selected-log diagnosis service", () => {
       }),
     });
 
-    const response = await diagnoseSelectedLog(client, "owner-1", { growLogId: "log-1", question }, dependencies);
+    const response = await diagnoseSelectedLog(
+      client,
+      "owner-1",
+      { growLogId: "550e8400-e29b-41d4-a716-446655440000", question },
+      dependencies,
+    );
 
     expect(response.ok).toBe(true);
     expect(response.ok ? response.diagnosis.scopeStatus : null).toBe(expectedScope);
@@ -388,7 +419,7 @@ describe("selected-log diagnosis service", () => {
     const response = await diagnoseSelectedLog(
       client,
       "owner-1",
-      { growLogId: "log-1", question: "Can you identify this species from a photo?" },
+      { growLogId: "550e8400-e29b-41d4-a716-446655440000", question: "Can you identify this species from a photo?" },
       dependencies,
     );
 
@@ -407,7 +438,10 @@ describe("selected-log diagnosis service", () => {
     const response = await diagnoseSelectedLog(
       client,
       "owner-1",
-      { growLogId: "log-1", question: "Identify the contamination from a photo and tell me the exact species." },
+      {
+        growLogId: "550e8400-e29b-41d4-a716-446655440000",
+        question: "Identify the contamination from a photo and tell me the exact species.",
+      },
       dependencies,
     );
 
@@ -431,7 +465,7 @@ describe("selected-log diagnosis service", () => {
     const response = await diagnoseSelectedLog(
       client,
       "owner-1",
-      { growLogId: "log-1", question: "Should I smell the jar to check contamination?" },
+      { growLogId: "550e8400-e29b-41d4-a716-446655440000", question: "Should I smell the jar to check contamination?" },
       dependencies,
     );
 
@@ -471,7 +505,12 @@ describe("selected-log diagnosis service", () => {
   ])("short-circuits unsupported F-03 non-goals: $question", async ({ question, expectedScope }) => {
     const dependencies = createDependencies();
 
-    const response = await diagnoseSelectedLog(client, "owner-1", { growLogId: "log-1", question }, dependencies);
+    const response = await diagnoseSelectedLog(
+      client,
+      "owner-1",
+      { growLogId: "550e8400-e29b-41d4-a716-446655440000", question },
+      dependencies,
+    );
 
     expect(response.ok).toBe(true);
     expect(response.ok ? response.diagnosis.scopeStatus : null).toBe(expectedScope);
@@ -491,7 +530,7 @@ describe("selected-log diagnosis service", () => {
     const response = await diagnoseSelectedLog(
       client,
       "owner-1",
-      { growLogId: "log-1", question: "Is this okay?" },
+      { growLogId: "550e8400-e29b-41d4-a716-446655440000", question: "Is this okay?" },
       dependencies,
     );
 
@@ -516,7 +555,7 @@ describe("selected-log diagnosis service", () => {
     const response = await diagnoseSelectedLog(
       client,
       "owner-1",
-      { growLogId: "log-1", question: "Is this okay?" },
+      { growLogId: "550e8400-e29b-41d4-a716-446655440000", question: "Is this okay?" },
       dependencies,
     );
 
@@ -543,7 +582,7 @@ describe("selected-log diagnosis service", () => {
     const response = await diagnoseSelectedLog(
       client,
       "owner-1",
-      { growLogId: "log-1", question: "Is this okay?" },
+      { growLogId: "550e8400-e29b-41d4-a716-446655440000", question: "Is this okay?" },
       dependencies,
     );
 

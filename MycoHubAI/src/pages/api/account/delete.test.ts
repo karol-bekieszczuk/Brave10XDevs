@@ -35,9 +35,13 @@ vi.mock("@/lib/auth-session", () => ({
 
 const { POST } = await import("./delete");
 
-function createContext(user: { id: string } | null = { id: "owner-1" }) {
+function createContext(user: { id: string } | null = { id: "owner-1" }, body?: Record<string, string>) {
   return {
-    request: new Request("http://localhost/api/account/delete", { method: "POST" }),
+    request: new Request("http://localhost/api/account/delete?targetUserId=query-attacker", {
+      method: "POST",
+      body: body ? JSON.stringify(body) : undefined,
+      headers: body ? { "content-type": "application/json" } : undefined,
+    }),
     cookies: {},
     locals: { user },
     redirect: vi.fn((location: string) => new Response(null, { status: 302, headers: { location } })),
@@ -88,6 +92,26 @@ describe("account deletion API route", () => {
     expect(signOut).not.toHaveBeenCalled();
     expect(safeSignOutMock).toHaveBeenCalledWith({ auth: { signOut } }, context.request.headers, context.cookies);
     expect(response.headers.get("location")).toBe("/auth/signin?message=Account%20deletion%20requested");
+  });
+
+  it("ignores client-selected targets and forwards only the authenticated user ID", async () => {
+    requestAccountDeletionMock.mockResolvedValue({
+      status: "success",
+      request: { userId: "owner-1" },
+    });
+    const context = createContext(
+      { id: "owner-1" },
+      {
+        targetUserId: "body-attacker",
+        owner_id: "body-owner",
+      },
+    );
+    const jsonSpy = vi.spyOn(context.request, "json");
+
+    await POST(context as never);
+
+    expect(jsonSpy).not.toHaveBeenCalled();
+    expect(requestAccountDeletionMock).toHaveBeenCalledWith("owner-1", { adminClient: {} });
   });
 
   it("does not sign out when the service fails", async () => {
