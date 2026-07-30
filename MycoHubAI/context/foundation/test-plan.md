@@ -44,27 +44,27 @@ terms, not test names. The Source column cites the evidence that surfaced
 this risk - never a specific file as "where the failure lives" (that is
 research's job, see §1 principle #3).
 
-| # | Risk (failure scenario) | Impact | Likelihood | Source (evidence - not anchor) |
-|---|---|---|---|---|
-| 1 | Diagnosis sounds confident while wrong or unsupported by the selected grow log. | High | High | PRD US-01/FR-003; AGENTS hard rules; interview Q1/Q3; hot-spot dir `MycoHubAI/src/lib/diagnosis` |
-| 2 | Malformed or partial OpenRouter/provider responses leak through API/service/UI and produce nonsense output. | High | High | interview Q1/Q2/Q4; active selected-log diagnosis surface; hot-spot dirs `MycoHubAI/src/lib/diagnosis`, `MycoHubAI/src/pages/api` |
-| 3 | Missing-context, mixed-scope, or out-of-scope prompts are diagnosed instead of narrowed/refused. | High | Medium | PRD acceptance criteria and guardrails; F-03 rubric surface; interview Q3 |
-| 4 | Owner/privacy boundaries regress across grow-log, diagnosis, account deletion, or bulk deletion flows. | High | Medium | PRD Access Control/FR-005; AGENTS privacy rule; roadmap S-03/S-04; hot-spot dirs `MycoHubAI/src/pages/api`, `MycoHubAI/src/lib/account-deletion` |
-| 5 | Runtime/env/provider failure works in tests but fails locally or on Cloudflare. | Medium | High | roadmap observability partial; stack Cloudflare/OpenRouter; hot-spot runtime/config/auth areas |
-| 6 | Server-side validation/RLS parity drifts as API surfaces expand. | High | Medium | PRD FR-001/FR-005; roadmap grow-log/account/bulk surfaces; hot-spot dirs `MycoHubAI/src/lib/grow-logs`, `MycoHubAI/supabase/migrations` |
-| 7 | Abuse of authenticated/API/provider surfaces bypasses ownership, trusts hostile input, leaks secrets/private data, or triggers costly provider work repeatedly. | High | Medium | mandatory abuse lens for auth + user input + server-side provider calls; AGENTS privacy rule; PRD Access Control/FR-005; stack Cloudflare/OpenRouter; hot-spot dirs `MycoHubAI/src/pages/api`, `MycoHubAI/src/lib/diagnosis`, `MycoHubAI/src/lib/runtime-env` |
+| #   | Risk (failure scenario)                                                                                                                                                                             | Impact | Likelihood | Source (evidence - not anchor)                                                                                                                                                                                                                                                               |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Diagnosis sounds confident while wrong or unsupported by the selected grow log.                                                                                                                     | High   | High       | PRD US-01/FR-003; AGENTS hard rules; interview Q1/Q3; hot-spot dir `MycoHubAI/src/lib/diagnosis`                                                                                                                                                                                             |
+| 2   | Malformed or partial OpenRouter/provider responses leak through API/service/UI and produce nonsense output.                                                                                         | High   | High       | interview Q1/Q2/Q4; active selected-log diagnosis surface; hot-spot dirs `MycoHubAI/src/lib/diagnosis`, `MycoHubAI/src/pages/api`                                                                                                                                                            |
+| 3   | Missing-context, mixed-scope, or out-of-scope prompts are diagnosed instead of narrowed/refused.                                                                                                    | High   | Medium     | PRD acceptance criteria and guardrails; F-03 rubric surface; interview Q3                                                                                                                                                                                                                    |
+| 4   | Owner/privacy boundaries regress across grow-log or diagnosis resources, bulk mutations, or privileged account deletion, including authenticated-target derivation and pending-deletion visibility. | High   | Medium     | PRD Access Control/FR-005; AGENTS privacy rule; roadmap S-03/S-04; hot-spot dirs `MycoHubAI/src/pages/api`, `MycoHubAI/src/lib/account-deletion`, `MycoHubAI/supabase/migrations`                                                                                                            |
+| 5   | Runtime/env/provider failure works in tests but fails locally or on Cloudflare.                                                                                                                     | Medium | High       | roadmap observability partial; stack Cloudflare/OpenRouter; hot-spot runtime/config/auth areas                                                                                                                                                                                               |
+| 6   | Defined stage/body/resource-ID validation or RLS-policy parity drifts across grow-log, diagnosis, and account-deletion surfaces.                                                                    | High   | Medium     | PRD FR-001/FR-005; roadmap grow-log/account/bulk surfaces; hot-spot dirs `MycoHubAI/src/pages/api`, `MycoHubAI/src/lib/grow-logs`, `MycoHubAI/supabase/migrations`                                                                                                                           |
+| 7   | Abuse of authenticated/API/provider surfaces bypasses ownership, trusts hostile input, leaks secrets/private data, or triggers costly provider work repeatedly.                                     | High   | Medium     | mandatory abuse lens for auth + user input + server-side provider calls; AGENTS privacy rule; PRD Access Control/FR-005; stack Cloudflare/OpenRouter; hot-spot dirs `MycoHubAI/src/pages/api`, `MycoHubAI/src/lib/diagnosis`, `MycoHubAI/src/lib/grow-logs`, `MycoHubAI/src/lib/runtime-env` |
 
 ### Risk Response Guidance
 
-| Risk | What would prove protection | Must challenge | Context `/10x-research` must ground | Likely cheapest layer | Anti-pattern to avoid |
-|------|-----------------------------|----------------|--------------------------------------|-----------------------|-----------------------|
-| #1 | Answer evidence visibly depends on selected log/stage and uncertainty stays bounded. | Passing schema means answer quality is safe. | diagnosis entry point, prompt contract, selected-log binding, rubric oracle | integration + contract tests | implementation mirror |
-| #2 | Bad provider shapes are rejected or translated into controlled errors before UI render. | Provider SDK always returns valid structured data. | provider boundary, validation path, error translation, UI rendering contract | unit + integration | happy-path-only mocks |
-| #3 | Unsupported/missing/mixed cases follow rubric outcomes without invented diagnosis. | In-scope happy path proves guardrails. | evaluation cases, scope classes, service routing | contract/evaluation tests | copied production expected values |
-| #4 | Non-owner/missing IDs cannot trigger diagnosis, data access, deletion, or side effects. | Authentication implies ownership. | owner checks, persisted state, API/resource boundary | integration | over-mocking internals |
-| #5 | Missing secrets/provider failures surface controlled failure and do not persist bad state. | Build success proves runtime readiness. | env contract, Cloudflare/runtime boundary, failure mode | unit + manual smoke | local-only assurance |
-| #6 | Invalid stage/body/owner inputs are rejected server-side and by DB/RLS where applicable. | UI validation equals product contract. | server validation, migration/RLS source, API side effects | integration + migration smoke | testing only client forms |
-| #7 | Hostile or repeated requests cannot cross owner boundaries, bypass server validation, leak secrets/private data, or start unbounded expensive provider work. | "Signed in" means safe, client validation is enough, and provider calls are cheap/harmless, but cannot be repeatedly sent as can generate higher costs. | auth/resource boundary, input parsing, error/log redaction, provider-call ordering, rate/cost control surface | integration + abuse/security contract tests | happy-path auth tests, testing only one benign request, or exposing debug details as assertions |
+| Risk | What would prove protection                                                                                                                                                                                                                                          | Must challenge                                                                                                         | Context `/10x-research` must ground                                                                                                               | Likely cheapest layer                       | Anti-pattern to avoid                                                                                 |
+| ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| #1   | Answer evidence visibly depends on selected log/stage and uncertainty stays bounded.                                                                                                                                                                                 | Passing schema means answer quality is safe.                                                                           | diagnosis entry point, prompt contract, selected-log binding, rubric oracle                                                                       | integration + contract tests                | implementation mirror                                                                                 |
+| #2   | Bad provider shapes are rejected or translated into controlled errors before UI render.                                                                                                                                                                              | Provider SDK always returns valid structured data.                                                                     | provider boundary, validation path, error translation, UI rendering contract                                                                      | unit + integration                          | happy-path-only mocks                                                                                 |
+| #3   | Unsupported/missing/mixed cases follow rubric outcomes without invented diagnosis.                                                                                                                                                                                   | In-scope happy path proves guardrails.                                                                                 | evaluation cases, scope classes, service routing                                                                                                  | contract/evaluation tests                   | copied production expected values                                                                     |
+| #4   | Non-owner/missing resource IDs cannot cause reads, diagnosis/provider work, or mutations; account deletion targets only the authenticated user; pending-deletion state is owner-readable without becoming cross-owner mutable.                                       | Authentication implies resource ownership, or privileged admin access implies the target ID is safe.                   | owner filters and RLS, persisted state, authenticated target derivation, admin boundary, pending-deletion policy                                  | integration + RLS smoke                     | over-mocking internals or treating query shape as persisted-state proof                               |
+| #5   | Missing secrets/provider failures surface controlled failure and do not persist bad state.                                                                                                                                                                           | Build success proves runtime readiness.                                                                                | env contract, Cloudflare/runtime boundary, failure mode                                                                                           | unit + manual smoke                         | local-only assurance                                                                                  |
+| #6   | Defined stage/body invariants are enforced server-side and by the DB; malformed resource IDs are classified before DB/provider work; spoofed owners are ignored and direct cross-owner operations are denied; account-deletion policy matches middleware visibility. | UI validation or a generic database failure equals the product contract.                                               | server validation and ID schema, migration constraints/RLS policies, authenticated owner derivation, API side effects                             | integration + migration/RLS smoke           | testing only client forms or static SQL text                                                          |
+| #7   | Invalid, non-owner, and unsupported requests fail before private-data access or provider cost and return redacted errors; after an explicit cost policy exists, repeated valid requests and oversized inputs/outputs remain bounded.                                 | "Signed in" means safe, client validation is sufficient, or per-call timeout bounds request volume and provider spend. | auth/resource boundary, input and stored-text bounds, error/log redaction, provider-call ordering, rate/concurrency/deduplication control surface | integration + abuse/security contract tests | happy-path auth tests, one benign request, assuming missing controls pass, or asserting debug details |
 
 ## 3. Phased Rollout
 
@@ -72,23 +72,23 @@ Each row is a discrete rollout phase that will open its own change folder
 via `/10x-new`. Status moves left-to-right through the values below; the
 orchestrator updates Status as artifacts appear on disk.
 
-| # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
-|---|---|---|---|---|---|---|
-| 1 | Diagnosis Contract Hardening | Prove diagnosis confidence, selected-log binding, malformed provider handling, and scope outcomes at the cheapest deterministic layers. | #1, #2, #3 | unit, integration, contract/evaluation | complete | context/changes/testing-diagnosis-contract-hardening/ |
-| 2 | Ownership, Abuse, And Mutation Boundaries | Prove owner-scoped access, hostile-input rejection, secret/private-data redaction, side-effect boundaries, and costly-operation controls for diagnosis, account deletion, and bulk/grow-log APIs. | #4, #6, #7 | integration, abuse/security, RLS/manual smoke | change opened | context/changes/testing-ownership-abuse-mutation-boundaries/ |
-| 3 | Runtime Failure And Smoke Layer | Prove env/provider/runtime failures are visible, controlled, and covered by focused smoke checks. | #5, cross-cutting | targeted smoke, limited browser/manual | not started | — |
-| 4 | Quality Gates And Cookbook | Lock the current floor in CI/docs and write cookbook patterns for future tests. | cross-cutting | gates, documentation | not started | — |
+| #   | Phase name                                | Goal (one line)                                                                                                                                                                                   | Risks covered     | Test types                                    | Status      | Change folder                                                |
+| --- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- | --------------------------------------------- | ----------- | ------------------------------------------------------------ |
+| 1   | Diagnosis Contract Hardening              | Prove diagnosis confidence, selected-log binding, malformed provider handling, and scope outcomes at the cheapest deterministic layers.                                                           | #1, #2, #3        | unit, integration, contract/evaluation        | complete    | context/changes/testing-diagnosis-contract-hardening/        |
+| 2   | Ownership, Abuse, And Mutation Boundaries | Prove owner-scoped access, hostile-input rejection, secret/private-data redaction, side-effect boundaries, and costly-operation controls for diagnosis, account deletion, and bulk/grow-log APIs. | #4, #6, #7        | integration, abuse/security, RLS/manual smoke | planned     | context/changes/testing-ownership-abuse-mutation-boundaries/ |
+| 3   | Runtime Failure And Smoke Layer           | Prove env/provider/runtime failures are visible, controlled, and covered by focused smoke checks.                                                                                                 | #5, cross-cutting | targeted smoke, limited browser/manual        | not started | —                                                            |
+| 4   | Quality Gates And Cookbook                | Lock the current floor in CI/docs and write cookbook patterns for future tests.                                                                                                                   | cross-cutting     | gates, documentation                          | not started | —                                                            |
 
 Status vocabulary (fixed - parser literals):
 
-| Value | Meaning |
-|---|---|
-| `not started` | No change folder for this rollout phase yet. |
+| Value           | Meaning                                                             |
+| --------------- | ------------------------------------------------------------------- |
+| `not started`   | No change folder for this rollout phase yet.                        |
 | `change opened` | `context/changes/<id>/` exists with `change.md`; research not done. |
-| `researched` | `research.md` exists in the change folder. |
-| `planned` | `plan.md` exists with a `## Progress` section. |
-| `implementing` | Progress section has at least one `[x]` and at least one `[ ]`. |
-| `complete` | Progress section is fully `[x]`. |
+| `researched`    | `research.md` exists in the change folder.                          |
+| `planned`       | `plan.md` exists with a `## Progress` section.                      |
+| `implementing`  | Progress section has at least one `[x]` and at least one `[ ]`.     |
+| `complete`      | Progress section is fully `[x]`.                                    |
 
 ## 4. Stack
 
@@ -99,15 +99,16 @@ plus the MCP/tools actually exposed in the current session. If a useful docs
 or search MCP such as Context7 or Exa.ai is not available, say that instead
 of assuming access.
 
-| Layer | Tool | Version | Notes |
-|---|---|---|---|
-| unit + integration | Vitest | 4.1.7 | Meaningful existing suite; use for deterministic API, service, and component coverage. |
-| API mocking | custom mocks / direct dependency injection | n/a | Prefer boundary mocks for provider, Supabase, and fetch edges already present in the codebase. |
-| e2e | Browser / Playwright-style manual smoke when needed | n/a | Reserve for user-visible flows that integration tests cannot express cheaply. |
-| accessibility | none yet | n/a | See Phase 4 if accessibility checks become necessary. |
-| (optional) AI-native | Browser plugin - checked: 2026-06-15 | n/a | Use only for runtime/manual verification where deterministic tests miss the signal. |
+| Layer                | Tool                                                | Version | Notes                                                                                          |
+| -------------------- | --------------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------- |
+| unit + integration   | Vitest                                              | 4.1.7   | Meaningful existing suite; use for deterministic API, service, and component coverage.         |
+| API mocking          | custom mocks / direct dependency injection          | n/a     | Prefer boundary mocks for provider, Supabase, and fetch edges already present in the codebase. |
+| e2e                  | Browser / Playwright-style manual smoke when needed | n/a     | Reserve for user-visible flows that integration tests cannot express cheaply.                  |
+| accessibility        | none yet                                            | n/a     | See Phase 4 if accessibility checks become necessary.                                          |
+| (optional) AI-native | Browser plugin - checked: 2026-06-15                | n/a     | Use only for runtime/manual verification where deterministic tests miss the signal.            |
 
 **Stack grounding tools (current session):**
+
 - Docs: Context7 - Astro 6.3.1 and Vitest 4.1.6 docs checked for current testing guidance; checked: 2026-06-15
 - Search: Exa.ai - available in current session, not needed after Context7 grounding; checked: 2026-06-15
 - Runtime/browser: Browser tool - available as a local verification layer, not used during plan write; checked: 2026-06-15
@@ -124,16 +125,16 @@ The full set of gates that must pass before a change reaches production.
 "Required for §3 Phase <N>" means the gate is enforced once that rollout
 phase lands; before that, the gate is `planned`.
 
-| Gate | Where | Required? | Catches |
-|---|---|---|---|
-| lint + typecheck | local + CI | required | syntactic / type drift |
-| unit + integration | local + CI | required after §3 Phase 1 | logic regressions |
-| e2e on critical flows | CI on PR | required after §3 Phase 2 only if still needed | broken critical user paths |
-| abuse/security contracts | local + CI | required after §3 Phase 2 | owner bypass, hostile input, secret/private-data leak, unbounded costly operations |
-| post-edit hook | local (agent loop) | recommended after §3 Phase 3 | regressions at edit time |
-| visual diff (deterministic) | CI on PR | optional | rendering regressions |
-| multimodal visual review | CI on PR | optional | visual issues classic diff misses |
-| pre-prod smoke | between merge + prod | optional | environment-specific failures |
+| Gate                        | Where                | Required?                                      | Catches                                                                            |
+| --------------------------- | -------------------- | ---------------------------------------------- | ---------------------------------------------------------------------------------- |
+| lint + typecheck            | local + CI           | required                                       | syntactic / type drift                                                             |
+| unit + integration          | local + CI           | required after §3 Phase 1                      | logic regressions                                                                  |
+| e2e on critical flows       | CI on PR             | required after §3 Phase 2 only if still needed | broken critical user paths                                                         |
+| abuse/security contracts    | local + CI           | required after §3 Phase 2                      | owner bypass, hostile input, secret/private-data leak, unbounded costly operations |
+| post-edit hook              | local (agent loop)   | recommended after §3 Phase 3                   | regressions at edit time                                                           |
+| visual diff (deterministic) | CI on PR             | optional                                       | rendering regressions                                                              |
+| multimodal visual review    | CI on PR             | optional                                       | visual issues classic diff misses                                                  |
+| pre-prod smoke              | between merge + prod | optional                                       | environment-specific failures                                                      |
 
 ## 6. Cookbook Patterns
 
