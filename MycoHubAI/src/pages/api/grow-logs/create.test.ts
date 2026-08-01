@@ -13,11 +13,11 @@ vi.mock("@/lib/supabase", () => ({
 
 const { POST } = await import("./create");
 
-function createContext() {
+function createContext(input: { stage?: string; title?: string; body?: string } = {}) {
   const form = new FormData();
-  form.set("stage", "grain");
-  form.set("title", "Jar A");
-  form.set("body", "Recovering after shake.");
+  form.set("stage", input.stage ?? "grain");
+  form.set("title", input.title ?? "Jar A");
+  form.set("body", input.body ?? "Recovering after shake.");
   form.set("owner_id", "attacker-owner");
 
   return {
@@ -47,5 +47,20 @@ describe("create grow-log API route", () => {
       body: "Recovering after shake.",
     });
     expect(response.headers.get("location")).toBe("/grow-logs/550e8400-e29b-41d4-a716-446655440000");
+  });
+
+  it("accepts exact text limits and rejects one-over values before repository mutation", async () => {
+    createGrowLogMock.mockResolvedValue({ id: "550e8400-e29b-41d4-a716-446655440000" });
+    const title = "🍄".repeat(160);
+    const body = "🍄".repeat(8_000);
+
+    await POST(createContext({ title, body }) as never);
+
+    expect(createGrowLogMock).toHaveBeenCalledWith({}, "owner-1", { stage: "grain", title, body });
+
+    createGrowLogMock.mockClear();
+    await POST(createContext({ title: `${title}🍄`, body: `${body}🍄` }) as never);
+
+    expect(createGrowLogMock).not.toHaveBeenCalled();
   });
 });

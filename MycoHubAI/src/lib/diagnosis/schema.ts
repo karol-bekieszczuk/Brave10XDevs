@@ -10,18 +10,18 @@ export const diagnosisRequestSchema = z.object({
 });
 
 export const diagnosisSourceSchema = z.object({
-  sourcePath: z.string().min(1),
-  sourceHeading: z.string().min(1).nullable(),
+  sourcePath: z.string().min(1).max(300),
+  sourceHeading: z.string().min(1).max(200).nullable(),
 });
 
 export const diagnosisResponseSchema = z.object({
   scopeStatus: diagnosisScopeStatusSchema,
-  possibleCauses: z.array(z.string().min(1)),
-  suggestedActions: z.array(z.string().min(1)),
+  possibleCauses: z.array(z.string().min(1).max(500)).max(5),
+  suggestedActions: z.array(z.string().min(1).max(500)).max(5),
   confidenceBand: diagnosisConfidenceBandSchema.nullable(),
-  uncertainty: z.string().min(1),
-  followUpQuestion: z.string().min(1).nullable(),
-  sources: z.array(diagnosisSourceSchema),
+  uncertainty: z.string().min(1).max(1_000),
+  followUpQuestion: z.string().min(1).max(500).nullable(),
+  sources: z.array(diagnosisSourceSchema).max(5),
 });
 
 export const diagnosisSuccessSchema = z.object({

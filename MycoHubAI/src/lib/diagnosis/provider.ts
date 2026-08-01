@@ -101,6 +101,7 @@ export function createDiagnosisProvider(apiKey: string, options: DiagnosisProvid
           output: Output.object({
             schema: diagnosisResponseSchema,
           }),
+          maxOutputTokens: 1_200,
           prompt: buildDiagnosisPrompt(input),
           abortSignal: AbortSignal.timeout(DIAGNOSIS_GENERATION_TIMEOUT_MS),
         });

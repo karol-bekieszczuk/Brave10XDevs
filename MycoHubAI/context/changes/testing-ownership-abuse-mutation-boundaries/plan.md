@@ -486,33 +486,33 @@ The account-deletion owner-select migration grants authenticated `SELECT` only. 
 
 #### Automated
 
-- [x] 1.1 Focused ID/ordering route and service tests pass with malformed, missing, non-owner, and spoofed-owner cases.
-- [x] 1.2 Malformed diagnosis UUID returns controlled `invalid_request`/400 before Supabase lookup or provider construction.
-- [x] 1.3 Missing/non-owner single-delete leaves the delete operation uncalled and returns the generic not-found behavior.
-- [x] 1.4 Account deletion ignores client target fields and forwards only the authenticated user ID.
-- [x] 1.5 Production-shaped HTTP errors contain none of the sentinel private/secret/debug values.
-- [x] 1.6 Focused test command passes: `npm.cmd run test:unit -- src/lib/diagnosis/schema.test.ts src/lib/diagnosis/service.test.ts src/pages/api/diagnosis/selected-log.test.ts "src/pages/api/grow-logs/[id]/delete.test.ts" "src/pages/api/grow-logs/[id]/update.test.ts" src/pages/api/grow-logs/create.test.ts src/pages/api/account/delete.test.ts`.
+- [x] 1.1 Focused ID/ordering route and service tests pass with malformed, missing, non-owner, and spoofed-owner cases. — 768f9c9
+- [x] 1.2 Malformed diagnosis UUID returns controlled `invalid_request`/400 before Supabase lookup or provider construction. — 768f9c9
+- [x] 1.3 Missing/non-owner single-delete leaves the delete operation uncalled and returns the generic not-found behavior. — 768f9c9
+- [x] 1.4 Account deletion ignores client target fields and forwards only the authenticated user ID. — 768f9c9
+- [x] 1.5 Production-shaped HTTP errors contain none of the sentinel private/secret/debug values. — 768f9c9
+- [x] 1.6 Focused test command passes: `npm.cmd run test:unit -- src/lib/diagnosis/schema.test.ts src/lib/diagnosis/service.test.ts src/pages/api/diagnosis/selected-log.test.ts "src/pages/api/grow-logs/[id]/delete.test.ts" "src/pages/api/grow-logs/[id]/update.test.ts" src/pages/api/grow-logs/create.test.ts src/pages/api/account/delete.test.ts`. — 768f9c9
 
 #### Manual
 
-- [x] 1.7 Review the response matrix and confirm valid missing and non-owner resources remain publicly indistinguishable.
-- [x] 1.8 Confirm the account-deletion route has no client-selected target-ID contract.
+- [x] 1.7 Review the response matrix and confirm valid missing and non-owner resources remain publicly indistinguishable. — 768f9c9
+- [x] 1.8 Confirm the account-deletion route has no client-selected target-ID contract. — 768f9c9
 
 ### Phase 2: Bound Server And Database Inputs
 
 #### Automated
 
-- [ ] 2.1 Grow-log validation tests pass for 160/8,000 exact and one-over boundaries.
-- [ ] 2.2 Create/update route tests prove invalid and oversized inputs cause zero repository mutation and spoofed owners are ignored.
-- [ ] 2.3 Bulk tests preserve partial success and reject more than 100 deduplicated valid UUIDs before deletion.
-- [ ] 2.4 Diagnosis tests reject raw JSON over 16 KiB before service/provider work.
-- [ ] 2.5 Provider/schema tests enforce `maxOutputTokens: 1200` and all response cardinality/text bounds.
-- [ ] 2.6 Focused validation command passes: `npm.cmd run test:unit -- src/lib/grow-logs/validation.test.ts src/pages/api/grow-logs/create.test.ts "src/pages/api/grow-logs/[id]/update.test.ts" src/pages/api/grow-logs/bulk-delete.test.ts src/lib/diagnosis/schema.test.ts src/lib/diagnosis/provider.test.ts src/pages/api/diagnosis/selected-log.test.ts`.
+- [x] 2.1 Grow-log validation tests pass for 160/8,000 exact and one-over boundaries.
+- [x] 2.2 Create/update route tests prove invalid and oversized inputs cause zero repository mutation and spoofed owners are ignored.
+- [x] 2.3 Bulk tests preserve partial success and reject more than 100 deduplicated valid UUIDs before deletion.
+- [x] 2.4 Diagnosis tests reject raw JSON over 16 KiB before service/provider work.
+- [x] 2.5 Provider/schema tests enforce `maxOutputTokens: 1200` and all response cardinality/text bounds.
+- [x] 2.6 Focused validation command passes: `npm.cmd run test:unit -- src/lib/grow-logs/validation.test.ts src/pages/api/grow-logs/create.test.ts "src/pages/api/grow-logs/[id]/update.test.ts" src/pages/api/grow-logs/bulk-delete.test.ts src/lib/diagnosis/schema.test.ts src/lib/diagnosis/provider.test.ts src/pages/api/diagnosis/selected-log.test.ts`.
 
 #### Manual
 
-- [ ] 2.7 Review the migration and explicitly accept the chosen irreversible truncation of pre-existing values before constraints are added.
-- [ ] 2.8 Confirm response limits still permit concise uncertainty-forward agar/grain diagnoses.
+- [x] 2.7 Review the migration and explicitly accept the chosen irreversible truncation of pre-existing values before constraints are added.
+- [x] 2.8 Confirm response limits still permit concise uncertainty-forward agar/grain diagnoses.
 
 ### Phase 3: Prove Two-Principal RLS And Persisted Survivors
 

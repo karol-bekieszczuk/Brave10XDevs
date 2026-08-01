@@ -15,11 +15,11 @@ const { POST } = await import("./update");
 
 const VALID_ID = "550e8400-e29b-41d4-a716-446655440000";
 
-function createContext(id = VALID_ID) {
+function createContext(id = VALID_ID, input: { stage?: string; title?: string; body?: string } = {}) {
   const form = new FormData();
-  form.set("stage", "agar");
-  form.set("title", "Plate A");
-  form.set("body", "White growth is slow after transfer.");
+  form.set("stage", input.stage ?? "agar");
+  form.set("title", input.title ?? "Plate A");
+  form.set("body", input.body ?? "White growth is slow after transfer.");
   form.set("owner_id", "attacker-owner");
 
   return {
@@ -57,5 +57,20 @@ describe("single grow-log update API route", () => {
       body: "White growth is slow after transfer.",
     });
     expect(response.headers.get("location")).toBe(`/grow-logs/${VALID_ID}`);
+  });
+
+  it("accepts exact text limits and rejects one-over values before repository mutation", async () => {
+    updateGrowLogMock.mockResolvedValue({ id: VALID_ID });
+    const title = "🍄".repeat(160);
+    const body = "🍄".repeat(8_000);
+
+    await POST(createContext(VALID_ID, { title, body }) as never);
+
+    expect(updateGrowLogMock).toHaveBeenCalledWith({}, VALID_ID, "owner-1", { stage: "agar", title, body });
+
+    updateGrowLogMock.mockClear();
+    await POST(createContext(VALID_ID, { title: `${title}🍄`, body: `${body}🍄` }) as never);
+
+    expect(updateGrowLogMock).not.toHaveBeenCalled();
   });
 });

@@ -81,6 +81,15 @@ describe("diagnosis provider", () => {
     expect(generateOptions.abortSignal).toBeInstanceOf(AbortSignal);
   });
 
+  it("limits diagnosis generation to 1200 output tokens", async () => {
+    generateTextMock.mockResolvedValue({ output: diagnosis });
+
+    const provider = createDiagnosisProvider("test-key");
+    await provider.generateDiagnosis({ growLog, question: "Is this plate stalled?", chunks: [chunk] });
+
+    expect(generateTextMock).toHaveBeenCalledWith(expect.objectContaining({ maxOutputTokens: 1_200 }));
+  });
+
   it("rejects partial structured output from generateText", async () => {
     embedMock.mockResolvedValue({ embedding: [0.1, 0.2, 0.3] });
     generateTextMock.mockResolvedValue({
@@ -101,6 +110,21 @@ describe("diagnosis provider", () => {
     ).rejects.toMatchObject({
       code: "invalid_model_output",
     } satisfies Partial<DiagnosisError>);
+  });
+
+  it("maps over-limit structured output to invalid_model_output", async () => {
+    generateTextMock.mockResolvedValue({
+      output: {
+        ...diagnosis,
+        possibleCauses: Array.from({ length: 6 }, () => "Possible cause"),
+      },
+    });
+
+    const provider = createDiagnosisProvider("test-key");
+
+    await expect(
+      provider.generateDiagnosis({ growLog, question: "Is this plate stalled?", chunks: [chunk] }),
+    ).rejects.toMatchObject({ code: "invalid_model_output" } satisfies Partial<DiagnosisError>);
   });
 
   it("rejects wrong-shaped structured output from generateText", async () => {

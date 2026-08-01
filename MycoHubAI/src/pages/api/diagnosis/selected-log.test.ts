@@ -91,6 +91,21 @@ describe("selected-log diagnosis API route", () => {
     expect(diagnoseSelectedLogMock).not.toHaveBeenCalled();
   });
 
+  it("rejects raw JSON over 16 KiB before JSON parsing or service execution", async () => {
+    const context = createContext({
+      growLogId: "550e8400-e29b-41d4-a716-446655440000",
+      question: "x".repeat(16 * 1024),
+    });
+    const jsonSpy = vi.spyOn(context.request, "json");
+
+    const response = await POST(context as never);
+
+    expect(response.status).toBe(400);
+    expect(jsonSpy).not.toHaveBeenCalled();
+    expect(diagnoseSelectedLogMock).not.toHaveBeenCalled();
+    expect(createDiagnosisProviderMock).not.toHaveBeenCalled();
+  });
+
   it("returns controlled invalid_request for malformed UUIDs before service or provider work", async () => {
     const response = await POST(createContext({ growLogId: "not-a-uuid", question: "Is this okay?" }) as never);
 
@@ -112,7 +127,7 @@ describe("selected-log diagnosis API route", () => {
       growLogId: "550e8400-e29b-41d4-a716-446655440000",
       question: "Is this okay?",
     });
-    vi.spyOn(context.request, "json").mockRejectedValue(
+    vi.spyOn(context.request, "text").mockRejectedValue(
       new Error("PRIVATE_GROW_LOG SECRET_API_KEY DEBUG_STACK provider detail"),
     );
 

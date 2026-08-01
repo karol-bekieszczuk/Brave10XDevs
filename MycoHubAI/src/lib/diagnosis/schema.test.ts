@@ -25,6 +25,40 @@ describe("diagnosis schemas", () => {
     expect(diagnosisResponseSchema.parse(validDiagnosis)).toEqual(validDiagnosis);
   });
 
+  it("accepts structured output at every response limit", () => {
+    const result = diagnosisResponseSchema.safeParse({
+      ...validDiagnosis,
+      possibleCauses: Array.from({ length: 5 }, () => "c".repeat(500)),
+      suggestedActions: Array.from({ length: 5 }, () => "a".repeat(500)),
+      uncertainty: "u".repeat(1_000),
+      followUpQuestion: "f".repeat(500),
+      sources: Array.from({ length: 5 }, () => ({
+        sourcePath: "p".repeat(300),
+        sourceHeading: "h".repeat(200),
+      })),
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects output one over every response cardinality and text limit", () => {
+    const invalidResponses = [
+      { ...validDiagnosis, possibleCauses: Array.from({ length: 6 }, () => "cause") },
+      { ...validDiagnosis, suggestedActions: Array.from({ length: 6 }, () => "action") },
+      { ...validDiagnosis, sources: Array.from({ length: 6 }, () => validDiagnosis.sources[0]) },
+      { ...validDiagnosis, possibleCauses: ["c".repeat(501)] },
+      { ...validDiagnosis, suggestedActions: ["a".repeat(501)] },
+      { ...validDiagnosis, uncertainty: "u".repeat(1_001) },
+      { ...validDiagnosis, followUpQuestion: "f".repeat(501) },
+      { ...validDiagnosis, sources: [{ ...validDiagnosis.sources[0], sourcePath: "p".repeat(301) }] },
+      { ...validDiagnosis, sources: [{ ...validDiagnosis.sources[0], sourceHeading: "h".repeat(201) }] },
+    ];
+
+    for (const response of invalidResponses) {
+      expect(diagnosisResponseSchema.safeParse(response).success).toBe(false);
+    }
+  });
+
   it("rejects unsupported scopeStatus values", () => {
     const result = diagnosisResponseSchema.safeParse({
       ...validDiagnosis,

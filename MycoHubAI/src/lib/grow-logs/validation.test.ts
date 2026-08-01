@@ -57,6 +57,32 @@ describe("validateGrowLogInput", () => {
       ],
     });
   });
+
+  it("accepts title and body values at their Unicode code-point limits", () => {
+    const result = validateGrowLogInput({
+      stage: "agar",
+      title: "🍄".repeat(160),
+      body: "🍄".repeat(8_000),
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects title and body values one Unicode code point over their limits", () => {
+    const result = validateGrowLogInput({
+      stage: "grain",
+      title: "🍄".repeat(161),
+      body: "🍄".repeat(8_001),
+    });
+
+    expect(result).toEqual({
+      success: false,
+      errors: [
+        { field: "title", message: "Title must be 160 characters or fewer." },
+        { field: "body", message: "Body must be 8000 characters or fewer." },
+      ],
+    });
+  });
 });
 
 describe("validateBulkSelectedGrowLogIds", () => {
@@ -88,5 +114,18 @@ describe("validateBulkSelectedGrowLogIds", () => {
     expect(result).toEqual({
       success: false,
     });
+  });
+
+  it("rejects more than 100 valid ids after malformed values and duplicates are removed", () => {
+    const validIds = Array.from(
+      { length: 101 },
+      (_, index) => `00000000-0000-4000-8000-${index.toString().padStart(12, "0")}`,
+    );
+
+    expect(validateBulkSelectedGrowLogIds(["bad-id", ...validIds.slice(0, 100), validIds[0]])).toEqual({
+      success: true,
+      data: validIds.slice(0, 100),
+    });
+    expect(validateBulkSelectedGrowLogIds(["bad-id", ...validIds, validIds[0]])).toEqual({ success: false });
   });
 });

@@ -77,6 +77,18 @@ describe("bulk-delete grow-log API route", () => {
     expect(deleteOwnerGrowLogsMock).not.toHaveBeenCalled();
   });
 
+  it("rejects more than 100 deduplicated valid ids before repository deletion", async () => {
+    const validIds = Array.from(
+      { length: 101 },
+      (_, index) => `00000000-0000-4000-8000-${index.toString().padStart(12, "0")}`,
+    );
+
+    const response = await POST(createContext(["bad-id", ...validIds, validIds[0]]) as never);
+
+    expect(response.headers.get("location")).toBe("/grow-logs?error=Select%20at%20least%20one%20grow%20log");
+    expect(deleteOwnerGrowLogsMock).not.toHaveBeenCalled();
+  });
+
   it("redirects to sign-in when auth context is unavailable", async () => {
     createClientMock.mockReturnValue(null);
 

@@ -5,6 +5,8 @@ import { diagnosisRequestSchema, type DiagnosisApiResponse } from "@/lib/diagnos
 import { getOpenRouterApiKey } from "@/lib/runtime-env";
 import { createClient } from "@/lib/supabase";
 
+const MAX_DIAGNOSIS_REQUEST_BYTES = 16 * 1024;
+
 function json(response: DiagnosisApiResponse, status: number) {
   return new Response(JSON.stringify(response), {
     status,
@@ -66,11 +68,33 @@ export const POST: APIRoute = async (context) => {
       );
     }
 
-    console.log("[selected-log] before request json");
+    console.log("[selected-log] before request body");
 
-    const body: unknown = await context.request.json();
+    const rawBody = await context.request.text();
 
-    console.log("[selected-log] after request json");
+    if (new TextEncoder().encode(rawBody).byteLength > MAX_DIAGNOSIS_REQUEST_BYTES) {
+      return json(
+        {
+          ok: false,
+          error: {
+            code: "invalid_request",
+            message: "Invalid diagnosis request.",
+            retryable: false,
+          },
+        },
+        400,
+      );
+    }
+
+    let body: unknown;
+
+    try {
+      body = JSON.parse(rawBody);
+    } catch {
+      body = null;
+    }
+
+    console.log("[selected-log] after request body");
 
     const request = diagnosisRequestSchema.safeParse(body);
 
