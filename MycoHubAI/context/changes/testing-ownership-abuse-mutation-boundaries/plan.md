@@ -502,17 +502,17 @@ The account-deletion owner-select migration grants authenticated `SELECT` only. 
 
 #### Automated
 
-- [x] 2.1 Grow-log validation tests pass for 160/8,000 exact and one-over boundaries.
-- [x] 2.2 Create/update route tests prove invalid and oversized inputs cause zero repository mutation and spoofed owners are ignored.
-- [x] 2.3 Bulk tests preserve partial success and reject more than 100 deduplicated valid UUIDs before deletion.
-- [x] 2.4 Diagnosis tests reject raw JSON over 16 KiB before service/provider work.
-- [x] 2.5 Provider/schema tests enforce `maxOutputTokens: 1200` and all response cardinality/text bounds.
-- [x] 2.6 Focused validation command passes: `npm.cmd run test:unit -- src/lib/grow-logs/validation.test.ts src/pages/api/grow-logs/create.test.ts "src/pages/api/grow-logs/[id]/update.test.ts" src/pages/api/grow-logs/bulk-delete.test.ts src/lib/diagnosis/schema.test.ts src/lib/diagnosis/provider.test.ts src/pages/api/diagnosis/selected-log.test.ts`.
+- [x] 2.1 Grow-log validation tests pass for 160/8,000 exact and one-over boundaries. — ffcc3b5
+- [x] 2.2 Create/update route tests prove invalid and oversized inputs cause zero repository mutation and spoofed owners are ignored. — ffcc3b5
+- [x] 2.3 Bulk tests preserve partial success and reject more than 100 deduplicated valid UUIDs before deletion. — ffcc3b5
+- [x] 2.4 Diagnosis tests reject raw JSON over 16 KiB before service/provider work. — ffcc3b5
+- [x] 2.5 Provider/schema tests enforce `maxOutputTokens: 1200` and all response cardinality/text bounds. — ffcc3b5
+- [x] 2.6 Focused validation command passes: `npm.cmd run test:unit -- src/lib/grow-logs/validation.test.ts src/pages/api/grow-logs/create.test.ts "src/pages/api/grow-logs/[id]/update.test.ts" src/pages/api/grow-logs/bulk-delete.test.ts src/lib/diagnosis/schema.test.ts src/lib/diagnosis/provider.test.ts src/pages/api/diagnosis/selected-log.test.ts`. — ffcc3b5
 
 #### Manual
 
-- [x] 2.7 Review the migration and explicitly accept the chosen irreversible truncation of pre-existing values before constraints are added.
-- [x] 2.8 Confirm response limits still permit concise uncertainty-forward agar/grain diagnoses.
+- [x] 2.7 Review the migration and explicitly accept the chosen irreversible truncation of pre-existing values before constraints are added. — ffcc3b5
+- [x] 2.8 Confirm response limits still permit concise uncertainty-forward agar/grain diagnoses. — ffcc3b5
 
 ### Phase 3: Prove Two-Principal RLS And Persisted Survivors
 
