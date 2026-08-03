@@ -36,3 +36,10 @@
 - **Problem**: statistic only stryker call is useless as it doesnt show what exactly was checked/mutated.
 - **Rule**: When asked to run Stryker, never leave the output at console statistics only. always show output from stryker in CLI which should be in HTML, JSON or at minimum markdown. Don't save report to file unless explicitly asked to.
 - **Applies to**: external library
+
+## Typecheck Is A Phase-Closing Invariant
+
+- **Context**: Every implementation, TDD, or E2E phase that writes Progress state.
+- **Problem**: A phase can appear complete and reach staging or commit while generated Worker declarations are stale or Astro/TypeScript diagnostics remain.
+- **Rule**: Run `npm run typecheck` successfully before reporting automated verification passed, opening the manual gate, staging, or committing any 10x phase. A failure blocks phase completion and must be fixed; never accept, subtract, or grandfather a diagnostic baseline.
+- **Applies to**: implement, tdd, e2e

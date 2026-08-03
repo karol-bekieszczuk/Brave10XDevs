@@ -287,37 +287,37 @@ Existing reviewed Progress rows remain unchanged. Existing completed changes are
 
 #### Automated
 
-- [x] 1.1 Cloudflare declarations generate successfully: `npm.cmd run types:generate`.
-- [x] 1.2 Committed Cloudflare declarations are current without regeneration: `npx.cmd wrangler types --check`.
-- [x] 1.3 Canonical static verification reports zero errors: `npm.cmd run typecheck`.
-- [x] 1.4 Focused Worker, auth, Supabase, retrieval, provider, middleware, and route tests pass.
-- [x] 1.5 Full unit and integration suite passes: `npm.cmd run test:unit`.
-- [x] 1.6 Lint passes: `npm.cmd run lint`.
-- [x] 1.7 Production build passes: `npm.cmd run build`.
-- [x] 1.8 Search confirms no `as unknown as SupabaseServerClient` boundary or handwritten Cloudflare ambient fallback remains.
+- [x] 1.1 Cloudflare declarations generate successfully: `npm.cmd run types:generate`. — 967d9d1
+- [x] 1.2 Committed Cloudflare declarations are current without regeneration: `npx.cmd wrangler types --check`. — 967d9d1
+- [x] 1.3 Canonical static verification reports zero errors: `npm.cmd run typecheck`. — 967d9d1
+- [x] 1.4 Focused Worker, auth, Supabase, retrieval, provider, middleware, and route tests pass. — 967d9d1
+- [x] 1.5 Full unit and integration suite passes: `npm.cmd run test:unit`. — 967d9d1
+- [x] 1.6 Lint passes: `npm.cmd run lint`. — 967d9d1
+- [x] 1.7 Production build passes: `npm.cmd run build`. — 967d9d1
+- [x] 1.8 Search confirms no `as unknown as SupabaseServerClient` boundary or handwritten Cloudflare ambient fallback remains. — 967d9d1
 
 #### Manual
 
-- [x] 1.9 Review `worker-configuration.d.ts` and confirm it contains type declarations only, no secret values or local credentials.
-- [x] 1.10 Confirm the changed type contracts preserve existing authentication, account-deletion, Worker scheduling, and diagnosis error behavior.
+- [x] 1.9 Review `worker-configuration.d.ts` and confirm it contains type declarations only, no secret values or local credentials. — 967d9d1
+- [x] 1.10 Confirm the changed type contracts preserve existing authentication, account-deletion, Worker scheduling, and diagnosis error behavior. — 967d9d1
 
 ### Phase 2: Enforce The Contract Across Repository Workflows
 
 #### Automated
 
-- [ ] 2.1 CI invokes `npm run typecheck` after Astro sync and before tests, lint, and build.
-- [ ] 2.2 Husky retains lint-staged and rejects a deliberate type error through the canonical typecheck command.
-- [ ] 2.3 The Codex hook delegates to `npm.cmd run typecheck` and emits a block payload for the deliberate type error.
-- [ ] 2.4 The reversible probe is removed and absent from Git status before final verification.
-- [ ] 2.5 `context/foundation/lessons.md` contains the phase-closing invariant read by implement, TDD, and E2E workflows.
-- [ ] 2.6 `context/foundation/test-plan.md` names the canonical static gate without falsely completing the broader rollout phase.
-- [ ] 2.7 Canonical static verification returns to zero errors: `npm.cmd run typecheck`.
-- [ ] 2.8 Full unit and integration suite passes: `npm.cmd run test:unit`.
-- [ ] 2.9 Lint passes: `npm.cmd run lint`.
-- [ ] 2.10 Production build passes: `npm.cmd run build`.
-- [ ] 2.11 Repository whitespace and conflict-marker validation passes: `git diff --check`.
+- [x] 2.1 CI invokes `npm run typecheck` after Astro sync and before tests, lint, and build.
+- [x] 2.2 Husky retains lint-staged and rejects a deliberate type error through the canonical typecheck command.
+- [x] 2.3 The Codex hook delegates to `npm.cmd run typecheck` and emits a block payload for the deliberate type error.
+- [x] 2.4 The reversible probe is removed and absent from Git status before final verification.
+- [x] 2.5 `context/foundation/lessons.md` contains the phase-closing invariant read by implement, TDD, and E2E workflows.
+- [x] 2.6 `context/foundation/test-plan.md` names the canonical static gate without falsely completing the broader rollout phase.
+- [x] 2.7 Canonical static verification returns to zero errors: `npm.cmd run typecheck`.
+- [x] 2.8 Full unit and integration suite passes: `npm.cmd run test:unit`.
+- [x] 2.9 Lint passes: `npm.cmd run lint`.
+- [x] 2.10 Production build passes: `npm.cmd run build`.
+- [x] 2.11 Repository whitespace and conflict-marker validation passes: `git diff --check`.
 
 #### Manual
 
-- [ ] 2.12 Review the failure-probe transcript and confirm command failure, pre-commit rejection, hook feedback, cleanup, and final green recovery were all observed.
-- [ ] 2.13 Confirm no `AGENTS.md`, `.agents/skills/**`, archived plan, or reviewed Progress title was modified.
+- [x] 2.12 Review the failure-probe transcript and confirm command failure, pre-commit rejection, hook feedback, cleanup, and final green recovery were all observed.
+- [x] 2.13 Confirm no `AGENTS.md`, `.agents/skills/**`, archived plan, or reviewed Progress title was modified.

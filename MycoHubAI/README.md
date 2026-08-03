@@ -13,7 +13,7 @@ Private single-user grow-log workspace for agar and grain troubleshooting.
 
 ## Prerequisites
 
-- Node.js v22.14.0, as specified in `.nvmrc`
+- Node.js v24.15.0, as specified in `.nvmrc`
 - npm
 
 ## Getting Started
@@ -56,13 +56,13 @@ This project uses Supabase Auth as the credential provider, but MycoHubAI author
 
 Required local values in both `.env` and `.dev.vars`:
 
-| Variable | Description |
-| --- | --- |
-| `SUPABASE_URL` | Supabase project URL |
-| `SUPABASE_KEY` | Supabase anon/public key used by SSR auth |
-| `AUTHORIZED_USER_ID` | Allowed owner ID from Supabase Auth `auth.users.id` |
+| Variable             | Description                                                                                    |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| `SUPABASE_URL`       | Supabase project URL                                                                           |
+| `SUPABASE_KEY`       | Supabase anon/public key used by SSR auth                                                      |
+| `AUTHORIZED_USER_ID` | Allowed owner ID from Supabase Auth `auth.users.id`                                            |
 | `SUPABASE_ADMIN_KEY` | Server-only Supabase service-role/admin key used only for account deletion and scheduled purge |
-| `OPENROUTER_API_KEY` | Server-only OpenRouter key for selected-log diagnosis |
+| `OPENROUTER_API_KEY` | Server-only OpenRouter key for selected-log diagnosis                                          |
 
 Local example:
 
@@ -101,11 +101,11 @@ For local Supabase, `supabase/config.toml` disables `[auth]`, `[auth.email]`, an
 
 ### Auth Routes
 
-| Route | Description |
-| --- | --- |
-| `/auth/signin` | Email/password sign-in form |
-| `/api/auth/signout` | Sign-out endpoint |
-| `/dashboard` | Protected owner-only page |
+| Route               | Description                 |
+| ------------------- | --------------------------- |
+| `/auth/signin`      | Email/password sign-in form |
+| `/api/auth/signout` | Sign-out endpoint           |
+| `/dashboard`        | Protected owner-only page   |
 
 Route protection is handled in `src/middleware.ts`. The middleware default-denies app and API routes unless the active Supabase `user.id` equals `AUTHORIZED_USER_ID`. Static assets, sign-in, and sign-out are explicitly allowed.
 

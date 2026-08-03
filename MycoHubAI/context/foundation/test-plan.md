@@ -125,16 +125,16 @@ The full set of gates that must pass before a change reaches production.
 "Required for §3 Phase <N>" means the gate is enforced once that rollout
 phase lands; before that, the gate is `planned`.
 
-| Gate                        | Where                | Required?                                      | Catches                                                                            |
-| --------------------------- | -------------------- | ---------------------------------------------- | ---------------------------------------------------------------------------------- |
-| lint + typecheck            | local + CI           | required                                       | syntactic / type drift                                                             |
-| unit + integration          | local + CI           | required after §3 Phase 1                      | logic regressions                                                                  |
-| e2e on critical flows       | CI on PR             | required after §3 Phase 2 only if still needed | broken critical user paths                                                         |
-| abuse/security contracts    | local + CI           | required after §3 Phase 2                      | owner bypass, hostile input, secret/private-data leak, unbounded costly operations |
-| post-edit hook              | local (agent loop)   | recommended after §3 Phase 3                   | regressions at edit time                                                           |
-| visual diff (deterministic) | CI on PR             | optional                                       | rendering regressions                                                              |
-| multimodal visual review    | CI on PR             | optional                                       | visual issues classic diff misses                                                  |
-| pre-prod smoke              | between merge + prod | optional                                       | environment-specific failures                                                      |
+| Gate                        | Where                 | Required?                                      | Catches                                                                            |
+| --------------------------- | --------------------- | ---------------------------------------------- | ---------------------------------------------------------------------------------- |
+| lint + canonical typecheck  | local pre-commit + CI | required                                       | lint failures, generated Worker declaration drift, Astro/TypeScript errors         |
+| unit + integration          | local + CI            | required after §3 Phase 1                      | logic regressions                                                                  |
+| e2e on critical flows       | CI on PR              | required after §3 Phase 2 only if still needed | broken critical user paths                                                         |
+| abuse/security contracts    | local + CI            | required after §3 Phase 2                      | owner bypass, hostile input, secret/private-data leak, unbounded costly operations |
+| post-edit hook              | local (agent loop)    | recommended after §3 Phase 3                   | regressions at edit time                                                           |
+| visual diff (deterministic) | CI on PR              | optional                                       | rendering regressions                                                              |
+| multimodal visual review    | CI on PR              | optional                                       | visual issues classic diff misses                                                  |
+| pre-prod smoke              | between merge + prod  | optional                                       | environment-specific failures                                                      |
 
 ## 6. Cookbook Patterns
 
@@ -184,6 +184,14 @@ the relevant rollout phase ships; before that, the sub-section reads
 here capturing anything surprising the rollout phase taught - e.g., "Phase
 2 found we needed a fixture catalog under `src/lib/...`; new content tests
 should reuse it.")
+
+### 6.8 Running the static quality gate
+
+- **Canonical command**: `npm run typecheck`.
+- **Contract**: The command is non-mutating. It runs `wrangler types --check` to reject generated Worker declaration drift, then `astro check` to reject Astro/TypeScript errors.
+- **Enforcement**: Run locally before a phase closes; the Husky pre-commit hook and CI both invoke the same package command. Regenerate declarations explicitly with `npm run types:generate`, review the diff, and rerun the gate.
+- **Current guidance checked**: 2026-08-01 (Astro and Cloudflare Wrangler).
+- **Rollout boundary**: This static contract does not by itself complete the broader Quality Gates And Cookbook rollout.
 
 ## 7. What We Deliberately Don't Test
 

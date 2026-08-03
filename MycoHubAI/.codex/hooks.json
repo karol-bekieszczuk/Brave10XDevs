@@ -8,7 +8,7 @@
             "type": "command",
             "command": "node C:\\Users\\karol\\repos\\Brave10XDevs\\MycoHubAI\\.codex\\hooks\\post-tool-use-astro-check.mjs",
             "timeout": 60,
-            "statusMessage": "Running ESLint and Astro check"
+            "statusMessage": "Running ESLint and canonical typecheck"
           },
           {
             "type": "command",

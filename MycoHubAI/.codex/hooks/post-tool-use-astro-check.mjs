@@ -7,9 +7,9 @@ const checks = [
     args: ["eslint", "--fix", ".", "--quiet"],
   },
   {
-    label: "Astro check",
+    label: "Canonical typecheck",
     command: "npm.cmd",
-    args: ["run", "astro", "--", "check"],
+    args: ["run", "typecheck"],
   },
 ];
 const maxContextChars = 9000;
