@@ -1,7 +1,7 @@
 ---
 change_id: enforced-typecheck-quality-contract
 title: Enforced typecheck quality contract
-status: planned
+status: implementing
 created: 2026-08-01
 updated: 2026-08-01
 archived_at: null

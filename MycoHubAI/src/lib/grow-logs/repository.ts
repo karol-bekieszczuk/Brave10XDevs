@@ -1,9 +1,10 @@
 import type { CreateGrowLogInput, GrowLogRow, UpdateGrowLogInput } from "@/lib/grow-logs/types";
-import type { SupabaseServerClient, SupabaseTableClientLike } from "@/lib/supabase";
 
 const GROW_LOG_SELECT = "id, owner_id, stage, title, body, created_at, updated_at";
 
-export type GrowLogClient = Pick<SupabaseServerClient, "from">;
+export interface GrowLogClient {
+  from(table: "grow_logs"): unknown;
+}
 
 export interface GrowLogRecord {
   id: string;
@@ -49,7 +50,7 @@ interface GrowLogDeleteByOwnerQuery extends PromiseLike<{ error: Error | null }>
   };
 }
 
-interface GrowLogTable extends SupabaseTableClientLike {
+interface GrowLogTable {
   select(query: string): GrowLogListQuery;
   insert(values: { owner_id: string; stage: GrowLogRow["stage"]; title: string; body: string }): GrowLogInsertQuery;
   update(values: UpdateGrowLogInput): GrowLogUpdateQuery;

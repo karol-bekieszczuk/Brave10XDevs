@@ -2,6 +2,8 @@ import { parseCookieHeader } from "@supabase/ssr";
 import type { AstroCookies } from "astro";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+type SignOutClient = Pick<SupabaseClient, "auth">;
+
 function clearSupabaseAuthCookies(requestHeaders: Headers, cookies: AstroCookies) {
   const parsedCookies = parseCookieHeader(requestHeaders.get("Cookie") ?? "");
 
@@ -17,7 +19,7 @@ function clearSupabaseAuthCookies(requestHeaders: Headers, cookies: AstroCookies
   }
 }
 
-export async function safeSignOut(supabase: SupabaseClient | null, requestHeaders: Headers, cookies: AstroCookies) {
+export async function safeSignOut(supabase: SignOutClient | null, requestHeaders: Headers, cookies: AstroCookies) {
   if (supabase) {
     try {
       await supabase.auth.signOut();

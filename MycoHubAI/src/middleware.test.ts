@@ -109,4 +109,16 @@ describe("middleware pending deletion handling", () => {
     expect(response.headers.get("location")).toBe("/auth/signin");
     expect(next).not.toHaveBeenCalled();
   });
+
+  it("treats a missing Supabase client as unauthenticated on protected routes", async () => {
+    createClientMock.mockReturnValue(null);
+    const context = createContext("/dashboard");
+    const next = vi.fn(() => Promise.resolve(new Response("ok")));
+
+    const response = (await onRequest(context as never, next)) as Response;
+
+    expect(response.headers.get("location")).toBe("/auth/signin");
+    expect(getOwnerAccountDeletionRequestMock).not.toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalled();
+  });
 });

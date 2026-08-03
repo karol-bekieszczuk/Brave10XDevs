@@ -31,7 +31,10 @@ interface DiagnosisKnowledgeRpcResult {
 }
 
 export interface DiagnosisRetrievalClient {
-  rpc(name: "match_diagnosis_knowledge_chunks", args: Record<string, unknown>): Promise<DiagnosisKnowledgeRpcResult>;
+  rpc(
+    name: "match_diagnosis_knowledge_chunks",
+    args: Record<string, unknown>,
+  ): PromiseLike<DiagnosisKnowledgeRpcResult>;
 }
 
 export function mapDiagnosisKnowledgeChunk(row: DiagnosisKnowledgeRpcRow): DiagnosisKnowledgeChunk {

@@ -4,8 +4,8 @@ import type { AccountDeletionRequest } from "@/lib/account-deletion/types";
 const ACCOUNT_DELETION_SELECT =
   "user_id, requested_at, purge_after, soft_deleted_at, last_attempt_at, attempt_count, last_error";
 
-export type AccountDeletionClient = SupabaseClient;
-export type AccountDeletionAdminClient = SupabaseClient;
+export type AccountDeletionClient = Pick<SupabaseClient, "from">;
+export type AccountDeletionAdminClient = Pick<SupabaseClient, "auth" | "from">;
 
 export interface AccountDeletionRequestRecord {
   user_id: string;
@@ -41,7 +41,7 @@ export interface UpdateAccountDeletionAttemptInput {
   lastError: string | null;
 }
 
-function getAccountDeletionTable(client: SupabaseClient) {
+function getAccountDeletionTable(client: Pick<SupabaseClient, "from">) {
   return client.from("account_deletion_requests");
 }
 
@@ -85,7 +85,7 @@ export async function getAccountDeletionRequestByUserId(client: AccountDeletionA
 }
 
 export async function upsertAccountDeletionRequest(
-  client: AccountDeletionAdminClient,
+  client: AccountDeletionClient,
   input: UpsertAccountDeletionRequestInput,
 ) {
   const { data, error } = await getAccountDeletionTable(client)
@@ -112,7 +112,7 @@ export async function upsertAccountDeletionRequest(
 }
 
 export async function markAccountDeletionRequestSoftDeleted(
-  client: AccountDeletionAdminClient,
+  client: AccountDeletionClient,
   input: MarkAccountDeletionRequestSoftDeletedInput,
 ) {
   const { data, error } = await getAccountDeletionTable(client)
@@ -134,7 +134,7 @@ export async function markAccountDeletionRequestSoftDeleted(
 }
 
 export async function updateAccountDeletionAttempt(
-  client: AccountDeletionAdminClient,
+  client: AccountDeletionClient,
   input: UpdateAccountDeletionAttemptInput,
 ) {
   const { data, error } = await getAccountDeletionTable(client)
@@ -154,7 +154,7 @@ export async function updateAccountDeletionAttempt(
   return mapAccountDeletionRequestRow(data satisfies AccountDeletionRequestRecord);
 }
 
-export async function deleteAccountDeletionRequest(client: AccountDeletionAdminClient, userId: string) {
+export async function deleteAccountDeletionRequest(client: AccountDeletionClient, userId: string) {
   const { error } = await getAccountDeletionTable(client).delete().eq("user_id", userId);
 
   if (error) {
@@ -162,7 +162,7 @@ export async function deleteAccountDeletionRequest(client: AccountDeletionAdminC
   }
 }
 
-export async function listDueAccountDeletionRequests(client: AccountDeletionAdminClient, now: string) {
+export async function listDueAccountDeletionRequests(client: AccountDeletionClient, now: string) {
   const { data, error } = await getAccountDeletionTable(client)
     .select(ACCOUNT_DELETION_SELECT)
     .lte("purge_after", now)

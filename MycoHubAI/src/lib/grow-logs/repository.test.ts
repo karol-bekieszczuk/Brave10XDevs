@@ -9,7 +9,6 @@ import {
   mapGrowLogRow,
   updateGrowLog,
 } from "./repository";
-import type { SupabaseServerClient } from "@/lib/supabase";
 
 interface QueryResult {
   data: GrowLogRecord | GrowLogRecord[] | null;
@@ -77,17 +76,11 @@ class MockQueryBuilder {
 function createMockClient(result: QueryResult): { builder: MockQueryBuilder; client: GrowLogClient } {
   const builder = new MockQueryBuilder(result);
 
-  const client: SupabaseServerClient = {
-    auth: {
-      getUser: () => Promise.resolve({ data: { user: null }, error: null }),
-      signInWithPassword: () => Promise.resolve({ data: { user: null }, error: null }),
-      signOut: () => Promise.resolve({ error: null }),
-    },
+  const client: GrowLogClient = {
     from(table: string) {
       builder.actions.push({ type: "from", args: [table] });
       return builder;
     },
-    rpc: () => Promise.resolve({ data: null, error: null }),
   };
 
   return { builder, client };

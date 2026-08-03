@@ -17,7 +17,7 @@ export function getAccessControlConfig(): { authorizedUserId: string; isConfigur
   };
 }
 
-export function isAuthorizedUser(user: User | null | undefined) {
+export function isAuthorizedUser(user: User | null | undefined): user is User {
   const { authorizedUserId } = getAccessControlConfig();
 
   return Boolean(user?.id && authorizedUserId && user.id === authorizedUserId);

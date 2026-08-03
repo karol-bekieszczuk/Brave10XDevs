@@ -2,16 +2,9 @@ import { handle } from "@astrojs/cloudflare/handler";
 import { createClient } from "@supabase/supabase-js";
 import { purgeDueAccountDeletionRequests } from "@/lib/account-deletion/purge";
 
-interface WorkerEnv {
-  SUPABASE_URL?: string;
-  SUPABASE_ADMIN_KEY?: string;
-}
+const handleRequest = handle;
 
-type CloudflareFetchHandler = (request: Request, env: WorkerEnv, ctx: ExecutionContext) => Promise<Response>;
-
-const handleRequest = handle as CloudflareFetchHandler;
-
-function createWorkerAdminClient(env: WorkerEnv) {
+function createWorkerAdminClient(env: Pick<Env, "SUPABASE_URL" | "SUPABASE_ADMIN_KEY">) {
   const url = typeof env.SUPABASE_URL === "string" ? env.SUPABASE_URL.trim() : "";
   const adminKey = typeof env.SUPABASE_ADMIN_KEY === "string" ? env.SUPABASE_ADMIN_KEY.trim() : "";
 
@@ -27,11 +20,11 @@ function createWorkerAdminClient(env: WorkerEnv) {
   });
 }
 
-const worker: ExportedHandler<WorkerEnv> = {
-  async fetch(request: Request, env: WorkerEnv, ctx: ExecutionContext) {
+const worker: ExportedHandler<Env> = {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext) {
     return handleRequest(request, env, ctx);
   },
-  async scheduled(_controller: ScheduledController, env: WorkerEnv, _ctx: ExecutionContext) {
+  async scheduled(_controller: ScheduledController, env: Env, _ctx: ExecutionContext) {
     const summary = await purgeDueAccountDeletionRequests({
       adminClient: createWorkerAdminClient(env),
     });

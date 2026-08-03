@@ -24,10 +24,10 @@ interface WorkerHandler {
 const workerModule = await import("./worker");
 const worker = workerModule.default as unknown as WorkerHandler;
 
-const executionContext: ExecutionContext = {
+const executionContext = {
   passThroughOnException: vi.fn(),
   waitUntil: vi.fn(),
-};
+} as unknown as ExecutionContext;
 
 const scheduledController: ScheduledController = {
   cron: "0 3 * * *",

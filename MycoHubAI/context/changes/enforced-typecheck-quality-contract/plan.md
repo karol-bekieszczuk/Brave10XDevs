@@ -287,19 +287,19 @@ Existing reviewed Progress rows remain unchanged. Existing completed changes are
 
 #### Automated
 
-- [ ] 1.1 Cloudflare declarations generate successfully: `npm.cmd run types:generate`.
-- [ ] 1.2 Committed Cloudflare declarations are current without regeneration: `npx.cmd wrangler types --check`.
-- [ ] 1.3 Canonical static verification reports zero errors: `npm.cmd run typecheck`.
-- [ ] 1.4 Focused Worker, auth, Supabase, retrieval, provider, middleware, and route tests pass.
-- [ ] 1.5 Full unit and integration suite passes: `npm.cmd run test:unit`.
-- [ ] 1.6 Lint passes: `npm.cmd run lint`.
-- [ ] 1.7 Production build passes: `npm.cmd run build`.
-- [ ] 1.8 Search confirms no `as unknown as SupabaseServerClient` boundary or handwritten Cloudflare ambient fallback remains.
+- [x] 1.1 Cloudflare declarations generate successfully: `npm.cmd run types:generate`.
+- [x] 1.2 Committed Cloudflare declarations are current without regeneration: `npx.cmd wrangler types --check`.
+- [x] 1.3 Canonical static verification reports zero errors: `npm.cmd run typecheck`.
+- [x] 1.4 Focused Worker, auth, Supabase, retrieval, provider, middleware, and route tests pass.
+- [x] 1.5 Full unit and integration suite passes: `npm.cmd run test:unit`.
+- [x] 1.6 Lint passes: `npm.cmd run lint`.
+- [x] 1.7 Production build passes: `npm.cmd run build`.
+- [x] 1.8 Search confirms no `as unknown as SupabaseServerClient` boundary or handwritten Cloudflare ambient fallback remains.
 
 #### Manual
 
-- [ ] 1.9 Review `worker-configuration.d.ts` and confirm it contains type declarations only, no secret values or local credentials.
-- [ ] 1.10 Confirm the changed type contracts preserve existing authentication, account-deletion, Worker scheduling, and diagnosis error behavior.
+- [x] 1.9 Review `worker-configuration.d.ts` and confirm it contains type declarations only, no secret values or local credentials.
+- [x] 1.10 Confirm the changed type contracts preserve existing authentication, account-deletion, Worker scheduling, and diagnosis error behavior.
 
 ### Phase 2: Enforce The Contract Across Repository Workflows
 

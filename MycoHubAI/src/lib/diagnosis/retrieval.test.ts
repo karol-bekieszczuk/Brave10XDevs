@@ -90,6 +90,24 @@ describe("diagnosis retrieval", () => {
     ]);
   });
 
+  it("accepts an awaitable RPC builder without native Promise methods", async () => {
+    const awaitable: PromiseLike<RpcResult> = {
+      then(onfulfilled, onrejected) {
+        return Promise.resolve({ data: [rpcRow], error: null }).then(onfulfilled, onrejected);
+      },
+    };
+    const client = {
+      rpc() {
+        return awaitable;
+      },
+    } satisfies DiagnosisRetrievalClient;
+
+    await expect(matchDiagnosisKnowledgeChunks(client, { queryEmbedding: [0.1], stage: "agar" })).resolves.toEqual([
+      mapDiagnosisKnowledgeChunk(rpcRow),
+    ]);
+    expect("catch" in awaitable).toBe(false);
+  });
+
   it("throws controlled Supabase RPC errors to the service boundary", async () => {
     const error = new Error("rpc failed");
     const { client } = createMockClient({ data: null, error });

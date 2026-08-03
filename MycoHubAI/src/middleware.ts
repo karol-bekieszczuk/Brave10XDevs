@@ -49,7 +49,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     return context.redirect(`/auth/signin?error=${encodeURIComponent(ACCESS_CONFIG_ERROR)}`);
   }
 
-  if (!context.locals.user) {
+  if (!supabase || !context.locals.user) {
     return context.redirect("/auth/signin");
   }
 

@@ -7,6 +7,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "types:generate": "wrangler types",
+    "typecheck": "wrangler types --check && astro check",
     "diagnosis:ingest": "tsx scripts/ingest-diagnosis-knowledge.ts",
     "diagnosis:evaluate": "tsx scripts/evaluate-diagnosis-cases.ts",
     "diagnosis:evaluate:live": "tsx scripts/evaluate-diagnosis-cases-live.ts",
@@ -67,7 +69,7 @@
     "wrangler": "^4.94.0"
   },
   "overrides": {
-    "vite": "^7.3.2"
+    "vite": "^8.0.13"
   },
   "lint-staged": {
     "*.{ts,tsx,astro}": [

@@ -7,6 +7,8 @@ import { diagnoseSelectedLog } from "../src/lib/diagnosis/service";
 import { createDiagnosisProvider } from "../src/lib/diagnosis/provider";
 import type { DiagnosisApiResponse, DiagnosisResponse, DiagnosisScopeStatus } from "../src/lib/diagnosis/schema";
 
+type DiagnosisApiErrorCode = Extract<DiagnosisApiResponse, { ok: false }>["error"]["code"];
+
 const CASES_PATH = path.resolve(
   "context",
   "changes",
@@ -340,7 +342,7 @@ function buildChecks(testCase: EvaluationCase, response: DiagnosisResponse): Liv
   return checks;
 }
 
-function classifyErrorCode(code: DiagnosisApiResponse["error"]["code"]): LiveFailureCategory {
+function classifyErrorCode(code: DiagnosisApiErrorCode): LiveFailureCategory {
   switch (code) {
     case "invalid_model_output":
       return "model_contract_failure";
@@ -480,7 +482,11 @@ function summarize(results: LiveCaseResult[]) {
   const categories = new Map<LiveFailureCategory, number>();
 
   for (const result of failed) {
-    for (const check of result.checks.filter((entry) => !entry.passed && entry.blocking !== false && entry.category)) {
+    for (const check of result.checks) {
+      if (check.passed || check.blocking === false || !check.category) {
+        continue;
+      }
+
       categories.set(check.category, (categories.get(check.category) ?? 0) + 1);
     }
   }

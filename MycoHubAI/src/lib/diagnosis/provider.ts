@@ -68,7 +68,10 @@ function createTextEmbeddingModel(provider: unknown, modelId: string) {
   return (provider as OpenRouterRuntimeEmbeddings).textEmbeddingModel(modelId);
 }
 
-export function createDiagnosisProvider(apiKey: string, options: DiagnosisProviderOptions = {}): DiagnosisProvider {
+export function createDiagnosisProvider(
+  apiKey: string | undefined,
+  options: DiagnosisProviderOptions = {},
+): DiagnosisProvider {
   if (!apiKey) {
     throw new DiagnosisError("provider_failed", "OpenRouter API key is not configured.");
   }
