@@ -305,19 +305,19 @@ Existing reviewed Progress rows remain unchanged. Existing completed changes are
 
 #### Automated
 
-- [x] 2.1 CI invokes `npm run typecheck` after Astro sync and before tests, lint, and build.
-- [x] 2.2 Husky retains lint-staged and rejects a deliberate type error through the canonical typecheck command.
-- [x] 2.3 The Codex hook delegates to `npm.cmd run typecheck` and emits a block payload for the deliberate type error.
-- [x] 2.4 The reversible probe is removed and absent from Git status before final verification.
-- [x] 2.5 `context/foundation/lessons.md` contains the phase-closing invariant read by implement, TDD, and E2E workflows.
-- [x] 2.6 `context/foundation/test-plan.md` names the canonical static gate without falsely completing the broader rollout phase.
-- [x] 2.7 Canonical static verification returns to zero errors: `npm.cmd run typecheck`.
-- [x] 2.8 Full unit and integration suite passes: `npm.cmd run test:unit`.
-- [x] 2.9 Lint passes: `npm.cmd run lint`.
-- [x] 2.10 Production build passes: `npm.cmd run build`.
-- [x] 2.11 Repository whitespace and conflict-marker validation passes: `git diff --check`.
+- [x] 2.1 CI invokes `npm run typecheck` after Astro sync and before tests, lint, and build. — 3027c2d
+- [x] 2.2 Husky retains lint-staged and rejects a deliberate type error through the canonical typecheck command. — 3027c2d
+- [x] 2.3 The Codex hook delegates to `npm.cmd run typecheck` and emits a block payload for the deliberate type error. — 3027c2d
+- [x] 2.4 The reversible probe is removed and absent from Git status before final verification. — 3027c2d
+- [x] 2.5 `context/foundation/lessons.md` contains the phase-closing invariant read by implement, TDD, and E2E workflows. — 3027c2d
+- [x] 2.6 `context/foundation/test-plan.md` names the canonical static gate without falsely completing the broader rollout phase. — 3027c2d
+- [x] 2.7 Canonical static verification returns to zero errors: `npm.cmd run typecheck`. — 3027c2d
+- [x] 2.8 Full unit and integration suite passes: `npm.cmd run test:unit`. — 3027c2d
+- [x] 2.9 Lint passes: `npm.cmd run lint`. — 3027c2d
+- [x] 2.10 Production build passes: `npm.cmd run build`. — 3027c2d
+- [x] 2.11 Repository whitespace and conflict-marker validation passes: `git diff --check`. — 3027c2d
 
 #### Manual
 
-- [x] 2.12 Review the failure-probe transcript and confirm command failure, pre-commit rejection, hook feedback, cleanup, and final green recovery were all observed.
-- [x] 2.13 Confirm no `AGENTS.md`, `.agents/skills/**`, archived plan, or reviewed Progress title was modified.
+- [x] 2.12 Review the failure-probe transcript and confirm command failure, pre-commit rejection, hook feedback, cleanup, and final green recovery were all observed. — 3027c2d
+- [x] 2.13 Confirm no `AGENTS.md`, `.agents/skills/**`, archived plan, or reviewed Progress title was modified. — 3027c2d
