@@ -518,17 +518,17 @@ The account-deletion owner-select migration grants authenticated `SELECT` only. 
 
 #### Automated
 
-- [ ] 3.1 `package.json` defines `test:rls` for the loopback-only ownership smoke.
-- [ ] 3.2 The smoke refuses non-loopback Supabase URLs and cleans up only generated fixture users.
-- [ ] 3.3 A/B JWT-backed assertions prove grow-log select/insert/update/delete RLS and database constraints through persisted state.
-- [ ] 3.4 Mixed bulk deletion removes only the selected A row; unselected A and B rows survive.
-- [ ] 3.5 Non-owner diagnosis lookup starts no provider work against the real local Supabase boundary.
-- [ ] 3.6 Pending-deletion rows are owner-readable and have no authenticated insert/update/delete path.
+- [x] 3.1 `package.json` defines `test:rls` for the loopback-only ownership smoke.
+- [x] 3.2 The smoke refuses non-loopback Supabase URLs and cleans up only generated fixture users.
+- [x] 3.3 A/B JWT-backed assertions prove grow-log select/insert/update/delete RLS and database constraints through persisted state.
+- [x] 3.4 Mixed bulk deletion removes only the selected A row; unselected A and B rows survive.
+- [x] 3.5 Non-owner diagnosis lookup starts no provider work against the real local Supabase boundary.
+- [x] 3.6 Pending-deletion rows are owner-readable and have no authenticated insert/update/delete path.
 
 #### Manual
 
-- [ ] 3.7 Start local Supabase, explicitly reset the disposable local database so the full migration chain applies, export local credentials into the current shell, and run `npm.cmd run test:rls` successfully.
-- [ ] 3.8 Confirm the smoke ran without reading or modifying `.dev.vars` and without changing the application-authorized owner ID.
+- [x] 3.7 Start local Supabase, explicitly reset the disposable local database so the full migration chain applies, export local credentials into the current shell, and run `npm.cmd run test:rls` successfully.
+- [x] 3.8 Confirm the smoke ran without reading or modifying `.dev.vars` and without changing the application-authorized owner ID.
 
 ### Phase 4: Enforce Durable Cost And Privileged-Work Admission
 
