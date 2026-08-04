@@ -1,5 +1,4 @@
+set -e
 cd "$(dirname "$0")/.."
 npx lint-staged
-npm run types:generate
-git add worker-configuration.d.ts
 npm run typecheck
