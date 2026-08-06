@@ -1,14 +1,11 @@
 import type { AuthError } from "@supabase/supabase-js";
 import {
-  getAccountDeletionRequestByUserId,
-  markAccountDeletionRequestSoftDeleted,
+  claimAccountDeletionProcessing,
+  finalizeAccountDeletionProcessing,
+  releaseAccountDeletionProcessing,
   type AccountDeletionAdminClient,
-  upsertAccountDeletionRequest,
-  updateAccountDeletionAttempt,
 } from "@/lib/account-deletion/repository";
 import type { AccountDeletionRequest } from "@/lib/account-deletion/types";
-
-const RETENTION_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 
 export type RequestAccountDeletionResult =
   | { status: "success"; request: AccountDeletionRequest }
@@ -20,10 +17,6 @@ export interface RequestAccountDeletionDependencies {
   adminClient: AccountDeletionAdminClient | null;
   now?: Date;
   softDeleteUser?: (client: AccountDeletionAdminClient, userId: string) => Promise<AuthError | null>;
-}
-
-function addRetentionWindow(now: Date) {
-  return new Date(now.getTime() + RETENTION_WINDOW_MS).toISOString();
 }
 
 function getErrorMessage(error: unknown) {
@@ -39,7 +32,8 @@ function getErrorMessage(error: unknown) {
 }
 
 function isAdminConfigError(error: unknown) {
-  const message = getErrorMessage(error).toLowerCase();
+  const cause = error instanceof Error ? error.cause : undefined;
+  const message = `${getErrorMessage(error)} ${cause === undefined ? "" : getErrorMessage(cause)}`.toLowerCase();
 
   return (
     message.includes("row-level security") ||
@@ -50,6 +44,13 @@ function isAdminConfigError(error: unknown) {
     message.includes("invalid jwt") ||
     message.includes("unauthorized")
   );
+}
+
+function isAlreadyDeletedError(error: AuthError) {
+  const code = "code" in error && typeof error.code === "string" ? error.code.toLowerCase() : "";
+  const message = error.message.toLowerCase();
+
+  return code === "user_not_found" || message.includes("user not found") || message.includes("user does not exist");
 }
 
 async function defaultSoftDeleteUser(client: AccountDeletionAdminClient, userId: string) {
@@ -66,26 +67,18 @@ export async function requestAccountDeletion(
     return { status: "missing_admin_config" };
   }
 
-  const now = dependencies.now ?? new Date();
-  const attemptTimestamp = now.toISOString();
   const softDeleteUser = dependencies.softDeleteUser ?? defaultSoftDeleteUser;
+  const claimId = crypto.randomUUID();
+  let claimHeld = false;
 
   try {
-    const existing = await getAccountDeletionRequestByUserId(adminClient, userId);
+    const claim = await claimAccountDeletionProcessing(adminClient, userId, claimId);
 
-    if (existing?.softDeletedAt) {
-      return { status: "already_pending", request: existing };
+    if (!claim.claimed) {
+      return { status: "already_pending", request: claim.request };
     }
 
-    const baseRequest = await upsertAccountDeletionRequest(adminClient, {
-      userId,
-      requestedAt: existing?.requestedAt ?? attemptTimestamp,
-      purgeAfter: existing?.purgeAfter ?? addRetentionWindow(now),
-      softDeletedAt: null,
-      lastAttemptAt: existing?.lastAttemptAt ?? null,
-      attemptCount: existing?.attemptCount ?? 0,
-      lastError: null,
-    });
+    claimHeld = true;
 
     const error = await softDeleteUser(adminClient, userId);
 
@@ -93,29 +86,23 @@ export async function requestAccountDeletion(
       return { status: "missing_admin_config" };
     }
 
-    const updatedRequest = await updateAccountDeletionAttempt(adminClient, {
+    const succeeded = !error || isAlreadyDeletedError(error);
+    const finalizedRequest = await finalizeAccountDeletionProcessing(adminClient, {
       userId,
-      lastAttemptAt: attemptTimestamp,
-      attemptCount: baseRequest.attemptCount + 1,
-      lastError: error?.message ?? null,
+      claimId,
+      succeeded,
     });
+    claimHeld = false;
 
-    if (error) {
+    if (!succeeded) {
       return {
         status: "unexpected_failure",
-        request: updatedRequest,
-        error: error.message,
+        request: finalizedRequest,
+        error: "Account deletion failed.",
       };
     }
 
-    const softDeletedRequest = await markAccountDeletionRequestSoftDeleted(adminClient, {
-      userId,
-      softDeletedAt: attemptTimestamp,
-      lastAttemptAt: attemptTimestamp,
-      attemptCount: updatedRequest.attemptCount,
-    });
-
-    return { status: "success", request: softDeletedRequest };
+    return { status: "success", request: finalizedRequest };
   } catch (error) {
     if (isAdminConfigError(error)) {
       return { status: "missing_admin_config" };
@@ -126,5 +113,13 @@ export async function requestAccountDeletion(
       request: null,
       error: getErrorMessage(error),
     };
+  } finally {
+    if (claimHeld) {
+      try {
+        await releaseAccountDeletionProcessing(adminClient, userId, claimId);
+      } catch {
+        // The two-minute database lease is the fail-safe when an explicit release cannot be persisted.
+      }
+    }
   }
 }

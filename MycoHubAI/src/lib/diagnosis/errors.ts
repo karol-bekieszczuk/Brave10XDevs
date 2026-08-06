@@ -3,12 +3,14 @@ export type DiagnosisErrorCode =
   | "unauthorized"
   | "grow_log_not_found"
   | "unsupported_stage"
+  | "rate_limited"
   | "retrieval_failed"
   | "provider_failed"
   | "provider_timeout"
   | "invalid_model_output";
 
 const retryableCodes = new Set<DiagnosisErrorCode>([
+  "rate_limited",
   "retrieval_failed",
   "provider_failed",
   "provider_timeout",
@@ -18,21 +20,32 @@ const retryableCodes = new Set<DiagnosisErrorCode>([
 export class DiagnosisError extends Error {
   readonly code: DiagnosisErrorCode;
   readonly retryable: boolean;
+  readonly retryAfterSeconds?: number;
 
-  constructor(code: DiagnosisErrorCode, message: string, retryable = retryableCodes.has(code)) {
+  constructor(
+    code: DiagnosisErrorCode,
+    message: string,
+    retryable = retryableCodes.has(code),
+    retryAfterSeconds?: number,
+  ) {
     super(message);
     this.name = "DiagnosisError";
     this.code = code;
     this.retryable = retryable;
+    this.retryAfterSeconds = retryAfterSeconds;
   }
 
   toResponse() {
+    const retryMetadata =
+      this.retryAfterSeconds === undefined ? {} : { retryAfterSeconds: Math.max(1, Math.ceil(this.retryAfterSeconds)) };
+
     return {
       ok: false as const,
       error: {
         code: this.code,
         message: this.message,
         retryable: this.retryable,
+        ...retryMetadata,
       },
     };
   }

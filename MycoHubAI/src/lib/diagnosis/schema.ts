@@ -35,6 +35,7 @@ export const diagnosisErrorSchema = z.object({
     code: z.string().min(1),
     message: z.string().min(1),
     retryable: z.boolean(),
+    retryAfterSeconds: z.number().int().positive().optional(),
   }),
 });
 

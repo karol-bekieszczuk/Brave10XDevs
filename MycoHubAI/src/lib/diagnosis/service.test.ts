@@ -2,11 +2,12 @@ import { describe, expect, it, vi } from "vitest";
 import { DiagnosisError } from "./errors";
 import { diagnoseSelectedLog, type DiagnoseSelectedLogDependencies } from "./service";
 import type { DiagnosisKnowledgeChunk, DiagnosisRetrievalClient } from "./retrieval";
+import type { DiagnosisAdmissionClient } from "./admission";
 import type { DiagnosisResponse } from "./schema";
 import type { GrowLogClient } from "@/lib/grow-logs/repository";
 import type { GrowLogRow } from "@/lib/grow-logs/types";
 
-const client = {} as GrowLogClient & DiagnosisRetrievalClient;
+const client = {} as GrowLogClient & DiagnosisRetrievalClient & DiagnosisAdmissionClient;
 
 const growLog: GrowLogRow = {
   id: "550e8400-e29b-41d4-a716-446655440000",
@@ -47,6 +48,8 @@ function createDependencies(overrides: Partial<DiagnoseSelectedLogDependencies> 
     getGrowLog: vi.fn().mockResolvedValue(growLog),
     provider,
     retrieveChunks: vi.fn().mockResolvedValue([chunk]),
+    acquireAdmission: vi.fn().mockResolvedValue({ admitted: true, claimId: "claim-1" }),
+    releaseAdmission: vi.fn().mockResolvedValue(undefined),
     ...overrides,
   } satisfies DiagnoseSelectedLogDependencies;
 }
@@ -589,5 +592,125 @@ describe("selected-log diagnosis service", () => {
     expect(response.ok).toBe(false);
     expect(response.ok ? null : response.error.code).toBe("invalid_model_output");
     expect(response.ok ? null : response.error.retryable).toBe(true);
+  });
+
+  it("admits ten sequential provider-bearing attempts and rejects the eleventh", async () => {
+    let attempts = 0;
+    const acquireAdmission = vi.fn().mockImplementation(() => {
+      attempts += 1;
+      return Promise.resolve(
+        attempts <= 10
+          ? { admitted: true as const, claimId: `claim-${attempts}` }
+          : { admitted: false as const, retryAfterSeconds: 600 },
+      );
+    });
+    const dependencies = createDependencies({ acquireAdmission });
+    const responses = [];
+
+    for (let index = 0; index < 11; index += 1) {
+      responses.push(
+        await diagnoseSelectedLog(
+          client,
+          "owner-1",
+          { growLogId: growLog.id, question: `Is this plate stalled attempt ${index + 1}?` },
+          dependencies,
+        ),
+      );
+    }
+
+    expect(responses.slice(0, 10).every((response) => response.ok)).toBe(true);
+    expect(responses[10]).toEqual({
+      ok: false,
+      error: {
+        code: "rate_limited",
+        message: "Diagnosis requests are temporarily limited. Try again later.",
+        retryable: true,
+        retryAfterSeconds: 600,
+      },
+    });
+    expect(dependencies.provider.generateDiagnosis).toHaveBeenCalledTimes(10);
+    expect(dependencies.releaseAdmission).toHaveBeenCalledTimes(10);
+  });
+
+  it("starts only one provider-bearing request while a claim is active", async () => {
+    let resolveGeneration!: (value: DiagnosisResponse) => void;
+    const heldGeneration = new Promise<DiagnosisResponse>((resolve) => {
+      resolveGeneration = resolve;
+    });
+    const dependencies = createDependencies({
+      acquireAdmission: vi
+        .fn()
+        .mockResolvedValueOnce({ admitted: true, claimId: "claim-1" })
+        .mockResolvedValueOnce({ admitted: false, retryAfterSeconds: 120 }),
+      provider: {
+        createQueryEmbedding: vi.fn().mockResolvedValue([0.1, 0.2, 0.3]),
+        generateDiagnosis: vi.fn().mockReturnValue(heldGeneration),
+      },
+    });
+
+    const first = diagnoseSelectedLog(
+      client,
+      "owner-1",
+      { growLogId: growLog.id, question: "Is this plate stalled?" },
+      dependencies,
+    );
+    await vi.waitFor(() => {
+      expect(dependencies.provider.generateDiagnosis).toHaveBeenCalledTimes(1);
+    });
+    const second = await diagnoseSelectedLog(
+      client,
+      "owner-1",
+      { growLogId: growLog.id, question: "Is this plate recovering?" },
+      dependencies,
+    );
+
+    expect(second.ok ? null : second.error.code).toBe("rate_limited");
+    expect(dependencies.provider.generateDiagnosis).toHaveBeenCalledTimes(1);
+    resolveGeneration(diagnosis);
+    await expect(first).resolves.toEqual({ ok: true, diagnosis });
+  });
+
+  it("does not acquire admission for invalid, missing, unsupported, or thin-context requests", async () => {
+    const cases: { input: unknown; selectedLog?: GrowLogRow | null }[] = [
+      { input: { growLogId: "invalid", question: "Question" } },
+      { input: { growLogId: growLog.id, question: "Question" }, selectedLog: null },
+      {
+        input: { growLogId: growLog.id, question: "Question" },
+        selectedLog: { ...growLog, stage: "fruiting" as never },
+      },
+      {
+        input: { growLogId: growLog.id, question: "Question" },
+        selectedLog: { ...growLog, body: "No details recorded about appearance or timing." },
+      },
+    ];
+
+    for (const testCase of cases) {
+      const dependencies = createDependencies(
+        "selectedLog" in testCase ? { getGrowLog: vi.fn().mockResolvedValue(testCase.selectedLog) } : {},
+      );
+      await diagnoseSelectedLog(client, "owner-1", testCase.input, dependencies);
+      expect(dependencies.acquireAdmission).not.toHaveBeenCalled();
+      expect(dependencies.provider.createQueryEmbedding).not.toHaveBeenCalled();
+    }
+  });
+
+  it("consumes an admitted provider timeout and always releases its active claim", async () => {
+    const dependencies = createDependencies({
+      provider: {
+        createQueryEmbedding: vi.fn().mockResolvedValue([0.1, 0.2, 0.3]),
+        generateDiagnosis: vi.fn().mockRejectedValue(new DiagnosisError("provider_timeout", "Provider timed out.")),
+      },
+    });
+
+    const response = await diagnoseSelectedLog(
+      client,
+      "owner-1",
+      { growLogId: growLog.id, question: "Is this plate stalled?" },
+      dependencies,
+    );
+
+    expect(response.ok ? null : response.error.code).toBe("provider_timeout");
+    expect(dependencies.acquireAdmission).toHaveBeenCalledTimes(1);
+    expect(dependencies.releaseAdmission).toHaveBeenCalledWith(client, "claim-1");
   });
 });

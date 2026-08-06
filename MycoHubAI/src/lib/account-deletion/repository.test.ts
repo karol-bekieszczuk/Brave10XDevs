@@ -123,7 +123,7 @@ describe("account deletion repository", () => {
       { type: "from", args: ["account_deletion_requests"] },
       {
         type: "select",
-        args: ["user_id, requested_at, purge_after, soft_deleted_at, last_attempt_at, attempt_count, last_error"],
+        args: ["user_id, requested_at, purge_after, soft_deleted_at, last_attempt_at, attempt_count"],
       },
       { type: "eq", args: ["user_id", "owner-1"] },
       { type: "not", args: ["soft_deleted_at", "is", null] },
@@ -174,6 +174,7 @@ describe("account deletion repository", () => {
       softDeletedAt: "2026-06-11T10:05:00.000Z",
       lastAttemptAt: "2026-06-11T10:05:00.000Z",
       attemptCount: 1,
+      claimId: "claim-1",
     });
 
     expect(result).toEqual(mapAccountDeletionRequestRow(dbRow));
@@ -187,10 +188,13 @@ describe("account deletion repository", () => {
             last_attempt_at: "2026-06-11T10:05:00.000Z",
             attempt_count: 1,
             last_error: null,
+            processing_claim_id: null,
+            processing_expires_at: null,
           },
         ],
       },
       { type: "eq", args: ["user_id", "owner-1"] },
+      { type: "eq", args: ["processing_claim_id", "claim-1"] },
       {
         type: "select",
         args: ["user_id, requested_at, purge_after, soft_deleted_at, last_attempt_at, attempt_count, last_error"],

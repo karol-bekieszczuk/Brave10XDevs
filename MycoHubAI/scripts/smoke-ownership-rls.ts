@@ -367,6 +367,164 @@ async function assertPendingDeletionRls(admin: SupabaseClient, a: FixtureUser, b
   );
 }
 
+async function assertDiagnosisAdmission(admin: SupabaseClient, principal: FixtureUser) {
+  interface AdmissionResult {
+    data: { admitted: boolean; retry_after_seconds: number }[] | null;
+    error: { message: string } | null;
+  }
+
+  async function claim(fingerprint: string): Promise<AdmissionResult> {
+    return principal.client.rpc("claim_diagnosis_admission", {
+      p_claim_id: randomUUID(),
+      p_fingerprint: fingerprint,
+    });
+  }
+
+  async function releaseActiveClaim() {
+    const active = await admin
+      .from("diagnosis_admission")
+      .select("active_claim_id")
+      .eq("owner_id", principal.id)
+      .single()
+      .overrideTypes<{ active_claim_id: string }, { merge: false }>();
+    expectNoError(active.error, "read active diagnosis claim");
+    assert(active.data, "read active diagnosis claim: missing row");
+    const released = await principal.client.rpc("release_diagnosis_admission", {
+      p_claim_id: active.data.active_claim_id,
+    });
+    expectNoError(released.error, "release admitted diagnosis claim");
+  }
+
+  const claims = await Promise.all(
+    Array.from({ length: 8 }, (_, index) => claim(index.toString(16).padStart(64, "0"))),
+  );
+
+  for (const [index, result] of claims.entries()) {
+    expectNoError(result.error, `parallel diagnosis claim ${index + 1}`);
+  }
+
+  const rows = claims.flatMap((result) => result.data ?? []);
+  assert.equal(rows.filter((row) => row.admitted).length, 1, "exactly one parallel diagnosis claim must be admitted");
+  assert.equal(rows.filter((row) => !row.admitted).length, 7, "all concurrent claim losers must be rejected");
+  assert(rows.filter((row) => !row.admitted).every((row) => row.retry_after_seconds > 0));
+
+  const state = await admin
+    .from("diagnosis_admission")
+    .select("owner_id, attempt_count, active_claim_id")
+    .eq("owner_id", principal.id)
+    .single()
+    .overrideTypes<{ owner_id: string; attempt_count: number; active_claim_id: string }, { merge: false }>();
+  expectNoError(state.error, "diagnosis admission persisted-state oracle");
+  assert(state.data, "diagnosis admission persisted-state oracle: missing row");
+  assert.equal(state.data.attempt_count, 1, "concurrent losers must not consume quota");
+  assert.match(state.data.active_claim_id, /^[0-9a-f-]{36}$/, "an opaque claim ID must persist while active");
+
+  const cooldowns = await admin
+    .from("diagnosis_admission_cooldowns")
+    .select("fingerprint")
+    .eq("owner_id", principal.id)
+    .overrideTypes<{ fingerprint: string }[], { merge: false }>();
+  expectNoError(cooldowns.error, "diagnosis cooldown persisted-state oracle");
+  assert.equal(cooldowns.data?.length, 1, "only the admitted parallel claim may create cooldown state");
+  assert.match(cooldowns.data[0].fingerprint, /^[0-9a-f]{64}$/, "only an opaque fingerprint may persist");
+
+  await releaseActiveClaim();
+
+  for (let index = 1; index < 10; index += 1) {
+    const admitted = await claim((index + 100).toString(16).padStart(64, "0"));
+    expectNoError(admitted.error, `sequential diagnosis claim ${index + 1}`);
+    assert.equal(admitted.data?.[0]?.admitted, true, `sequential claim ${index + 1} must be admitted`);
+    await releaseActiveClaim();
+  }
+
+  const eleventh = await claim("f".repeat(64));
+  expectNoError(eleventh.error, "eleventh diagnosis claim");
+  assert.equal(eleventh.data?.[0]?.admitted, false, "the eleventh claim in one window must be rejected");
+
+  const forceRollover = await admin
+    .from("diagnosis_admission")
+    .update({ window_started_at: new Date(Date.now() - 11 * 60_000).toISOString() })
+    .eq("owner_id", principal.id);
+  expectNoError(forceRollover.error, "force diagnosis window rollover fixture");
+  const rollover = await claim("e".repeat(64));
+  expectNoError(rollover.error, "diagnosis claim after exact-window rollover");
+  assert.equal(rollover.data?.[0]?.admitted, true, "a new fixed window must reset the quota");
+  await releaseActiveClaim();
+
+  const interleaved = await claim("c".repeat(64));
+  expectNoError(interleaved.error, "interleaved diagnosis claim");
+  assert.equal(interleaved.data?.[0]?.admitted, true, "a different fingerprint may be admitted after release");
+  await releaseActiveClaim();
+
+  const duplicate = await claim("e".repeat(64));
+  expectNoError(duplicate.error, "duplicate diagnosis claim");
+  assert.equal(duplicate.data?.[0]?.admitted, false, "A-B-A inside 60 seconds must preserve A's cooldown");
+
+  const expireDuplicate = await admin
+    .from("diagnosis_admission_cooldowns")
+    .update({ claimed_at: new Date(Date.now() - 61_000).toISOString() })
+    .eq("owner_id", principal.id)
+    .eq("fingerprint", "e".repeat(64));
+  expectNoError(expireDuplicate.error, "expire duplicate cooldown fixture");
+  const afterCooldown = await claim("e".repeat(64));
+  expectNoError(afterCooldown.error, "diagnosis claim after duplicate cooldown");
+  assert.equal(afterCooldown.data?.[0]?.admitted, true, "the exact duplicate must be admitted after 60 seconds");
+  await releaseActiveClaim();
+
+  const expireLease = await admin
+    .from("diagnosis_admission")
+    .update({
+      active_claim_id: randomUUID(),
+      active_expires_at: new Date(Date.now() - 1_000).toISOString(),
+    })
+    .eq("owner_id", principal.id);
+  expectNoError(expireLease.error, "expire diagnosis lease fixture");
+  const afterStaleLease = await claim("d".repeat(64));
+  expectNoError(afterStaleLease.error, "diagnosis claim after stale lease");
+  assert.equal(afterStaleLease.data?.[0]?.admitted, true, "an expired lease must not lock out provider work");
+  await releaseActiveClaim();
+}
+
+async function assertAccountDeletionProcessingClaim(admin: SupabaseClient, principal: FixtureUser) {
+  interface ClaimResult {
+    data: { claimed: boolean }[] | null;
+    error: { message: string } | null;
+  }
+
+  const claimIds = Array.from({ length: 6 }, () => randomUUID());
+  const claims = (await Promise.all(
+    claimIds.map((claimId) =>
+      admin.rpc("claim_account_deletion_processing", {
+        p_user_id: principal.id,
+        p_claim_id: claimId,
+      }),
+    ),
+  )) as unknown as ClaimResult[];
+
+  for (const [index, result] of claims.entries()) {
+    expectNoError(result.error, `parallel account-deletion claim ${index + 1}`);
+  }
+
+  const rows = claims.flatMap((result) => result.data ?? []);
+  assert.equal(rows.filter((row) => row.claimed).length, 1, "exactly one account-deletion claim must be admitted");
+  assert.equal(rows.filter((row) => !row.claimed).length, 5, "concurrent account-deletion losers must be pending");
+
+  const winnerIndex = rows.findIndex((row) => row.claimed);
+  const finalize = await admin.rpc("finalize_account_deletion_processing", {
+    p_user_id: principal.id,
+    p_claim_id: claimIds[winnerIndex],
+    p_succeeded: false,
+    p_error_code: "admin_delete_failed",
+  });
+  expectNoError(finalize.error, "finalize account-deletion processing claim fixture");
+
+  const privateErrorRead = await principal.client
+    .from("account_deletion_requests")
+    .select("last_error")
+    .eq("user_id", principal.id);
+  expectDenied(privateErrorRead.error, "owner reads privileged account-deletion error detail");
+}
+
 async function main() {
   const url = requireEnv("SUPABASE_URL");
   await assertLoopbackUrl(url);
@@ -385,9 +543,11 @@ async function main() {
 
     await assertGrowLogRls(admin, a, b);
     await assertPendingDeletionRls(admin, a, b);
+    await assertDiagnosisAdmission(admin, a);
+    await assertAccountDeletionProcessingClaim(admin, a);
 
     process.stdout.write(
-      "Ownership/RLS smoke passed: two JWT principals, persisted survivors, constraints, diagnosis ordering, and owner-select-only pending state.\n",
+      "Ownership/RLS smoke passed: two JWT principals, persisted survivors, constraints, diagnosis/account-deletion admission concurrency, and owner-select-only pending state.\n",
     );
   } catch (error) {
     runError = error;

@@ -211,6 +211,8 @@ async function runCase(testCase: EvaluationCase): Promise<EvaluationResult> {
       getGrowLog: () => Promise.resolve(createGrowLog(testCase)),
       provider: createProvider(testCase),
       retrieveChunks: () => Promise.resolve(testCase.scope_class === "missing_context" ? [] : [createChunk(testCase)]),
+      acquireAdmission: () => Promise.resolve({ admitted: true, claimId: `evaluation-${testCase.id}` }),
+      releaseAdmission: () => Promise.resolve(),
     },
   );
 

@@ -3,9 +3,20 @@ import type { AccountDeletionRequest } from "@/lib/account-deletion/types";
 
 const ACCOUNT_DELETION_SELECT =
   "user_id, requested_at, purge_after, soft_deleted_at, last_attempt_at, attempt_count, last_error";
+const OWNER_ACCOUNT_DELETION_SELECT =
+  "user_id, requested_at, purge_after, soft_deleted_at, last_attempt_at, attempt_count";
 
 export type AccountDeletionClient = Pick<SupabaseClient, "from">;
-export type AccountDeletionAdminClient = Pick<SupabaseClient, "auth" | "from">;
+export type AccountDeletionAdminClient = Pick<SupabaseClient, "auth" | "from" | "rpc">;
+
+interface AccountDeletionClaimRecord extends AccountDeletionRequestRecord {
+  claimed: boolean;
+}
+
+interface AccountDeletionClaimRpcResult {
+  data: unknown;
+  error: unknown;
+}
 
 export interface AccountDeletionRequestRecord {
   user_id: string;
@@ -16,6 +27,8 @@ export interface AccountDeletionRequestRecord {
   attempt_count: number;
   last_error: string | null;
 }
+
+type OwnerAccountDeletionRequestRecord = Omit<AccountDeletionRequestRecord, "last_error">;
 
 export interface UpsertAccountDeletionRequestInput {
   userId: string;
@@ -32,6 +45,7 @@ export interface MarkAccountDeletionRequestSoftDeletedInput {
   softDeletedAt: string;
   lastAttemptAt: string;
   attemptCount: number;
+  claimId: string;
 }
 
 export interface UpdateAccountDeletionAttemptInput {
@@ -57,9 +71,13 @@ export function mapAccountDeletionRequestRow(record: AccountDeletionRequestRecor
   };
 }
 
+function mapOwnerAccountDeletionRequestRow(record: OwnerAccountDeletionRequestRecord): AccountDeletionRequest {
+  return mapAccountDeletionRequestRow({ ...record, last_error: null });
+}
+
 export async function getOwnerAccountDeletionRequest(client: AccountDeletionClient, userId: string) {
   const { data, error } = await getAccountDeletionTable(client)
-    .select(ACCOUNT_DELETION_SELECT)
+    .select(OWNER_ACCOUNT_DELETION_SELECT)
     .eq("user_id", userId)
     .not("soft_deleted_at", "is", null)
     .maybeSingle();
@@ -68,7 +86,7 @@ export async function getOwnerAccountDeletionRequest(client: AccountDeletionClie
     throw error;
   }
 
-  return data ? mapAccountDeletionRequestRow(data satisfies AccountDeletionRequestRecord) : null;
+  return data ? mapOwnerAccountDeletionRequestRow(data satisfies OwnerAccountDeletionRequestRecord) : null;
 }
 
 export async function getAccountDeletionRequestByUserId(client: AccountDeletionAdminClient, userId: string) {
@@ -82,6 +100,68 @@ export async function getAccountDeletionRequestByUserId(client: AccountDeletionA
   }
 
   return data ? mapAccountDeletionRequestRow(data satisfies AccountDeletionRequestRecord) : null;
+}
+
+export async function claimAccountDeletionProcessing(
+  client: AccountDeletionAdminClient,
+  userId: string,
+  claimId: string,
+) {
+  const { data, error } = (await client.rpc("claim_account_deletion_processing", {
+    p_user_id: userId,
+    p_claim_id: claimId,
+  })) as unknown as AccountDeletionClaimRpcResult;
+
+  if (error) {
+    throw new Error("Account deletion claim RPC failed.", { cause: error });
+  }
+
+  const row = (Array.isArray(data) ? data[0] : data) as AccountDeletionClaimRecord | null;
+
+  if (!row || typeof row.claimed !== "boolean") {
+    throw new Error("Invalid account deletion claim response.");
+  }
+
+  return { claimed: row.claimed, request: mapAccountDeletionRequestRow(row) };
+}
+
+export async function finalizeAccountDeletionProcessing(
+  client: AccountDeletionAdminClient,
+  input: { userId: string; claimId: string; succeeded: boolean },
+) {
+  const { data, error } = (await client.rpc("finalize_account_deletion_processing", {
+    p_user_id: input.userId,
+    p_claim_id: input.claimId,
+    p_succeeded: input.succeeded,
+    p_error_code: input.succeeded ? null : "admin_delete_failed",
+  })) as unknown as AccountDeletionClaimRpcResult;
+
+  if (error) {
+    throw new Error("Account deletion finalization RPC failed.", { cause: error });
+  }
+
+  const row = (Array.isArray(data) ? data[0] : data) as AccountDeletionRequestRecord | null;
+
+  if (!row) {
+    throw new Error("Account deletion processing claim is no longer active.");
+  }
+
+  return mapAccountDeletionRequestRow(row);
+}
+
+export async function releaseAccountDeletionProcessing(
+  client: AccountDeletionAdminClient,
+  userId: string,
+  claimId: string,
+) {
+  const { error } = await getAccountDeletionTable(client)
+    .update({ processing_claim_id: null, processing_expires_at: null })
+    .eq("user_id", userId)
+    .eq("processing_claim_id", claimId);
+
+  if (error) {
+    throw error;
+  }
 }
 
 export async function upsertAccountDeletionRequest(
@@ -121,8 +201,11 @@ export async function markAccountDeletionRequestSoftDeleted(
       last_attempt_at: input.lastAttemptAt,
       attempt_count: input.attemptCount,
       last_error: null,
+      processing_claim_id: null,
+      processing_expires_at: null,
     })
     .eq("user_id", input.userId)
+    .eq("processing_claim_id", input.claimId)
     .select(ACCOUNT_DELETION_SELECT)
     .single();
 

@@ -534,18 +534,18 @@ The account-deletion owner-select migration grants authenticated `SELECT` only. 
 
 #### Automated
 
-- [ ] 4.1 Sequential diagnosis tests prove 10 admissions per 10-minute window and controlled rejection of the 11th.
-- [ ] 4.2 Concurrent tests prove one provider-bearing request at a time and 60-second exact-duplicate suppression.
-- [ ] 4.3 Invalid, non-owner, unsupported, and thin-context cases consume no admission quota and start no provider work.
-- [ ] 4.4 Provider failure/timeout consumes its admitted slot, releases the active lease, and returns a controlled response.
-- [ ] 4.5 Local parallel RPC smoke proves exactly one simultaneous diagnosis claim is admitted.
-- [ ] 4.6 Concurrent account-deletion tests prove exactly one Admin API call and safe retry/idempotency behavior.
-- [ ] 4.7 Focused admission command passes: `npm.cmd run test:unit -- src/lib/diagnosis/admission.test.ts src/lib/diagnosis/service.test.ts src/pages/api/diagnosis/selected-log.test.ts src/lib/account-deletion/service.test.ts src/pages/api/account/delete.test.ts`.
+- [x] 4.1 Sequential diagnosis tests prove 10 admissions per 10-minute window and controlled rejection of the 11th.
+- [x] 4.2 Concurrent tests prove one provider-bearing request at a time and 60-second exact-duplicate suppression.
+- [x] 4.3 Invalid, non-owner, unsupported, and thin-context cases consume no admission quota and start no provider work.
+- [x] 4.4 Provider failure/timeout consumes its admitted slot, releases the active lease, and returns a controlled response.
+- [x] 4.5 Local parallel RPC smoke proves exactly one simultaneous diagnosis claim is admitted.
+- [x] 4.6 Concurrent account-deletion tests prove exactly one Admin API call and safe retry/idempotency behavior.
+- [x] 4.7 Focused admission command passes: `npm.cmd run test:unit -- src/lib/diagnosis/admission.test.ts src/lib/diagnosis/service.test.ts src/pages/api/diagnosis/selected-log.test.ts src/lib/account-deletion/service.test.ts src/pages/api/account/delete.test.ts`.
 
 #### Manual
 
-- [ ] 4.8 Review database admission functions and confirm they store no raw question, grow-log text, provider output, or secret.
-- [ ] 4.9 Confirm the public 429 and concurrent account-deletion outcomes reveal no internal policy or target details.
+- [x] 4.8 Review database admission functions and confirm they store no raw question, grow-log text, provider output, or secret.
+- [x] 4.9 Confirm the public 429 and concurrent account-deletion outcomes reveal no internal policy or target details.
 
 ### Phase 5: Run Gates And Ship Cookbook Patterns
 

@@ -1,4 +1,11 @@
 import { DiagnosisError, toDiagnosisError } from "@/lib/diagnosis/errors";
+import {
+  acquireDiagnosisAdmission,
+  DIAGNOSIS_RATE_LIMIT_MESSAGE,
+  releaseDiagnosisAdmission,
+  type DiagnosisAdmission,
+  type DiagnosisAdmissionClient,
+} from "@/lib/diagnosis/admission";
 import { validateGeneratedDiagnosisContract } from "@/lib/diagnosis/contract";
 import type { DiagnosisProvider } from "@/lib/diagnosis/provider";
 import {
@@ -101,6 +108,13 @@ export interface DiagnoseSelectedLogDependencies {
     client: DiagnosisRetrievalClient,
     args: { queryEmbedding: number[]; stage: "agar" | "grain" },
   ) => Promise<DiagnosisKnowledgeChunk[]>;
+  acquireAdmission?: (
+    client: DiagnosisAdmissionClient,
+    ownerId: string,
+    growLogId: string,
+    question: string,
+  ) => Promise<DiagnosisAdmission>;
+  releaseAdmission?: (client: DiagnosisAdmissionClient, claimId: string) => Promise<void>;
 }
 
 function missingContextResponse(): DiagnosisApiResponse {
@@ -227,49 +241,72 @@ export async function diagnoseSelectedLog(
     return missingContextResponse();
   }
 
+  const acquire = dependencies.acquireAdmission ?? acquireDiagnosisAdmission;
+  const release = dependencies.releaseAdmission ?? releaseDiagnosisAdmission;
+
   try {
-    const provider = dependencies.provider ?? dependencies.createProvider?.();
+    const admission = await acquire(
+      client as unknown as DiagnosisAdmissionClient,
+      ownerId,
+      request.data.growLogId,
+      request.data.question,
+    );
 
-    if (!provider) {
-      return new DiagnosisError("provider_failed", "Diagnosis provider is not configured.").toResponse();
-    }
-
-    const queryEmbedding = await provider.createQueryEmbedding(growLog, request.data.question);
-    const retrieve = dependencies.retrieveChunks ?? matchDiagnosisKnowledgeChunks;
-    let chunks: DiagnosisKnowledgeChunk[];
-
-    try {
-      chunks = await retrieve(client, {
-        queryEmbedding,
-        stage: growLog.stage,
-      });
-    } catch {
-      return new DiagnosisError("retrieval_failed", "Diagnosis knowledge retrieval failed.").toResponse();
-    }
-
-    if (chunks.length === 0) {
-      return missingContextResponse();
-    }
-
-    const diagnosis = await provider.generateDiagnosis({
-      growLog,
-      question: request.data.question,
-      chunks,
-    });
-
-    const parsed = diagnosisResponseSchema.safeParse(diagnosis);
-
-    if (!parsed.success) {
+    if (!admission.admitted) {
       return new DiagnosisError(
-        "invalid_model_output",
-        "Diagnosis provider returned invalid structured output.",
+        "rate_limited",
+        DIAGNOSIS_RATE_LIMIT_MESSAGE,
+        true,
+        admission.retryAfterSeconds,
       ).toResponse();
     }
 
-    return {
-      ok: true,
-      diagnosis: validateGeneratedDiagnosisContract(growLog, chunks, parsed.data),
-    };
+    try {
+      const provider = dependencies.provider ?? dependencies.createProvider?.();
+
+      if (!provider) {
+        return new DiagnosisError("provider_failed", "Diagnosis provider is not configured.").toResponse();
+      }
+
+      const queryEmbedding = await provider.createQueryEmbedding(growLog, request.data.question);
+      const retrieve = dependencies.retrieveChunks ?? matchDiagnosisKnowledgeChunks;
+      let chunks: DiagnosisKnowledgeChunk[];
+
+      try {
+        chunks = await retrieve(client, {
+          queryEmbedding,
+          stage: growLog.stage,
+        });
+      } catch {
+        return new DiagnosisError("retrieval_failed", "Diagnosis knowledge retrieval failed.").toResponse();
+      }
+
+      if (chunks.length === 0) {
+        return missingContextResponse();
+      }
+
+      const diagnosis = await provider.generateDiagnosis({
+        growLog,
+        question: request.data.question,
+        chunks,
+      });
+
+      const parsed = diagnosisResponseSchema.safeParse(diagnosis);
+
+      if (!parsed.success) {
+        return new DiagnosisError(
+          "invalid_model_output",
+          "Diagnosis provider returned invalid structured output.",
+        ).toResponse();
+      }
+
+      return {
+        ok: true,
+        diagnosis: validateGeneratedDiagnosisContract(growLog, chunks, parsed.data),
+      };
+    } finally {
+      await release(client as unknown as DiagnosisAdmissionClient, admission.claimId);
+    }
   } catch (error) {
     if (error instanceof DiagnosisError) {
       return error.toResponse();

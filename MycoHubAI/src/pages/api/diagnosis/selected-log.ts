@@ -8,10 +8,14 @@ import { createClient } from "@/lib/supabase";
 const MAX_DIAGNOSIS_REQUEST_BYTES = 16 * 1024;
 
 function json(response: DiagnosisApiResponse, status: number) {
+  const retryAfter =
+    !response.ok && response.error.code === "rate_limited" ? response.error.retryAfterSeconds : undefined;
+
   return new Response(JSON.stringify(response), {
     status,
     headers: {
       "content-type": "application/json",
+      ...(retryAfter === undefined ? {} : { "retry-after": String(retryAfter) }),
     },
   });
 }
@@ -29,6 +33,8 @@ function statusFor(response: DiagnosisApiResponse) {
       return 401;
     case "grow_log_not_found":
       return 404;
+    case "rate_limited":
+      return 429;
     case "retrieval_failed":
     case "provider_failed":
     case "provider_timeout":

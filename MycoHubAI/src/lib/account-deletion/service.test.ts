@@ -13,160 +13,167 @@ const existingRequest: AccountDeletionRequest = {
   lastError: null,
 };
 
+const finalizedRequest: AccountDeletionRequest = {
+  ...existingRequest,
+  softDeletedAt: "2026-06-11T10:00:00.000Z",
+  lastAttemptAt: "2026-06-11T10:00:00.000Z",
+  attemptCount: 1,
+};
+
 const {
-  getAccountDeletionRequestByUserIdMock,
-  markAccountDeletionRequestSoftDeletedMock,
-  upsertAccountDeletionRequestMock,
-  updateAccountDeletionAttemptMock,
+  claimAccountDeletionProcessingMock,
+  finalizeAccountDeletionProcessingMock,
+  releaseAccountDeletionProcessingMock,
 } = vi.hoisted(() => ({
-  getAccountDeletionRequestByUserIdMock: vi.fn(),
-  markAccountDeletionRequestSoftDeletedMock: vi.fn(),
-  upsertAccountDeletionRequestMock: vi.fn(),
-  updateAccountDeletionAttemptMock: vi.fn(),
+  claimAccountDeletionProcessingMock: vi.fn(),
+  finalizeAccountDeletionProcessingMock: vi.fn(),
+  releaseAccountDeletionProcessingMock: vi.fn(),
 }));
 
 vi.mock("@/lib/account-deletion/repository", () => ({
-  getAccountDeletionRequestByUserId: getAccountDeletionRequestByUserIdMock,
-  markAccountDeletionRequestSoftDeleted: markAccountDeletionRequestSoftDeletedMock,
-  upsertAccountDeletionRequest: upsertAccountDeletionRequestMock,
-  updateAccountDeletionAttempt: updateAccountDeletionAttemptMock,
+  claimAccountDeletionProcessing: claimAccountDeletionProcessingMock,
+  finalizeAccountDeletionProcessing: finalizeAccountDeletionProcessingMock,
+  releaseAccountDeletionProcessing: releaseAccountDeletionProcessingMock,
 }));
 
 describe("requestAccountDeletion", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    releaseAccountDeletionProcessingMock.mockResolvedValue(undefined);
   });
 
-  it("soft deletes the user with shouldSoftDelete=true and records the attempt", async () => {
-    const adminClient = { auth: { admin: { deleteUser: vi.fn() } } } as unknown as AccountDeletionAdminClient;
+  it("soft deletes the authenticated user and atomically finalizes the matching claim", async () => {
+    const adminClient = {} as AccountDeletionAdminClient;
     const deleteUserMock = vi.fn().mockResolvedValue(null);
-    getAccountDeletionRequestByUserIdMock.mockResolvedValue(null);
-    upsertAccountDeletionRequestMock.mockResolvedValue({
-      ...existingRequest,
-      attemptCount: 0,
-      lastError: null,
-    });
-    updateAccountDeletionAttemptMock.mockResolvedValue({
-      ...existingRequest,
-      lastAttemptAt: "2026-06-11T10:00:00.000Z",
-      attemptCount: 1,
-      lastError: null,
-    });
-    markAccountDeletionRequestSoftDeletedMock.mockResolvedValue({
-      ...existingRequest,
-      softDeletedAt: "2026-06-11T10:00:00.000Z",
-      lastAttemptAt: "2026-06-11T10:00:00.000Z",
-      attemptCount: 1,
-      lastError: null,
-    });
+    claimAccountDeletionProcessingMock.mockResolvedValue({ claimed: true, request: existingRequest });
+    finalizeAccountDeletionProcessingMock.mockResolvedValue(finalizedRequest);
 
-    const result: Awaited<ReturnType<typeof requestAccountDeletion>> = await requestAccountDeletion("owner-1", {
+    const result = await requestAccountDeletion("owner-1", {
       adminClient,
-      now: new Date("2026-06-11T10:00:00.000Z"),
       softDeleteUser: deleteUserMock,
     });
 
-    expect(result).toEqual({
-      status: "success",
-      request: {
-        ...existingRequest,
-        softDeletedAt: "2026-06-11T10:00:00.000Z",
-        lastAttemptAt: "2026-06-11T10:00:00.000Z",
-        attemptCount: 1,
-        lastError: null,
-      },
-    });
+    expect(result).toEqual({ status: "success", request: finalizedRequest });
     expect(deleteUserMock).toHaveBeenCalledWith(adminClient, "owner-1");
-    expect(upsertAccountDeletionRequestMock).toHaveBeenCalledWith(adminClient, {
+    const claimId = claimAccountDeletionProcessingMock.mock.calls[0]?.[2] as string;
+    expect(claimId).toMatch(/^[0-9a-f-]{36}$/);
+    expect(finalizeAccountDeletionProcessingMock).toHaveBeenCalledWith(adminClient, {
       userId: "owner-1",
-      requestedAt: "2026-06-11T10:00:00.000Z",
-      purgeAfter: "2026-07-11T10:00:00.000Z",
-      softDeletedAt: null,
-      lastAttemptAt: null,
-      attemptCount: 0,
-      lastError: null,
+      claimId,
+      succeeded: true,
     });
-    expect(updateAccountDeletionAttemptMock).toHaveBeenCalledWith(adminClient, {
-      userId: "owner-1",
-      lastAttemptAt: "2026-06-11T10:00:00.000Z",
-      attemptCount: 1,
-      lastError: null,
-    });
-    expect(markAccountDeletionRequestSoftDeletedMock).toHaveBeenCalledWith(adminClient, {
-      userId: "owner-1",
-      softDeletedAt: "2026-06-11T10:00:00.000Z",
-      lastAttemptAt: "2026-06-11T10:00:00.000Z",
-      attemptCount: 1,
-    });
+    expect(releaseAccountDeletionProcessingMock).not.toHaveBeenCalled();
   });
 
   it("returns missing_admin_config when the admin client is absent", async () => {
-    const result = await requestAccountDeletion("owner-1", { adminClient: null });
-
-    expect(result).toEqual({ status: "missing_admin_config" });
-    expect(getAccountDeletionRequestByUserIdMock).not.toHaveBeenCalled();
+    await expect(requestAccountDeletion("owner-1", { adminClient: null })).resolves.toEqual({
+      status: "missing_admin_config",
+    });
+    expect(claimAccountDeletionProcessingMock).not.toHaveBeenCalled();
   });
 
-  it("returns missing_admin_config when the configured admin key hits RLS instead of admin access", async () => {
-    getAccountDeletionRequestByUserIdMock.mockRejectedValue(
+  it("returns missing_admin_config when the configured admin key cannot claim privileged work", async () => {
+    claimAccountDeletionProcessingMock.mockRejectedValue(
       new Error('new row violates row-level security policy for table "account_deletion_requests"'),
     );
 
-    const result = await requestAccountDeletion("owner-1", {
-      adminClient: {} as AccountDeletionAdminClient,
-    });
-
-    expect(result).toEqual({ status: "missing_admin_config" });
-    expect(upsertAccountDeletionRequestMock).not.toHaveBeenCalled();
+    await expect(requestAccountDeletion("owner-1", { adminClient: {} as AccountDeletionAdminClient })).resolves.toEqual(
+      { status: "missing_admin_config" },
+    );
+    expect(finalizeAccountDeletionProcessingMock).not.toHaveBeenCalled();
   });
 
-  it("returns already_pending when the request already exists without an error", async () => {
-    getAccountDeletionRequestByUserIdMock.mockResolvedValue({
-      ...existingRequest,
-      softDeletedAt: "2026-06-11T10:00:00.000Z",
-    });
+  it("returns the generic pending result to a concurrent claimant", async () => {
+    claimAccountDeletionProcessingMock.mockResolvedValue({ claimed: false, request: existingRequest });
 
-    const result: Awaited<ReturnType<typeof requestAccountDeletion>> = await requestAccountDeletion("owner-1", {
-      adminClient: {} as AccountDeletionAdminClient,
-    });
-
-    expect(result).toEqual({
-      status: "already_pending",
-      request: {
-        ...existingRequest,
-        softDeletedAt: "2026-06-11T10:00:00.000Z",
-      },
-    });
-    expect(upsertAccountDeletionRequestMock).not.toHaveBeenCalled();
+    await expect(requestAccountDeletion("owner-1", { adminClient: {} as AccountDeletionAdminClient })).resolves.toEqual(
+      { status: "already_pending", request: existingRequest },
+    );
+    expect(finalizeAccountDeletionProcessingMock).not.toHaveBeenCalled();
   });
 
-  it("records failure metadata when the soft delete call fails", async () => {
+  it("persists only a controlled failure code and releases through atomic finalization", async () => {
     const adminClient = {} as AccountDeletionAdminClient;
-    const deleteUserMock = vi.fn().mockResolvedValue({ message: "delete failed" });
-    getAccountDeletionRequestByUserIdMock.mockResolvedValue(null);
-    upsertAccountDeletionRequestMock.mockResolvedValue(existingRequest);
-    updateAccountDeletionAttemptMock.mockResolvedValue({
-      ...existingRequest,
-      lastAttemptAt: "2026-06-11T10:00:00.000Z",
-      attemptCount: 1,
-      lastError: "delete failed",
-    });
+    const failedRequest = { ...finalizedRequest, softDeletedAt: null, lastError: "admin_delete_failed" };
+    claimAccountDeletionProcessingMock.mockResolvedValue({ claimed: true, request: existingRequest });
+    finalizeAccountDeletionProcessingMock.mockResolvedValue(failedRequest);
 
-    const result: Awaited<ReturnType<typeof requestAccountDeletion>> = await requestAccountDeletion("owner-1", {
+    const result = await requestAccountDeletion("owner-1", {
       adminClient,
-      now: new Date("2026-06-11T10:00:00.000Z"),
-      softDeleteUser: deleteUserMock,
+      softDeleteUser: vi.fn().mockResolvedValue({ message: "PRIVATE_ADMIN_DETAIL" }),
     });
 
     expect(result).toEqual({
       status: "unexpected_failure",
-      request: {
-        ...existingRequest,
-        lastAttemptAt: "2026-06-11T10:00:00.000Z",
-        attemptCount: 1,
-        lastError: "delete failed",
-      },
-      error: "delete failed",
+      request: failedRequest,
+      error: "Account deletion failed.",
     });
+    const failureFinalizeInput = finalizeAccountDeletionProcessingMock.mock.calls[0]?.[1] as {
+      userId: string;
+      claimId: string;
+      succeeded: boolean;
+    };
+    expect(failureFinalizeInput).toEqual({
+      userId: "owner-1",
+      claimId: failureFinalizeInput.claimId,
+      succeeded: false,
+    });
+    expect(failureFinalizeInput.claimId).toMatch(/^[0-9a-f-]{36}$/);
+    expect(JSON.stringify(result)).not.toContain("PRIVATE_ADMIN_DETAIL");
+    expect(releaseAccountDeletionProcessingMock).not.toHaveBeenCalled();
+  });
+
+  it("retries safely when Admin succeeded but finalization failed", async () => {
+    const adminClient = {} as AccountDeletionAdminClient;
+    const deleteUserMock = vi
+      .fn()
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ message: "User not found", code: "user_not_found" });
+    claimAccountDeletionProcessingMock.mockResolvedValue({ claimed: true, request: existingRequest });
+    finalizeAccountDeletionProcessingMock
+      .mockRejectedValueOnce(new Error("database unavailable"))
+      .mockResolvedValueOnce(finalizedRequest);
+
+    const first = await requestAccountDeletion("owner-1", { adminClient, softDeleteUser: deleteUserMock });
+    const second = await requestAccountDeletion("owner-1", { adminClient, softDeleteUser: deleteUserMock });
+
+    expect(first.status).toBe("unexpected_failure");
+    expect(second).toEqual({ status: "success", request: finalizedRequest });
+    expect(releaseAccountDeletionProcessingMock).toHaveBeenCalledTimes(1);
+    const retryFinalizeInput = finalizeAccountDeletionProcessingMock.mock.calls[1]?.[1] as {
+      userId: string;
+      claimId: string;
+      succeeded: boolean;
+    };
+    expect(retryFinalizeInput).toEqual({
+      userId: "owner-1",
+      claimId: retryFinalizeInput.claimId,
+      succeeded: true,
+    });
+    expect(retryFinalizeInput.claimId).toMatch(/^[0-9a-f-]{36}$/);
+  });
+
+  it("allows exactly one Admin API call across concurrent requests", async () => {
+    const adminClient = {} as AccountDeletionAdminClient;
+    let resolveDelete!: (value: null) => void;
+    const heldDelete = new Promise<null>((resolve) => {
+      resolveDelete = resolve;
+    });
+    const deleteUserMock = vi.fn().mockReturnValue(heldDelete);
+    claimAccountDeletionProcessingMock
+      .mockResolvedValueOnce({ claimed: true, request: existingRequest })
+      .mockResolvedValueOnce({ claimed: false, request: existingRequest });
+    finalizeAccountDeletionProcessingMock.mockResolvedValue(finalizedRequest);
+
+    const first = requestAccountDeletion("owner-1", { adminClient, softDeleteUser: deleteUserMock });
+    await vi.waitFor(() => {
+      expect(deleteUserMock).toHaveBeenCalledTimes(1);
+    });
+    const second = requestAccountDeletion("owner-1", { adminClient, softDeleteUser: deleteUserMock });
+
+    await expect(second).resolves.toEqual({ status: "already_pending", request: existingRequest });
+    expect(deleteUserMock).toHaveBeenCalledTimes(1);
+    resolveDelete(null);
+    await expect(first).resolves.toEqual({ status: "success", request: finalizedRequest });
   });
 });

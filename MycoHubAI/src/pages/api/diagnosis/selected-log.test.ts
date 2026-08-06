@@ -227,4 +227,39 @@ describe("selected-log diagnosis API route", () => {
       },
     });
   });
+
+  it("returns one redacted 429 contract with integer Retry-After metadata", async () => {
+    diagnoseSelectedLogMock.mockResolvedValue({
+      ok: false,
+      error: {
+        code: "rate_limited",
+        message: "Diagnosis requests are temporarily limited. Try again later.",
+        retryable: true,
+        retryAfterSeconds: 42,
+      },
+    });
+
+    const response = await POST(
+      createContext({
+        growLogId: "550e8400-e29b-41d4-a716-446655440000",
+        question: "PRIVATE_GROW_LOG concurrent duplicate?",
+      }) as never,
+    );
+    const serialized = JSON.stringify(await response.json());
+
+    expect(response.status).toBe(429);
+    expect(response.headers.get("retry-after")).toBe("42");
+    expect(serialized).toBe(
+      JSON.stringify({
+        ok: false,
+        error: {
+          code: "rate_limited",
+          message: "Diagnosis requests are temporarily limited. Try again later.",
+          retryable: true,
+          retryAfterSeconds: 42,
+        },
+      }),
+    );
+    expect(serialized).not.toMatch(/PRIVATE_GROW_LOG|fingerprint|claim|concurr|duplicate|quota/i);
+  });
 });

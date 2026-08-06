@@ -94,6 +94,23 @@ describe("account deletion API route", () => {
     expect(response.headers.get("location")).toBe("/auth/signin?message=Account%20deletion%20requested");
   });
 
+  it("returns the same generic pending outcome for a concurrent processing loser", async () => {
+    requestAccountDeletionMock.mockResolvedValue({
+      status: "already_pending",
+      request: {
+        userId: "owner-1",
+        processingClaimId: "SECRET_CLAIM",
+      },
+    });
+    const context = createContext();
+
+    const response = await POST(context as never);
+
+    expect(safeSignOutMock).toHaveBeenCalledTimes(1);
+    expect(response.headers.get("location")).toBe("/auth/signin?message=Account%20deletion%20requested");
+    expect(response.headers.get("location")).not.toMatch(/owner-1|SECRET_CLAIM|processing|concurrent/i);
+  });
+
   it("ignores client-selected targets and forwards only the authenticated user ID", async () => {
     requestAccountDeletionMock.mockResolvedValue({
       status: "success",
