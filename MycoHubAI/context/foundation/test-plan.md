@@ -76,7 +76,7 @@ orchestrator updates Status as artifacts appear on disk.
 | --- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- | --------------------------------------------- | ----------- | ------------------------------------------------------------ |
 | 1   | Diagnosis Contract Hardening              | Prove diagnosis confidence, selected-log binding, malformed provider handling, and scope outcomes at the cheapest deterministic layers.                                                           | #1, #2, #3        | unit, integration, contract/evaluation        | complete    | context/changes/testing-diagnosis-contract-hardening/        |
 | 2   | Ownership, Abuse, And Mutation Boundaries | Prove owner-scoped access, hostile-input rejection, secret/private-data redaction, side-effect boundaries, and costly-operation controls for diagnosis, account deletion, and bulk/grow-log APIs. | #4, #6, #7        | integration, abuse/security, RLS/manual smoke | complete    | context/changes/testing-ownership-abuse-mutation-boundaries/ |
-| 3   | Runtime Failure And Smoke Layer           | Prove env/provider/runtime failures are visible, controlled, and covered by focused smoke checks.                                                                                                 | #5, cross-cutting | targeted smoke, limited browser/manual        | not started | —                                                            |
+| 3   | Runtime Failure And Smoke Layer           | Prove env/provider/runtime failures are visible, controlled, and covered by focused smoke checks.                                                                                                 | #5, cross-cutting | targeted smoke, limited browser/manual        | planned     | context/changes/testing-runtime-failure-smoke-layer/         |
 | 4   | Quality Gates And Cookbook                | Lock the current floor in CI/docs and write cookbook patterns for future tests.                                                                                                                   | cross-cutting     | gates, documentation                          | not started | —                                                            |
 
 Status vocabulary (fixed - parser literals):
@@ -134,7 +134,7 @@ phase lands; before that, the gate is `planned`.
 | post-edit hook              | local (agent loop)    | recommended after §3 Phase 3                   | regressions at edit time                                                           |
 | visual diff (deterministic) | CI on PR              | optional                                       | rendering regressions                                                              |
 | multimodal visual review    | CI on PR              | optional                                       | visual issues classic diff misses                                                  |
-| pre-prod smoke              | between merge + prod  | optional                                       | environment-specific failures                                                      |
+| built-runtime smoke         | local + CI            | required after §3 Phase 3                      | Worker-shaped boot, bindings bridge, middleware, redirects, and SSR execution      |
 
 ## 6. Cookbook Patterns
 
