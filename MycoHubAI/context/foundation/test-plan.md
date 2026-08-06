@@ -6,7 +6,7 @@
 >
 > Refresh: re-run `/10x-test-plan --refresh` when stale (see §8).
 >
-> Last updated: 2026-06-15
+> Last updated: 2026-08-06
 
 ## 1. Strategy
 
@@ -75,7 +75,7 @@ orchestrator updates Status as artifacts appear on disk.
 | #   | Phase name                                | Goal (one line)                                                                                                                                                                                   | Risks covered     | Test types                                    | Status      | Change folder                                                |
 | --- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- | --------------------------------------------- | ----------- | ------------------------------------------------------------ |
 | 1   | Diagnosis Contract Hardening              | Prove diagnosis confidence, selected-log binding, malformed provider handling, and scope outcomes at the cheapest deterministic layers.                                                           | #1, #2, #3        | unit, integration, contract/evaluation        | complete    | context/changes/testing-diagnosis-contract-hardening/        |
-| 2   | Ownership, Abuse, And Mutation Boundaries | Prove owner-scoped access, hostile-input rejection, secret/private-data redaction, side-effect boundaries, and costly-operation controls for diagnosis, account deletion, and bulk/grow-log APIs. | #4, #6, #7        | integration, abuse/security, RLS/manual smoke | planned     | context/changes/testing-ownership-abuse-mutation-boundaries/ |
+| 2   | Ownership, Abuse, And Mutation Boundaries | Prove owner-scoped access, hostile-input rejection, secret/private-data redaction, side-effect boundaries, and costly-operation controls for diagnosis, account deletion, and bulk/grow-log APIs. | #4, #6, #7        | integration, abuse/security, RLS/manual smoke | complete    | context/changes/testing-ownership-abuse-mutation-boundaries/ |
 | 3   | Runtime Failure And Smoke Layer           | Prove env/provider/runtime failures are visible, controlled, and covered by focused smoke checks.                                                                                                 | #5, cross-cutting | targeted smoke, limited browser/manual        | not started | —                                                            |
 | 4   | Quality Gates And Cookbook                | Lock the current floor in CI/docs and write cookbook patterns for future tests.                                                                                                                   | cross-cutting     | gates, documentation                          | not started | —                                                            |
 
@@ -152,27 +152,38 @@ the relevant rollout phase ships; before that, the sub-section reads
 ### 6.2 Adding an integration test
 
 - **Location**: `src/pages/api/**` or the boundary-adjacent module under test.
-- **Mocking policy**: only mock at the network/provider/Supabase edge. Never mock internal modules.
-- **Reference test**: `src/pages/api/diagnosis/selected-log.test.ts`.
-- **Run locally**: `npm run test:unit`.
+- **Boundary-mocking policy**: keep validation and orchestration real; mock only provider, network, or Supabase edges when the asserted oracle does not require persisted state. Do not mock an internal service merely to restate its return value.
+- **Persisted-state policy**: when the claim is a database constraint, RLS decision, atomic admission, or selected-row/survivor outcome, use the loopback-only local Supabase smoke. Static SQL text and fluent query mocks are drift signals, not persisted-state/RLS proof.
+- **Reference tests**: `src/pages/api/diagnosis/selected-log.test.ts` for request/response ordering and `scripts/smoke-ownership-rls.ts` for persisted database behavior.
+- **Run locally**: `npm run test:unit`; after an explicit disposable local reset, provide the smoke's required credentials through its process environment and use `npm run test:rls` for database claims. Standard Astro/Cloudflare commands may load `.dev.vars` normally.
+- **Current guidance checked**: 2026-07-30 (Vitest and Supabase CLI).
 
 ### 6.3 Adding an e2e test
 
 - TBD - see §3 Phase 3.
+- The authenticated create-two/bulk-delete-one/reload scenario belongs to Phase 3 as a runtime/SSR wiring smoke. It does not replace Phase 2's two-principal persisted RLS proof or its selected-row/survivor mutation oracle.
 
 ### 6.4 Adding a test for a new API endpoint
 
 - **Test type**: integration (preferred).
-- **Pattern**: exercise the handler through its request contract, assert response shape and side effects, and mock only the external edges.
-- **Reference test**: `src/pages/api/grow-logs/[id]/delete.test.ts`.
+- **Pattern**: exercise the handler through its real request contract and table-drive unauthenticated, malformed, oversized, missing, non-owner, unsupported, and thin-context cases that apply to the endpoint.
+- **Fail-before-work oracle**: assert rejected requests make zero owner-private reads, mutations, privileged Admin calls, or provider work. For provider-bearing endpoints, this is the fail-before-cost pattern: admission is reached only after every no-cost refusal.
+- **HTTP redaction oracle**: put sentinel grow-log, secret, provider-error, and stack values into controlled failures, then assert none appear in the production-shaped response. Keep missing and non-owner resources publicly indistinguishable where required.
+- **Reference tests**: `src/pages/api/grow-logs/[id]/delete.test.ts`, `src/pages/api/account/delete.test.ts`, and `src/pages/api/diagnosis/selected-log.test.ts`.
 - **When to add e2e instead**: only if the endpoint's failure mode requires the full deployed shape and integration cannot catch the risk cheaply.
+- **Current guidance checked**: 2026-07-30 (Vitest).
 
 ### 6.5 Adding an abuse/security test
 
 - **Test type**: integration or contract test at the smallest boundary that proves the abuse scenario.
-- **Pattern**: assert the hostile or repeated request fails before data access, mutation, secret exposure, or costly provider work.
-- **Required checks**: ownership/resource ID, server-side input validation, error/log redaction, provider-call ordering, and rate/cost behavior where the surface exists.
-- **Anti-pattern**: do not reuse only a happy-path authenticated request as proof that abuse is blocked.
+- **Fail-before-cost matrix**: assert invalid, missing, non-owner, unsupported, and thin-context requests consume no admission quota and start no provider work. Assert provider failures consume an admitted rate slot but release the active lease.
+- **Durable-admission pattern**: prove sequential limits, concurrent one-in-flight behavior, exact-duplicate cooldown, stale-lease recovery, and controlled generic 429 responses against the database-backed boundary; an isolate-local map or a per-call timeout is not a volume-control proof.
+- **Two-principal RLS pattern**: create two temporary confirmed Auth users, sign both in through the anon-key client to obtain distinct JWT sessions, and reserve the service-role client for exact fixtures, persisted-state oracles, and cleanup. Assert selected-row deletion plus unselected/cross-owner survivors after mutation.
+- **Local safety**: require a loopback Supabase URL, reset the disposable database explicitly before the smoke, pass the smoke's credentials through its process environment, and clean up only the generated fixture users in `finally`. Do not directly inspect or modify `.dev.vars`; normal loading by Astro/Cloudflare tooling is expected and allowed.
+- **Required checks**: ownership/resource ID, application and database input bounds, persisted survivor state, owner-only pending-deletion visibility without authenticated mutation, HTTP redaction, provider-call ordering, durable rate/concurrency/deduplication, and privileged-work idempotency.
+- **Anti-patterns**: do not use a happy-path authenticated request, static migration text, repository query shape, or a browser-only CRUD flow as proof of ownership/RLS or bounded provider cost.
+- **Run locally**: `npm run test:unit`; for persisted RLS/admission proof, use `npm run test:rls` after the explicit local reset.
+- **Current guidance checked**: 2026-07-30 (Vitest, Supabase CLI, and AI SDK output bounds).
 
 ### 6.6 Adding a test for a new content-build rule
 
@@ -180,17 +191,15 @@ the relevant rollout phase ships; before that, the sub-section reads
 
 ### 6.7 Per-rollout-phase notes
 
-(Optional. After each phase lands, `/10x-implement` appends a 2-3 line note
-here capturing anything surprising the rollout phase taught - e.g., "Phase
-2 found we needed a fixture catalog under `src/lib/...`; new content tests
-should reuse it.")
+- **Phase 2 - Ownership, Abuse, And Mutation Boundaries (2026-07-30)**: query construction and static SQL inspection cannot prove persisted RLS. Use two JWT principals and selected-row/survivor assertions against the explicitly reset local stack.
+- Valid diagnosis cost is bounded only after fail-before-cost exits by durable database admission; provider timeouts alone do not bound request volume. Keep the create-two/bulk-delete-one/reload browser smoke in Phase 3 for runtime/SSR wiring.
 
 ### 6.8 Running the static quality gate
 
 - **Canonical command**: `npm run typecheck`.
-- **Contract**: The command is non-mutating. It runs `wrangler types --check` to reject generated Worker declaration drift, then `astro check` to reject Astro/TypeScript errors.
-- **Enforcement**: Run locally before a phase closes; the Husky pre-commit hook and CI both invoke the same package command. Regenerate declarations explicitly with `npm run types:generate`, review the diff, and rerun the gate.
-- **Current guidance checked**: 2026-08-01 (Astro and Cloudflare Wrangler).
+- **Contract**: The command is non-mutating and runs `astro check` to reject Astro/TypeScript diagnostics.
+- **Enforcement**: Run locally before a phase closes; the Husky pre-commit hook and CI both invoke the same package command. Worker declaration generation is a separate explicit operation: use `npm run types:generate`, review any diff, and rerun the gate.
+- **Current guidance checked**: 2026-08-06 (`package.json`, Husky, and CI workflow).
 - **Rollout boundary**: This static contract does not by itself complete the broader Quality Gates And Cookbook rollout.
 
 ## 7. What We Deliberately Don't Test

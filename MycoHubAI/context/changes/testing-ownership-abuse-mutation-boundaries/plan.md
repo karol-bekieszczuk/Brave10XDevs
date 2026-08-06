@@ -18,7 +18,7 @@ Several gaps are concrete. Diagnosis accepts any nonblank resource ID, so a malf
 
 Malformed, missing, non-owner, unsupported, oversized, and spoofed-owner requests fail at the earliest meaningful boundary with controlled responses and without private-data access, mutation, or provider work. Valid grow-log writes obey the same stage, nonblank, and length invariants in application validation and Postgres.
 
-A local Supabase smoke creates two temporary Auth principals and proves real JWT-backed cross-owner denial, selected-row/survivor state, owner-only pending-deletion visibility, and the absence of authenticated pending-state mutations. This proof bypasses the application's single-owner middleware intentionally; it does not read or modify `.dev.vars`.
+A local Supabase smoke creates two temporary Auth principals and proves real JWT-backed cross-owner denial, selected-row/survivor state, owner-only pending-deletion visibility, and the absence of authenticated pending-state mutations. This proof bypasses the application's single-owner middleware intentionally. The smoke script receives its inputs through the process environment and does not itself parse or modify `.dev.vars`; standard Astro/Cloudflare tooling may load `.dev.vars` during local commands.
 
 Provider-bearing diagnosis requests are durably bounded across Worker isolates: at most 10 admitted attempts per owner per fixed 10-minute window, one in-flight attempt, and a 60-second exact-duplicate cooldown. Concurrent account-deletion requests acquire one atomic processing lease before the Admin API. Public error responses remain controlled; existing server logging behavior is not expanded into a new redaction contract in this rollout.
 
@@ -37,7 +37,7 @@ Provider-bearing diagnosis requests are durably bounded across Worker isolates: 
 
 - Not adding multi-user product flows, sharing, social behavior, saved diagnosis history, response caching, photo storage, or image analysis.
 - Not treating the second RLS principal as an application-authorized user or changing `AUTHORIZED_USER_ID`.
-- Not reading, rewriting, or temporarily patching `.dev.vars`; the RLS smoke authenticates directly against local Supabase.
+- Not directly inspecting, rewriting, or temporarily patching `.dev.vars` as implementation data. Standard local Astro/Cloudflare tooling may load it normally, while the RLS smoke authenticates directly against local Supabase using its process environment.
 - Not adding the one-owner browser CRUD/reload scenario to Phase 2; it remains a Phase 3 runtime smoke.
 - Not calling static migration-text assertions, repository query-shape tests, or mocked middleware behavior persisted RLS proof.
 - Not moving the local Supabase smoke into CI in this rollout.
@@ -65,7 +65,7 @@ The product contracts are: title at most 160 Unicode code points, body at most 8
 
 ### Local Database Safety
 
-The RLS smoke hard-fails unless `SUPABASE_URL` resolves to loopback. It never resets the database itself and never loads committed or local secret files. The human starts and resets the disposable local stack explicitly, exports the local URL/anon/service-role values into the shell, then runs the smoke. Fixture cleanup deletes only the two exact generated Auth user IDs in `finally`.
+The RLS smoke hard-fails unless `SUPABASE_URL` resolves to loopback. It never resets the database itself and does not parse local secret files; it reads the required values from its process environment. The human starts and resets the disposable local stack explicitly, exports the local URL/anon/service-role values into the shell, then runs the smoke. Standard Astro/Cloudflare commands may load `.dev.vars` according to their normal local configuration. Fixture cleanup deletes only the two exact generated Auth user IDs in `finally`.
 
 ## Phase 1: Classify IDs And Fail Before Work
 
@@ -267,7 +267,7 @@ The two principals do not pass through `src/middleware.ts` and are not both appl
 #### Manual Verification:
 
 - Start local Supabase, explicitly reset the disposable local database so the full migration chain applies, export local credentials into the current shell, and run `npm.cmd run test:rls` successfully.
-- Confirm the smoke ran without reading or modifying `.dev.vars` and without changing the application-authorized owner ID.
+- Confirm the smoke script used process-environment credentials, did not modify `.dev.vars`, and did not change the application-authorized owner ID. Normal `.dev.vars` loading by Astro/Cloudflare tooling is allowed.
 
 **Implementation Note**: Database reset is a deliberate manual gate because it destroys local Supabase data. The smoke script itself must never invoke reset.
 
@@ -412,7 +412,7 @@ Run the complete deterministic and local database gates, then document the patte
 
 - On an explicitly reset local Supabase stack, `npm.cmd run test:rls` passes with two JWT principals, survivor assertions, admission concurrency, and cleanup.
 - Confirm the Phase 2 plan contains no create-two/bulk-delete-one/reload browser gate and §6 keeps that scenario in Phase 3.
-- Confirm no `.dev.vars` file was read or modified during implementation or verification.
+- Confirm `.dev.vars` was not directly inspected or modified during implementation or verification. Normal loading by Astro/Cloudflare tooling is expected and allowed.
 
 **Implementation Note**: After the automated and manual gates pass, pause for human confirmation before closing the rollout phase.
 
@@ -441,7 +441,7 @@ Run the complete deterministic and local database gates, then document the patte
 
 1. Start the local Supabase stack.
 2. Explicitly reset only the disposable local database to apply the full migration chain.
-3. Export the local URL, anon key, and service-role key into the current PowerShell process without reading `.dev.vars`.
+3. Export the local URL, anon key, and service-role key into the current PowerShell process; the RLS smoke reads these values from the process environment, while other Astro/Cloudflare commands may use `.dev.vars` normally.
 4. Run `npm.cmd run test:rls` and inspect the fixture cleanup result.
 5. Run `npm.cmd run test:unit`, `npm.cmd run lint`, and `npm.cmd run build`.
 6. Confirm the two generated identities authenticated directly to Supabase and did not pass through the application single-owner gate.
@@ -534,31 +534,31 @@ The account-deletion owner-select migration grants authenticated `SELECT` only. 
 
 #### Automated
 
-- [x] 4.1 Sequential diagnosis tests prove 10 admissions per 10-minute window and controlled rejection of the 11th.
-- [x] 4.2 Concurrent tests prove one provider-bearing request at a time and 60-second exact-duplicate suppression.
-- [x] 4.3 Invalid, non-owner, unsupported, and thin-context cases consume no admission quota and start no provider work.
-- [x] 4.4 Provider failure/timeout consumes its admitted slot, releases the active lease, and returns a controlled response.
-- [x] 4.5 Local parallel RPC smoke proves exactly one simultaneous diagnosis claim is admitted.
-- [x] 4.6 Concurrent account-deletion tests prove exactly one Admin API call and safe retry/idempotency behavior.
-- [x] 4.7 Focused admission command passes: `npm.cmd run test:unit -- src/lib/diagnosis/admission.test.ts src/lib/diagnosis/service.test.ts src/pages/api/diagnosis/selected-log.test.ts src/lib/account-deletion/service.test.ts src/pages/api/account/delete.test.ts`.
+- [x] 4.1 Sequential diagnosis tests prove 10 admissions per 10-minute window and controlled rejection of the 11th. — 2aca20d
+- [x] 4.2 Concurrent tests prove one provider-bearing request at a time and 60-second exact-duplicate suppression. — 2aca20d
+- [x] 4.3 Invalid, non-owner, unsupported, and thin-context cases consume no admission quota and start no provider work. — 2aca20d
+- [x] 4.4 Provider failure/timeout consumes its admitted slot, releases the active lease, and returns a controlled response. — 2aca20d
+- [x] 4.5 Local parallel RPC smoke proves exactly one simultaneous diagnosis claim is admitted. — 2aca20d
+- [x] 4.6 Concurrent account-deletion tests prove exactly one Admin API call and safe retry/idempotency behavior. — 2aca20d
+- [x] 4.7 Focused admission command passes: `npm.cmd run test:unit -- src/lib/diagnosis/admission.test.ts src/lib/diagnosis/service.test.ts src/pages/api/diagnosis/selected-log.test.ts src/lib/account-deletion/service.test.ts src/pages/api/account/delete.test.ts`. — 2aca20d
 
 #### Manual
 
-- [x] 4.8 Review database admission functions and confirm they store no raw question, grow-log text, provider output, or secret.
-- [x] 4.9 Confirm the public 429 and concurrent account-deletion outcomes reveal no internal policy or target details.
+- [x] 4.8 Review database admission functions and confirm they store no raw question, grow-log text, provider output, or secret. — 2aca20d
+- [x] 4.9 Confirm the public 429 and concurrent account-deletion outcomes reveal no internal policy or target details. — 2aca20d
 
 ### Phase 5: Run Gates And Ship Cookbook Patterns
 
 #### Automated
 
-- [ ] 5.1 Full unit/integration suite passes: `npm.cmd run test:unit`.
-- [ ] 5.2 Lint passes: `npm.cmd run lint`.
-- [ ] 5.3 Production build passes: `npm.cmd run build`.
-- [ ] 5.4 Search confirms the Phase 2 cookbook names persisted-state/RLS and fail-before-cost patterns without claiming static SQL or query mocks are proof.
-- [ ] 5.5 `context/foundation/test-plan.md` §6 contains the shipped Phase 2 patterns and dated guidance.
+- [x] 5.1 Full unit/integration suite passes: `npm.cmd run test:unit`.
+- [x] 5.2 Lint passes: `npm.cmd run lint`.
+- [x] 5.3 Production build passes: `npm.cmd run build`.
+- [x] 5.4 Search confirms the Phase 2 cookbook names persisted-state/RLS and fail-before-cost patterns without claiming static SQL or query mocks are proof.
+- [x] 5.5 `context/foundation/test-plan.md` §6 contains the shipped Phase 2 patterns and dated guidance.
 
 #### Manual
 
-- [ ] 5.6 On an explicitly reset local Supabase stack, `npm.cmd run test:rls` passes with two JWT principals, survivor assertions, admission concurrency, and cleanup.
-- [ ] 5.7 Confirm the Phase 2 plan contains no create-two/bulk-delete-one/reload browser gate and §6 keeps that scenario in Phase 3.
-- [ ] 5.8 Confirm no `.dev.vars` file was read or modified during implementation or verification.
+- [x] 5.6 On an explicitly reset local Supabase stack, `npm.cmd run test:rls` passes with two JWT principals, survivor assertions, admission concurrency, and cleanup.
+- [x] 5.7 Confirm the Phase 2 plan contains no create-two/bulk-delete-one/reload browser gate and §6 keeps that scenario in Phase 3.
+- [x] 5.8 Confirm `.dev.vars` was not directly inspected or modified; normal Astro/Cloudflare tooling access is allowed.
