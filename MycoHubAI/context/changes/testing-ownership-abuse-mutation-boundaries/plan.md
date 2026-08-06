@@ -551,14 +551,14 @@ The account-deletion owner-select migration grants authenticated `SELECT` only. 
 
 #### Automated
 
-- [x] 5.1 Full unit/integration suite passes: `npm.cmd run test:unit`.
-- [x] 5.2 Lint passes: `npm.cmd run lint`.
-- [x] 5.3 Production build passes: `npm.cmd run build`.
-- [x] 5.4 Search confirms the Phase 2 cookbook names persisted-state/RLS and fail-before-cost patterns without claiming static SQL or query mocks are proof.
-- [x] 5.5 `context/foundation/test-plan.md` §6 contains the shipped Phase 2 patterns and dated guidance.
+- [x] 5.1 Full unit/integration suite passes: `npm.cmd run test:unit`. — 55db8a2
+- [x] 5.2 Lint passes: `npm.cmd run lint`. — 55db8a2
+- [x] 5.3 Production build passes: `npm.cmd run build`. — 55db8a2
+- [x] 5.4 Search confirms the Phase 2 cookbook names persisted-state/RLS and fail-before-cost patterns without claiming static SQL or query mocks are proof. — 55db8a2
+- [x] 5.5 `context/foundation/test-plan.md` §6 contains the shipped Phase 2 patterns and dated guidance. — 55db8a2
 
 #### Manual
 
-- [x] 5.6 On an explicitly reset local Supabase stack, `npm.cmd run test:rls` passes with two JWT principals, survivor assertions, admission concurrency, and cleanup.
-- [x] 5.7 Confirm the Phase 2 plan contains no create-two/bulk-delete-one/reload browser gate and §6 keeps that scenario in Phase 3.
-- [x] 5.8 Confirm `.dev.vars` was not directly inspected or modified; normal Astro/Cloudflare tooling access is allowed.
+- [x] 5.6 On an explicitly reset local Supabase stack, `npm.cmd run test:rls` passes with two JWT principals, survivor assertions, admission concurrency, and cleanup. — 55db8a2
+- [x] 5.7 Confirm the Phase 2 plan contains no create-two/bulk-delete-one/reload browser gate and §6 keeps that scenario in Phase 3. — 55db8a2
+- [x] 5.8 Confirm `.dev.vars` was not directly inspected or modified; normal Astro/Cloudflare tooling access is allowed. — 55db8a2
