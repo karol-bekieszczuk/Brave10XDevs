@@ -8,7 +8,7 @@ import {
 } from "astro:env/server";
 
 function readOptionalString(value: unknown): string | undefined {
-  return typeof value === "string" && value.length > 0 ? value : undefined;
+  return typeof value === "string" && value.trim().length > 0 ? value : undefined;
 }
 
 export function getSupabaseEnv(): { url?: string; key?: string } {

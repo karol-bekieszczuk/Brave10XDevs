@@ -391,15 +391,15 @@ No database migration is required. The only dependency migration is the reviewed
 
 #### Automated
 
-- [ ] 1.1 Focused runtime failure tests pass: `npm.cmd run test:unit -- src/lib/runtime-env.test.ts src/lib/diagnosis/provider.test.ts src/pages/api/diagnosis/selected-log.runtime-failure.test.ts`.
-- [ ] 1.2 Runtime env tests prove Cloudflare precedence, Astro fallback, and missing/empty/whitespace handling.
-- [ ] 1.3 Missing-provider integration proves a retryable, vendor-neutral, schema-valid failure with no raw sentinel or provider name in the response and no external provider call.
-- [ ] 1.4 The integration proves admission release is attempted after the lazy provider factory fails.
-- [ ] 1.5 Canonical typecheck passes: `npm.cmd run typecheck`.
+- [x] 1.1 Focused runtime failure tests pass: `npm.cmd run test:unit -- src/lib/runtime-env.test.ts src/lib/diagnosis/provider.test.ts src/pages/api/diagnosis/selected-log.runtime-failure.test.ts`.
+- [x] 1.2 Runtime env tests prove Cloudflare precedence, Astro fallback, and missing/empty/whitespace handling.
+- [x] 1.3 Missing-provider integration proves a retryable, vendor-neutral, schema-valid failure with no raw sentinel or provider name in the response and no external provider call.
+- [x] 1.4 The integration proves admission release is attempted after the lazy provider factory fails.
+- [x] 1.5 Canonical typecheck passes: `npm.cmd run typecheck`.
 
 #### Manual
 
-- [ ] 1.6 Review the authenticated missing-provider copy and confirm it is actionable without naming OpenRouter or exposing configuration details.
+- [x] 1.6 Review the authenticated missing-provider copy and confirm it is actionable without naming OpenRouter or exposing configuration details.
 
 ### Phase 2: Prove Persisted Admission State After Provider Failure
 

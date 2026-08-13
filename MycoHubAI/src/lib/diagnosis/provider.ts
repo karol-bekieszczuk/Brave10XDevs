@@ -72,8 +72,8 @@ export function createDiagnosisProvider(
   apiKey: string | undefined,
   options: DiagnosisProviderOptions = {},
 ): DiagnosisProvider {
-  if (!apiKey) {
-    throw new DiagnosisError("provider_failed", "OpenRouter API key is not configured.");
+  if (!apiKey?.trim()) {
+    throw new DiagnosisError("provider_failed", "Diagnosis is temporarily unavailable. Try again.");
   }
 
   const openrouter = createOpenRouter({

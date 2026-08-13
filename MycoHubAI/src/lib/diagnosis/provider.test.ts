@@ -62,12 +62,19 @@ describe("diagnosis provider", () => {
     vi.clearAllMocks();
   });
 
-  it("rejects an undefined API key with the controlled provider failure", () => {
-    expect(() => createDiagnosisProvider(undefined)).toThrow(
-      expect.objectContaining({ code: "provider_failed", message: "OpenRouter API key is not configured." }),
-    );
-    expect(createOpenRouterMock).not.toHaveBeenCalled();
-  });
+  it.each([undefined, "", "   "])(
+    "rejects a blank-equivalent API key with the controlled provider failure",
+    (apiKey) => {
+      expect(() => createDiagnosisProvider(apiKey)).toThrow(
+        expect.objectContaining({
+          code: "provider_failed",
+          message: "Diagnosis is temporarily unavailable. Try again.",
+          retryable: true,
+        }),
+      );
+      expect(createOpenRouterMock).not.toHaveBeenCalled();
+    },
+  );
 
   it("passes timeout abort signals to embedding and generation calls", async () => {
     embedMock.mockResolvedValue({ embedding: [0.1, 0.2, 0.3] });
