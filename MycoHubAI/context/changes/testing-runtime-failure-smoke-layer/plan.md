@@ -391,29 +391,29 @@ No database migration is required. The only dependency migration is the reviewed
 
 #### Automated
 
-- [x] 1.1 Focused runtime failure tests pass: `npm.cmd run test:unit -- src/lib/runtime-env.test.ts src/lib/diagnosis/provider.test.ts src/pages/api/diagnosis/selected-log.runtime-failure.test.ts`.
-- [x] 1.2 Runtime env tests prove Cloudflare precedence, Astro fallback, and missing/empty/whitespace handling.
-- [x] 1.3 Missing-provider integration proves a retryable, vendor-neutral, schema-valid failure with no raw sentinel or provider name in the response and no external provider call.
-- [x] 1.4 The integration proves admission release is attempted after the lazy provider factory fails.
-- [x] 1.5 Canonical typecheck passes: `npm.cmd run typecheck`.
+- [x] 1.1 Focused runtime failure tests pass: `npm.cmd run test:unit -- src/lib/runtime-env.test.ts src/lib/diagnosis/provider.test.ts src/pages/api/diagnosis/selected-log.runtime-failure.test.ts`. — 60374ba
+- [x] 1.2 Runtime env tests prove Cloudflare precedence, Astro fallback, and missing/empty/whitespace handling. — 60374ba
+- [x] 1.3 Missing-provider integration proves a retryable, vendor-neutral, schema-valid failure with no raw sentinel or provider name in the response and no external provider call. — 60374ba
+- [x] 1.4 The integration proves admission release is attempted after the lazy provider factory fails. — 60374ba
+- [x] 1.5 Canonical typecheck passes: `npm.cmd run typecheck`. — 60374ba
 
 #### Manual
 
-- [x] 1.6 Review the authenticated missing-provider copy and confirm it is actionable without naming OpenRouter or exposing configuration details.
+- [x] 1.6 Review the authenticated missing-provider copy and confirm it is actionable without naming OpenRouter or exposing configuration details. — 60374ba
 
 ### Phase 2: Prove Persisted Admission State After Provider Failure
 
 #### Automated
 
-- [ ] 2.1 After an explicit manual reset of the disposable local Supabase stack, `npm.cmd run test:runtime:provider-failure` passes with credentials supplied through the process environment.
-- [ ] 2.2 The smoke proves attempt/cooldown retention, active-claim release, unchanged grow-log state, and absence of persisted provider/diagnosis content.
-- [ ] 2.3 A forced assertion failure demonstrates exact-user cleanup still runs and the temporary failure is reverted.
-- [ ] 2.4 A non-loopback URL is refused before user creation, mutation, or provider work.
-- [ ] 2.5 Canonical typecheck passes: `npm.cmd run typecheck`.
+- [x] 2.1 After an explicit manual reset of the disposable local Supabase stack, `npm.cmd run test:runtime:provider-failure` passes with credentials supplied through the process environment.
+- [x] 2.2 The smoke proves attempt/cooldown retention, active-claim release, unchanged grow-log state, and absence of persisted provider/diagnosis content.
+- [x] 2.3 A forced assertion failure demonstrates exact-user cleanup still runs and the temporary failure is reverted.
+- [x] 2.4 A non-loopback URL is refused before user creation, mutation, or provider work.
+- [x] 2.5 Canonical typecheck passes: `npm.cmd run typecheck`.
 
 #### Manual
 
-- [ ] 2.6 Confirm the target Supabase URL is loopback-only, reset that disposable local stack before the smoke, and verify the reported generated user is absent after completion.
+- [x] 2.6 Confirm the target Supabase URL is loopback-only, reset that disposable local stack before the smoke, and verify the reported generated user is absent after completion.
 
 ### Phase 3: Build The Workerd And Playwright Harness
 
