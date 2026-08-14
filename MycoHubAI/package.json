@@ -84,7 +84,7 @@
   "lint-staged": {
     "!(worker-configuration.d).{ts,tsx,astro}": [
       "eslint --fix",
-      "vitest related --run"
+      "vitest related --run --passWithNoTests"
     ],
     "*.{json,css,md}": [
       "prettier --write"

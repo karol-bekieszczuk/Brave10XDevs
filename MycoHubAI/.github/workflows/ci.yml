@@ -50,8 +50,8 @@ jobs:
           echo "SUPABASE_URL=$SUPABASE_URL" >> "$GITHUB_ENV"
           echo "SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> "$GITHUB_ENV"
           echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY" >> "$GITHUB_ENV"
-      - name: Run built-runtime and authenticated setup gate
-        run: npm run test:e2e:setup
+      - name: Run reviewed browser risk against the built local runtime
+        run: npm run test:e2e
       - name: Stop disposable local Supabase
         if: always()
         run: npx supabase stop --no-backup

@@ -419,37 +419,37 @@ No database migration is required. The only dependency migration is the reviewed
 
 #### Automated
 
-- [x] 3.1 Playwright config exposes `testDir`, loopback `baseURL`, setup-to-Chromium dependency, and built-runtime startup; the package command forwards a single spec path.
-- [x] 3.2 The local harness creates the owner before server startup, loads `/grow-logs` from saved auth state without UI login, and removes the user/auth state after success.
-- [x] 3.3 A forced setup or test failure proves the harness cleanup path still runs, after which the temporary failure is reverted.
-- [x] 3.4 Built-runtime smoke passes against `astro build` plus workerd-backed preview and checks application render/redirect outcomes without asserting Cloudflare error codes.
-- [x] 3.5 CI installs Chromium, uses only disposable local Supabase, runs the setup/runtime gate, and contains no hosted or production mutation target.
-- [x] 3.6 Unit tests pass: `npm.cmd run test:unit`.
-- [x] 3.7 Lint passes: `npm.cmd run lint`.
-- [x] 3.8 Build passes: `npm.cmd run build`.
-- [x] 3.9 Canonical typecheck passes: `npm.cmd run typecheck`.
+- [x] 3.1 Playwright config exposes `testDir`, loopback `baseURL`, setup-to-Chromium dependency, and built-runtime startup; the package command forwards a single spec path. — ffd7dc9
+- [x] 3.2 The local harness creates the owner before server startup, loads `/grow-logs` from saved auth state without UI login, and removes the user/auth state after success. — ffd7dc9
+- [x] 3.3 A forced setup or test failure proves the harness cleanup path still runs, after which the temporary failure is reverted. — ffd7dc9
+- [x] 3.4 Built-runtime smoke passes against `astro build` plus workerd-backed preview and checks application render/redirect outcomes without asserting Cloudflare error codes. — ffd7dc9
+- [x] 3.5 CI installs Chromium, uses only disposable local Supabase, runs the setup/runtime gate, and contains no hosted or production mutation target. — ffd7dc9
+- [x] 3.6 Unit tests pass: `npm.cmd run test:unit`. — ffd7dc9
+- [x] 3.7 Lint passes: `npm.cmd run lint`. — ffd7dc9
+- [x] 3.8 Build passes: `npm.cmd run build`. — ffd7dc9
+- [x] 3.9 Canonical typecheck passes: `npm.cmd run typecheck`. — ffd7dc9
 
 #### Manual
 
-- [x] 3.10 Inspect ignored artifacts and confirm no storage state, cookie, password, service-role value, or fixture metadata is tracked.
-- [x] 3.11 Run the harness once headed and confirm the browser starts already authenticated against the built local runtime, with no stale server reuse.
+- [x] 3.10 Inspect ignored artifacts and confirm no storage state, cookie, password, service-role value, or fixture metadata is tracked. — ffd7dc9
+- [x] 3.11 Run the harness once headed and confirm the browser starts already authenticated against the built local runtime, with no stale server reuse. — ffd7dc9
 
 ### Phase 4: Protect Grow-Log Mutation And SSR Persistence In The Browser
 
 #### Automated
 
-- [ ] 4.1 `$10x-e2e` creates or adapts the seed and E2E rules, then adds exactly one risk-bound spec file.
-- [ ] 4.2 The spec uses only role, label, and visible-text locators; unique data; state waits; and deterministic cleanup, with no CSS/XPath, `waitForTimeout`, skip/fixme, screenshot, or pixel oracle.
-- [ ] 4.3 Single-spec execution passes: `npm.cmd run test:e2e -- tests/e2e/grow-log-bulk-delete-ssr-persistence.spec.ts`.
-- [ ] 4.4 Assertions prove success feedback, selected-log absence, survivor presence, and the same absence/presence after `page.reload()`.
-- [ ] 4.5 Review against hallucinated assertion, brittle selector, shared state, wait-for-time, and no-cleanup anti-patterns finds no unresolved violation.
-- [ ] 4.6 A temporary deliberate break of the protected bulk-mutation or SSR-reread behavior makes this exact spec fail; the break is immediately reverted and the spec returns green.
-- [ ] 4.7 CI runs the reviewed spec against disposable local services and leaves no generated principal or auth artifact.
-- [ ] 4.8 Canonical typecheck passes: `npm.cmd run typecheck`.
+- [x] 4.1 `$10x-e2e` creates or adapts the seed and E2E rules, then adds exactly one risk-bound spec file.
+- [x] 4.2 The spec uses only role, label, and visible-text locators; unique data; state waits; and deterministic cleanup, with no CSS/XPath, `waitForTimeout`, skip/fixme, screenshot, or pixel oracle.
+- [x] 4.3 Single-spec execution passes: `npm.cmd run test:e2e -- tests/e2e/grow-log-bulk-delete-ssr-persistence.spec.ts`.
+- [x] 4.4 Assertions prove success feedback, selected-log absence, survivor presence, and the same absence/presence after `page.reload()`.
+- [x] 4.5 Review against hallucinated assertion, brittle selector, shared state, wait-for-time, and no-cleanup anti-patterns finds no unresolved violation.
+- [x] 4.6 A temporary deliberate break of the protected bulk-mutation or SSR-reread behavior makes this exact spec fail; the break is immediately reverted and the spec returns green.
+- [x] 4.7 CI runs the reviewed spec against disposable local services and leaves no generated principal or auth artifact.
+- [x] 4.8 Canonical typecheck passes: `npm.cmd run typecheck`.
 
 #### Manual
 
-- [ ] 4.9 Watch one headed run and confirm the real delete dialog appears, only the selected grow log disappears, and the survivor remains after a visible reload.
+- [x] 4.9 Watch one headed run and confirm the real delete dialog appears, only the selected grow log disappears, and the survivor remains after a visible reload.
 
 ### Phase 5: Lock Risk #5 And The E2E Cookbook
 
