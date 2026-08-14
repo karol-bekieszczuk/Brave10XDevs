@@ -244,7 +244,7 @@ Generate and harden exactly one browser spec for the cross-boundary runtime/SSR 
 
 #### 1. E2E quality levers
 
-**File**: `tests/e2e/seed.spec.ts`, `tests/e2e/e2e-quality-rules.md`
+**File**: `tests/e2e/seed.ts`, `tests/e2e/e2e-quality-rules.md`
 
 **Intent**: Give `$10x-e2e` a project-specific exemplar and explicit rules before it generates the business-risk spec.
 
@@ -438,18 +438,25 @@ No database migration is required. The only dependency migration is the reviewed
 
 #### Automated
 
-- [x] 4.1 `$10x-e2e` creates or adapts the seed and E2E rules, then adds exactly one risk-bound spec file.
-- [x] 4.2 The spec uses only role, label, and visible-text locators; unique data; state waits; and deterministic cleanup, with no CSS/XPath, `waitForTimeout`, skip/fixme, screenshot, or pixel oracle.
-- [x] 4.3 Single-spec execution passes: `npm.cmd run test:e2e -- tests/e2e/grow-log-bulk-delete-ssr-persistence.spec.ts`.
-- [x] 4.4 Assertions prove success feedback, selected-log absence, survivor presence, and the same absence/presence after `page.reload()`.
-- [x] 4.5 Review against hallucinated assertion, brittle selector, shared state, wait-for-time, and no-cleanup anti-patterns finds no unresolved violation.
-- [x] 4.6 A temporary deliberate break of the protected bulk-mutation or SSR-reread behavior makes this exact spec fail; the break is immediately reverted and the spec returns green.
-- [x] 4.7 CI runs the reviewed spec against disposable local services and leaves no generated principal or auth artifact.
-- [x] 4.8 Canonical typecheck passes: `npm.cmd run typecheck`.
+- [x] 4.1 `$10x-e2e` creates or adapts the seed and E2E rules, then adds exactly one risk-bound spec file. — e56cbca
+- [x] 4.2 The spec uses only role, label, and visible-text locators; unique data; state waits; and deterministic cleanup, with no CSS/XPath, `waitForTimeout`, skip/fixme, screenshot, or pixel oracle. — e56cbca
+- [x] 4.3 Single-spec execution passes: `npm.cmd run test:e2e -- tests/e2e/grow-log-bulk-delete-ssr-persistence.spec.ts`. — e56cbca
+- [x] 4.4 Assertions prove success feedback, selected-log absence, survivor presence, and the same absence/presence after `page.reload()`. — e56cbca
+- [x] 4.5 Review against hallucinated assertion, brittle selector, shared state, wait-for-time, and no-cleanup anti-patterns finds no unresolved violation. — e56cbca
+- [x] 4.6 A temporary deliberate break of the protected bulk-mutation or SSR-reread behavior makes this exact spec fail; the break is immediately reverted and the spec returns green. — e56cbca
+- [x] 4.7 CI runs the reviewed spec against disposable local services and leaves no generated principal or auth artifact. — e56cbca
+- [x] 4.8 Canonical typecheck passes: `npm.cmd run typecheck`. — e56cbca
 
 #### Manual
 
-- [x] 4.9 Watch one headed run and confirm the real delete dialog appears, only the selected grow log disappears, and the survivor remains after a visible reload.
+- [x] 4.9 Watch one headed run and confirm the real delete dialog appears, only the selected grow log disappears, and the survivor remains after a visible reload. — e56cbca
+
+#### Verification Evidence
+
+- Baseline: the focused Phase 4 E2E run completed with `2 passed`; exact owner, auth-state, and temporary-binding cleanup completed.
+- Deliberate break: the production bulk-delete call was temporarily disabled while the success feedback remained. The exact spec failed at the selected-title absence assertion with expected count `0` and received count `1`; cleanup still completed.
+- Restoration: the deliberate break was immediately removed, the production file had no remaining diff, and the focused run returned to `2 passed`; cleanup completed.
+- Headed: the operator supplied the headed-run output with `2 passed` and confirmed the visible flow; exact owner and artifact cleanup completed.
 
 ### Phase 5: Lock Risk #5 And The E2E Cookbook
 

@@ -9,4 +9,4 @@
 - Do not use `test.skip`, `test.fixme`, screenshots, pixel assertions, or shared rows to make a functional scenario pass.
 - A generated spec is complete only after it passes alone and fails under a temporary deliberate break of the exact behavior it protects.
 
-The seed exemplar is `tests/e2e/seed.spec.ts`. The harness creates and hard-deletes one disposable owner, removes temporary auth/binding artifacts, and refuses non-loopback Supabase targets.
+The seed exemplar is `tests/e2e/seed.ts`. The harness creates and hard-deletes one disposable owner, removes temporary auth/binding artifacts, and refuses non-loopback Supabase targets.

@@ -12,4 +12,4 @@ Cookie-backed authentication from `storageState`, authorization middleware, Astr
 Mocked boundaries:
 None. The scenario does not reach the diagnosis provider or any other external API.
 
-Write one Playwright test following `tests/e2e/seed.spec.ts` and `tests/e2e/e2e-quality-rules.md`. The test must fail if bulk deletion targets the wrong row, does not persist, or the SSR reread returns stale state. Clean up only rows identified by the generated owner ID and unique titles, with harness owner deletion as the final safety net.
+Write one Playwright test following `tests/e2e/seed.ts` and `tests/e2e/e2e-quality-rules.md`. The test must fail if bulk deletion targets the wrong row, does not persist, or the SSR reread returns stale state. Clean up only rows identified by the generated owner ID and unique titles, with harness owner deletion as the final safety net.

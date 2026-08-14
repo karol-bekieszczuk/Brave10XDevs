@@ -1,10 +1,10 @@
 // risk: test-plan.md Phase 3 — grow-log mutation survives an SSR reload
-// seed: tests/e2e/seed.spec.ts
+// seed: tests/e2e/seed.ts
 import { randomUUID } from "node:crypto";
 import { expect, test } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import { getE2EFixtureEnvironment } from "./fixtures";
-import { createUniqueGrowLogThroughUi } from "./seed.spec";
+import { createUniqueGrowLogThroughUi } from "./seed";
 
 function requireHarnessEnvironment(name: "E2E_SUPABASE_SERVICE_ROLE_KEY" | "E2E_SUPABASE_URL") {
   const value = process.env[name]?.trim();
