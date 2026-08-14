@@ -25,3 +25,33 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
           AUTHORIZED_USER_ID: ${{ secrets.AUTHORIZED_USER_ID }}
+
+  e2e-infrastructure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.15.0
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Start and reset disposable local Supabase
+        run: |
+          npx supabase start
+          npx supabase db reset --local
+      - name: Export disposable local Supabase credentials
+        shell: bash
+        run: |
+          eval "$(npx supabase status -o env \
+            --override-name api.url=SUPABASE_URL \
+            --override-name auth.anon_key=SUPABASE_ANON_KEY \
+            --override-name auth.service_role_key=SUPABASE_SERVICE_ROLE_KEY)"
+          echo "SUPABASE_URL=$SUPABASE_URL" >> "$GITHUB_ENV"
+          echo "SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> "$GITHUB_ENV"
+          echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY" >> "$GITHUB_ENV"
+      - name: Run built-runtime and authenticated setup gate
+        run: npm run test:e2e:setup
+      - name: Stop disposable local Supabase
+        if: always()
+        run: npx supabase stop --no-backup

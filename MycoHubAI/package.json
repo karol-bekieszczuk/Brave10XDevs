@@ -17,6 +17,10 @@
     "diagnosis:evaluate:live": "tsx scripts/evaluate-diagnosis-cases-live.ts",
     "test:rls": "tsx scripts/smoke-ownership-rls.ts",
     "test:runtime:provider-failure": "tsx scripts/smoke-runtime-provider-failure.ts",
+    "test:worker-runtime": "tsx scripts/run-e2e.ts --runtime-only",
+    "test:e2e": "tsx scripts/run-e2e.ts",
+    "test:e2e:setup": "tsx scripts/run-e2e.ts --project=setup",
+    "test:e2e:cleanup": "tsx scripts/run-e2e.ts --project=setup --verify-cleanup-on-failure",
     "test:unit": "vitest run",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -51,6 +55,7 @@
   "devDependencies": {
     "@eslint/compat": "^2.0.3",
     "@eslint/js": "^9.29.0",
+    "@playwright/test": "^1.61.0",
     "@stryker-mutator/core": "^9.6.1",
     "@stryker-mutator/vitest-runner": "^9.6.1",
     "eslint": "^9.29.0",

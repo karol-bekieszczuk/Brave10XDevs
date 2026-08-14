@@ -36,3 +36,7 @@ mutation-summary.md
 # E2E tests
 .playwright-cli/
 auth.json
+playwright/.auth/
+playwright/.fixture/
+test-results/
+playwright-report/

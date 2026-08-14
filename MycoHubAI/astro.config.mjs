@@ -1,10 +1,13 @@
 // @ts-check
+import process from "node:process";
 import { defineConfig, envField } from "astro/config";
 
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import cloudflare from "@astrojs/cloudflare";
+
+const e2eWranglerConfigPath = process.env.MYCOHUB_E2E_WRANGLER_CONFIG_PATH?.trim();
 
 // https://astro.build/config
 export default defineConfig({
@@ -14,7 +17,7 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
-  adapter: cloudflare(),
+  adapter: cloudflare(e2eWranglerConfigPath ? { configPath: e2eWranglerConfigPath } : undefined),
   env: {
     schema: {
       SUPABASE_URL: envField.string({ context: "server", access: "secret" }),

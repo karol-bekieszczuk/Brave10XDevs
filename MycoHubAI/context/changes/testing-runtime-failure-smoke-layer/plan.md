@@ -405,34 +405,34 @@ No database migration is required. The only dependency migration is the reviewed
 
 #### Automated
 
-- [x] 2.1 After an explicit manual reset of the disposable local Supabase stack, `npm.cmd run test:runtime:provider-failure` passes with credentials supplied through the process environment.
-- [x] 2.2 The smoke proves attempt/cooldown retention, active-claim release, unchanged grow-log state, and absence of persisted provider/diagnosis content.
-- [x] 2.3 A forced assertion failure demonstrates exact-user cleanup still runs and the temporary failure is reverted.
-- [x] 2.4 A non-loopback URL is refused before user creation, mutation, or provider work.
-- [x] 2.5 Canonical typecheck passes: `npm.cmd run typecheck`.
+- [x] 2.1 After an explicit manual reset of the disposable local Supabase stack, `npm.cmd run test:runtime:provider-failure` passes with credentials supplied through the process environment. — 5f81417
+- [x] 2.2 The smoke proves attempt/cooldown retention, active-claim release, unchanged grow-log state, and absence of persisted provider/diagnosis content. — 5f81417
+- [x] 2.3 A forced assertion failure demonstrates exact-user cleanup still runs and the temporary failure is reverted. — 5f81417
+- [x] 2.4 A non-loopback URL is refused before user creation, mutation, or provider work. — 5f81417
+- [x] 2.5 Canonical typecheck passes: `npm.cmd run typecheck`. — 5f81417
 
 #### Manual
 
-- [x] 2.6 Confirm the target Supabase URL is loopback-only, reset that disposable local stack before the smoke, and verify the reported generated user is absent after completion.
+- [x] 2.6 Confirm the target Supabase URL is loopback-only, reset that disposable local stack before the smoke, and verify the reported generated user is absent after completion. — 5f81417
 
 ### Phase 3: Build The Workerd And Playwright Harness
 
 #### Automated
 
-- [ ] 3.1 Playwright config exposes `testDir`, loopback `baseURL`, setup-to-Chromium dependency, and built-runtime startup; the package command forwards a single spec path.
-- [ ] 3.2 The local harness creates the owner before server startup, loads `/grow-logs` from saved auth state without UI login, and removes the user/auth state after success.
-- [ ] 3.3 A forced setup or test failure proves the harness cleanup path still runs, after which the temporary failure is reverted.
-- [ ] 3.4 Built-runtime smoke passes against `astro build` plus workerd-backed preview and checks application render/redirect outcomes without asserting Cloudflare error codes.
-- [ ] 3.5 CI installs Chromium, uses only disposable local Supabase, runs the setup/runtime gate, and contains no hosted or production mutation target.
-- [ ] 3.6 Unit tests pass: `npm.cmd run test:unit`.
-- [ ] 3.7 Lint passes: `npm.cmd run lint`.
-- [ ] 3.8 Build passes: `npm.cmd run build`.
-- [ ] 3.9 Canonical typecheck passes: `npm.cmd run typecheck`.
+- [x] 3.1 Playwright config exposes `testDir`, loopback `baseURL`, setup-to-Chromium dependency, and built-runtime startup; the package command forwards a single spec path.
+- [x] 3.2 The local harness creates the owner before server startup, loads `/grow-logs` from saved auth state without UI login, and removes the user/auth state after success.
+- [x] 3.3 A forced setup or test failure proves the harness cleanup path still runs, after which the temporary failure is reverted.
+- [x] 3.4 Built-runtime smoke passes against `astro build` plus workerd-backed preview and checks application render/redirect outcomes without asserting Cloudflare error codes.
+- [x] 3.5 CI installs Chromium, uses only disposable local Supabase, runs the setup/runtime gate, and contains no hosted or production mutation target.
+- [x] 3.6 Unit tests pass: `npm.cmd run test:unit`.
+- [x] 3.7 Lint passes: `npm.cmd run lint`.
+- [x] 3.8 Build passes: `npm.cmd run build`.
+- [x] 3.9 Canonical typecheck passes: `npm.cmd run typecheck`.
 
 #### Manual
 
-- [ ] 3.10 Inspect ignored artifacts and confirm no storage state, cookie, password, service-role value, or fixture metadata is tracked.
-- [ ] 3.11 Run the harness once headed and confirm the browser starts already authenticated against the built local runtime, with no stale server reuse.
+- [x] 3.10 Inspect ignored artifacts and confirm no storage state, cookie, password, service-role value, or fixture metadata is tracked.
+- [x] 3.11 Run the harness once headed and confirm the browser starts already authenticated against the built local runtime, with no stale server reuse.
 
 ### Phase 4: Protect Grow-Log Mutation And SSR Persistence In The Browser
 
