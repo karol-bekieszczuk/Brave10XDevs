@@ -16,16 +16,16 @@ The app has starter Supabase sign-in, signup, confirm-email, sign-out, and a mid
 
 ## Key Decisions Made
 
-| Decision | Choice | Why |
-| --- | --- | --- |
-| Owner identity | Supabase user ID | Stable and stronger than email for blocking old or unrelated accounts. |
-| Rejected login behavior | Sign out and show generic error | Clears unauthorized sessions without revealing which user is allowed. |
-| Signup removal | Delete signup page and API route | Fully removes app-level public registration instead of hiding only UI. |
-| Route protection | Explicit public allowlist only | Keeps sign-in and required assets public while every other app/API route requires the owner. |
-| Config style | Required `AUTHORIZED_USER_ID` secret/env | Fails clearly when owner access is not configured. |
-| Missing config UX | Sign-in shows configuration error | Makes setup failures visible without allowing access. |
-| Supabase signup | Code removal plus all signup switches disabled | Blocks registration at app, local provider, and hosted provider layers. |
-| Verification | Lint/build plus local and production smoke tests | Covers code, stale sessions, and Cloudflare runtime secret drift. |
+| Decision                | Choice                                           | Why                                                                                          |
+| ----------------------- | ------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| Owner identity          | Supabase user ID                                 | Stable and stronger than email for blocking old or unrelated accounts.                       |
+| Rejected login behavior | Sign out and show generic error                  | Clears unauthorized sessions without revealing which user is allowed.                        |
+| Signup removal          | Delete signup page and API route                 | Fully removes app-level public registration instead of hiding only UI.                       |
+| Route protection        | Explicit public allowlist only                   | Keeps sign-in and required assets public while every other app/API route requires the owner. |
+| Config style            | Required `AUTHORIZED_USER_ID` secret/env         | Fails clearly when owner access is not configured.                                           |
+| Missing config UX       | Sign-in shows configuration error                | Makes setup failures visible without allowing access.                                        |
+| Supabase signup         | Code removal plus all signup switches disabled   | Blocks registration at app, local provider, and hosted provider layers.                      |
+| Verification            | Lint/build plus local and production smoke tests | Covers code, stale sessions, and Cloudflare runtime secret drift.                            |
 
 ## Scope
 
@@ -53,11 +53,11 @@ Supabase remains the credential provider, while MycoHubAI owns authorization. A 
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. Authorization Gate Contract | Required owner secret plus sign-in and middleware enforcement | Getting the public-route allowlist wrong could block sign-in or leak app routes. |
-| 2. Registration Surface Removal | Signup UI/API/routes removed and local signup disabled | Deleting routes must also remove every link and stale README expectation. |
-| 3. Configuration, Documentation, And Deployment Verification | Secret/docs/runbook alignment plus production smoke checklist | Cloudflare, CI, and local secret drift can make production deny the owner. |
+| Phase                                                        | What it delivers                                              | Key risk                                                                         |
+| ------------------------------------------------------------ | ------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| 1. Authorization Gate Contract                               | Required owner secret plus sign-in and middleware enforcement | Getting the public-route allowlist wrong could block sign-in or leak app routes. |
+| 2. Registration Surface Removal                              | Signup UI/API/routes removed and local signup disabled        | Deleting routes must also remove every link and stale README expectation.        |
+| 3. Configuration, Documentation, And Deployment Verification | Secret/docs/runbook alignment plus production smoke checklist | Cloudflare, CI, and local secret drift can make production deny the owner.       |
 
 **Prerequisites:** The owner Supabase account already exists and its `auth.users.id` is known.
 **Estimated effort:** About 1-2 focused implementation sessions across 3 phases.
