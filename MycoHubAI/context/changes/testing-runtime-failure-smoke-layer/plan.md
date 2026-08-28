@@ -462,16 +462,16 @@ No database migration is required. The only dependency migration is the reviewed
 
 #### Automated
 
-- [ ] 5.1 Focused runtime tests pass: `npm.cmd run test:unit -- src/lib/runtime-env.test.ts src/lib/diagnosis/provider.test.ts src/pages/api/diagnosis/selected-log.runtime-failure.test.ts`.
-- [ ] 5.2 Full unit suite passes: `npm.cmd run test:unit`.
-- [ ] 5.3 After the explicit local reset, persisted provider-failure smoke passes: `npm.cmd run test:runtime:provider-failure`.
-- [ ] 5.4 Reviewed browser smoke passes: `npm.cmd run test:e2e -- tests/e2e/grow-log-bulk-delete-ssr-persistence.spec.ts`.
-- [ ] 5.5 Canonical typecheck passes: `npm.cmd run typecheck`.
-- [ ] 5.6 Lint passes: `npm.cmd run lint`.
-- [ ] 5.7 Build passes: `npm.cmd run build`.
-- [ ] 5.8 Search confirms Risk #5 and the E2E cookbook describe only delivered local/CI evidence and contain no additional environment or upstream-status prediction.
+- [x] 5.1 Focused runtime tests pass: `npm.cmd run test:unit -- src/lib/runtime-env.test.ts src/lib/diagnosis/provider.test.ts src/pages/api/diagnosis/selected-log.runtime-failure.test.ts`.
+- [x] 5.2 Full unit suite passes: `npm.cmd run test:unit`.
+- [x] 5.3 After the explicit local reset, persisted provider-failure smoke passes: `npm.cmd run test:runtime:provider-failure`.
+- [x] 5.4 Reviewed browser smoke passes: `npm.cmd run test:e2e -- tests/e2e/grow-log-bulk-delete-ssr-persistence.spec.ts`.
+- [x] 5.5 Canonical typecheck passes: `npm.cmd run typecheck`.
+- [x] 5.6 Lint passes: `npm.cmd run lint`.
+- [x] 5.7 Build passes: `npm.cmd run build`.
+- [x] 5.8 Search confirms Risk #5 and the E2E cookbook describe only delivered local/CI evidence and contain no additional environment or upstream-status prediction.
 
 #### Manual
 
-- [ ] 5.9 Confirm the final Risk #5 wording clearly distinguishes local workerd evidence from deployed Cloudflare configuration and introduces no additional environment.
-- [ ] 5.10 Confirm the cookbook is sufficient to run one future E2E spec without reading secret files or mutating production.
+- [x] 5.9 Confirm the final Risk #5 wording clearly distinguishes local workerd evidence from deployed Cloudflare configuration and introduces no additional environment.
+- [x] 5.10 Confirm the cookbook is sufficient to run one future E2E spec without reading secret files or mutating production.
