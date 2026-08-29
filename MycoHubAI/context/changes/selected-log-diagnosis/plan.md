@@ -536,8 +536,8 @@ This change introduces a new Supabase migration for pgvector knowledge chunks an
 
 #### Manual
 
-- [x] 5.10 Run a local smoke test with at least one agar and one grain selected log.
-- [x] 5.11 Confirm missing-context behavior asks a narrow follow-up and does not diagnose.
-- [x] 5.12 Confirm mixed-scope prompts answer only the supported agar/grain portion and decline the unsupported part.
-- [x] 5.13 Confirm out-of-scope prompts redirect back to text-based agar/grain troubleshooting.
-- [x] 5.14 Confirm production smoke testing remains pending until the Cloudflare provider secret is configured and deployed.
+- [x] 5.10 Run a local smoke test with at least one agar and one grain selected log. — ec9aac4
+- [x] 5.11 Confirm missing-context behavior asks a narrow follow-up and does not diagnose. — ec9aac4
+- [x] 5.12 Confirm mixed-scope prompts answer only the supported agar/grain portion and decline the unsupported part. — ec9aac4
+- [x] 5.13 Confirm out-of-scope prompts redirect back to text-based agar/grain troubleshooting. — ec9aac4
+- [x] 5.14 Confirm production smoke testing remains pending until the Cloudflare provider secret is configured and deployed. — ec9aac4
