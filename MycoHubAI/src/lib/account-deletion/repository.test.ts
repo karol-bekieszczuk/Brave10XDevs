@@ -3,6 +3,7 @@ import type { AccountDeletionClient, AccountDeletionRequestRecord } from "./repo
 import {
   getOwnerAccountDeletionRequest,
   listDueAccountDeletionRequests,
+  listUnfinalizedAccountDeletionRequests,
   markAccountDeletionRequestSoftDeleted,
   mapAccountDeletionRequestRow,
   updateAccountDeletionAttempt,
@@ -46,6 +47,11 @@ class MockQueryBuilder {
 
   not(...args: unknown[]) {
     this.actions.push({ type: "not", args });
+    return this;
+  }
+
+  is(...args: unknown[]) {
+    this.actions.push({ type: "is", args });
     return this;
   }
 
@@ -218,6 +224,23 @@ describe("account deletion repository", () => {
       { type: "lte", args: ["purge_after", "2026-07-12T10:00:00.000Z"] },
       { type: "not", args: ["soft_deleted_at", "is", null] },
       { type: "order", args: ["purge_after", { ascending: true }] },
+    ]);
+  });
+
+  it("lists unfinalized requests in request order for scheduled reconciliation", async () => {
+    const { builder, client } = createMockClient({ data: [requestedOnlyRow], error: null });
+
+    const result = await listUnfinalizedAccountDeletionRequests(client);
+
+    expect(result).toEqual([mapAccountDeletionRequestRow(requestedOnlyRow)]);
+    expect(builder.actions).toEqual([
+      { type: "from", args: ["account_deletion_requests"] },
+      {
+        type: "select",
+        args: ["user_id, requested_at, purge_after, soft_deleted_at, last_attempt_at, attempt_count, last_error"],
+      },
+      { type: "is", args: ["soft_deleted_at", null] },
+      { type: "order", args: ["requested_at", { ascending: true }] },
     ]);
   });
 

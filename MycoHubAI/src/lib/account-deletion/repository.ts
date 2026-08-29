@@ -245,6 +245,19 @@ export async function deleteAccountDeletionRequest(client: AccountDeletionClient
   }
 }
 
+export async function listUnfinalizedAccountDeletionRequests(client: AccountDeletionClient) {
+  const { data, error } = await getAccountDeletionTable(client)
+    .select(ACCOUNT_DELETION_SELECT)
+    .is("soft_deleted_at", null)
+    .order("requested_at", { ascending: true });
+
+  if (error) {
+    throw error;
+  }
+
+  return (data satisfies AccountDeletionRequestRecord[]).map(mapAccountDeletionRequestRow);
+}
+
 export async function listDueAccountDeletionRequests(client: AccountDeletionClient, now: string) {
   const { data, error } = await getAccountDeletionTable(client)
     .select(ACCOUNT_DELETION_SELECT)

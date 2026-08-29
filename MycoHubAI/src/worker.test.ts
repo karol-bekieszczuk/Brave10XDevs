@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const handleMock = vi.fn();
 const purgeDueAccountDeletionRequestsMock = vi.fn();
+const reconcileUnfinalizedAccountDeletionsMock = vi.fn();
 const consoleLogMock = vi.spyOn(console, "log").mockImplementation(() => undefined);
 
 vi.mock("@astrojs/cloudflare/handler", () => ({
@@ -14,6 +15,10 @@ vi.mock("@supabase/supabase-js", () => ({
 
 vi.mock("@/lib/account-deletion/purge", () => ({
   purgeDueAccountDeletionRequests: purgeDueAccountDeletionRequestsMock,
+}));
+
+vi.mock("@/lib/account-deletion/reconciliation", () => ({
+  reconcileUnfinalizedAccountDeletions: reconcileUnfinalizedAccountDeletionsMock,
 }));
 
 interface WorkerHandler {
@@ -51,7 +56,14 @@ describe("worker entrypoint", () => {
     expect(handleMock).toHaveBeenCalledTimes(1);
   });
 
-  it("runs the scheduled purge and logs only aggregate counts", async () => {
+  it("reconciles unfinalized requests before purge and logs only aggregate counts", async () => {
+    reconcileUnfinalizedAccountDeletionsMock.mockResolvedValue({
+      configured: true,
+      processed: 2,
+      repaired: 1,
+      deferred: 0,
+      failed: 1,
+    });
     purgeDueAccountDeletionRequestsMock.mockResolvedValue({
       configured: true,
       processed: 2,
@@ -65,14 +77,17 @@ describe("worker entrypoint", () => {
       executionContext,
     );
 
-    expect(purgeDueAccountDeletionRequestsMock).toHaveBeenCalledWith({
-      adminClient: {
-        key: "admin-key",
-        url: "https://example.supabase.co",
-      },
-    });
+    const adminClient = {
+      key: "admin-key",
+      url: "https://example.supabase.co",
+    };
+    expect(reconcileUnfinalizedAccountDeletionsMock).toHaveBeenCalledWith(adminClient);
+    expect(purgeDueAccountDeletionRequestsMock).toHaveBeenCalledWith({ adminClient });
+    expect(reconcileUnfinalizedAccountDeletionsMock.mock.invocationCallOrder[0]).toBeLessThan(
+      purgeDueAccountDeletionRequestsMock.mock.invocationCallOrder[0] ?? Number.POSITIVE_INFINITY,
+    );
     expect(consoleLogMock).toHaveBeenCalledWith(
-      "account deletion purge configured=true processed=2 deleted=1 failed=1",
+      "account deletion reconciliation configured=true processed=2 repaired=1 deferred=0 failed=1 purge_configured=true purge_processed=2 purge_deleted=1 purge_failed=1",
     );
     expect(consoleLogMock.mock.calls.join(" ")).not.toContain("grow log");
   });

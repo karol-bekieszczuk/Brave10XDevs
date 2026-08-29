@@ -1,6 +1,7 @@
 import { handle } from "@astrojs/cloudflare/handler";
 import { createClient } from "@supabase/supabase-js";
 import { purgeDueAccountDeletionRequests } from "@/lib/account-deletion/purge";
+import { reconcileUnfinalizedAccountDeletions } from "@/lib/account-deletion/reconciliation";
 
 const handleRequest = handle;
 
@@ -25,13 +26,13 @@ const worker: ExportedHandler<Env> = {
     return handleRequest(request, env, ctx);
   },
   async scheduled(_controller: ScheduledController, env: Env, _ctx: ExecutionContext) {
-    const summary = await purgeDueAccountDeletionRequests({
-      adminClient: createWorkerAdminClient(env),
-    });
+    const adminClient = createWorkerAdminClient(env);
+    const reconciliation = await reconcileUnfinalizedAccountDeletions(adminClient);
+    const purge = await purgeDueAccountDeletionRequests({ adminClient });
 
     // eslint-disable-next-line no-console
     console.log(
-      `account deletion purge configured=${summary.configured} processed=${summary.processed} deleted=${summary.deleted} failed=${summary.failed}`,
+      `account deletion reconciliation configured=${reconciliation.configured} processed=${reconciliation.processed} repaired=${reconciliation.repaired} deferred=${reconciliation.deferred} failed=${reconciliation.failed} purge_configured=${purge.configured} purge_processed=${purge.processed} purge_deleted=${purge.deleted} purge_failed=${purge.failed}`,
     );
   },
 };

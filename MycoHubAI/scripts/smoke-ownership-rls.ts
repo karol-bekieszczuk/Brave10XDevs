@@ -525,6 +525,69 @@ async function assertAccountDeletionProcessingClaim(admin: SupabaseClient, princ
   expectDenied(privateErrorRead.error, "owner reads privileged account-deletion error detail");
 }
 
+async function assertPendingDeletionBlocksGrowLogs(admin: SupabaseClient, pending: FixtureUser, active: FixtureUser) {
+  const before = await admin
+    .from("grow_logs")
+    .select("id, owner_id, stage, title, body")
+    .in("owner_id", [pending.id, active.id])
+    .order("id", { ascending: true })
+    .overrideTypes<GrowLogFixture[], { merge: false }>();
+  expectNoError(before.error, "read grow logs before pending-deletion block");
+
+  const disabled = await admin
+    .from("account_deletion_requests")
+    .update({ soft_deleted_at: new Date().toISOString() })
+    .eq("user_id", pending.id);
+  expectNoError(disabled.error, "mark account deletion as successfully disabled");
+
+  const hidden = await pending.client
+    .from("grow_logs")
+    .select("id")
+    .overrideTypes<{ id: string }[], { merge: false }>();
+  expectNoError(hidden.error, "pending owner lists grow logs");
+  assert.deepEqual(hidden.data, [], "pending owner must see no grow logs");
+
+  const inserted = await pending.client.from("grow_logs").insert({
+    owner_id: pending.id,
+    stage: "agar",
+    title: "Blocked pending deletion insert",
+    body: "Must not persist.",
+  });
+  expectDenied(inserted.error, "pending owner inserts grow log");
+
+  const updated = await pending.client
+    .from("grow_logs")
+    .update({ body: "COMPROMISED" })
+    .eq("owner_id", pending.id)
+    .select("id");
+  expectNoError(updated.error, "pending owner updates grow logs");
+  assert.deepEqual(updated.data, [], "pending owner update must affect zero rows");
+
+  const deleted = await pending.client.from("grow_logs").delete().eq("owner_id", pending.id).select("id");
+  expectNoError(deleted.error, "pending owner deletes grow logs");
+  assert.deepEqual(deleted.data, [], "pending owner delete must affect zero rows");
+
+  const activeRows = await active.client
+    .from("grow_logs")
+    .select("id, owner_id")
+    .overrideTypes<Pick<GrowLogFixture, "id" | "owner_id">[], { merge: false }>();
+  expectNoError(activeRows.error, "active owner lists grow logs");
+  assert((activeRows.data ?? []).length > 0, "active owner must retain grow-log access");
+  assert(
+    (activeRows.data ?? []).every((row) => row.owner_id === active.id),
+    "active owner access changed",
+  );
+
+  const after = await admin
+    .from("grow_logs")
+    .select("id, owner_id, stage, title, body")
+    .in("owner_id", [pending.id, active.id])
+    .order("id", { ascending: true })
+    .overrideTypes<GrowLogFixture[], { merge: false }>();
+  expectNoError(after.error, "read grow logs after pending-deletion block");
+  assert.deepEqual(after.data, before.data, "blocked operations changed persisted grow logs");
+}
+
 async function main() {
   const url = requireEnv("SUPABASE_URL");
   await assertLoopbackUrl(url);
@@ -545,9 +608,10 @@ async function main() {
     await assertPendingDeletionRls(admin, a, b);
     await assertDiagnosisAdmission(admin, a);
     await assertAccountDeletionProcessingClaim(admin, a);
+    await assertPendingDeletionBlocksGrowLogs(admin, a, b);
 
     process.stdout.write(
-      "Ownership/RLS smoke passed: two JWT principals, persisted survivors, constraints, diagnosis/account-deletion admission concurrency, and owner-select-only pending state.\n",
+      "Ownership/RLS smoke passed: two JWT principals, persisted survivors, constraints, diagnosis/account-deletion admission concurrency, owner-select-only pending state, and database-level pending-deletion grow-log blocking.\n",
     );
   } catch (error) {
     runError = error;
