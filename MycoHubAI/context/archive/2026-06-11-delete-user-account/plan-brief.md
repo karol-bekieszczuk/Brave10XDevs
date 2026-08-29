@@ -16,15 +16,15 @@ The dashboard exposes one account deletion action with a browser confirmation th
 
 ## Key Decisions Made
 
-| Decision | Choice | Why |
-| --- | --- | --- |
-| Deletion semantics | Soft-delete now, hard-delete after 30 days | Matches the RODO/GDPR retention requirement while preserving eventual permanent deletion. |
-| Confirmation UX | Single browser confirm | Keeps the MVP low-friction and consistent with current server-first destructive actions. |
-| Post-delete destination | Sign-in page with neutral message | Reuses the current public auth surface without adding a goodbye page. |
-| Purge mechanism | Cloudflare scheduled purge | Makes the 30-day hard delete automatic rather than checklist-driven. |
-| Data during retention | Retained but inaccessible | Preserves data during retention while preventing normal product use after deletion request. |
-| Cancellation | No cancellation | Avoids expanding into account recovery or broader account management. |
-| Confirmation copy | Explicit disabled-now and deleted-after-30-days wording | Prevents the user from misunderstanding the delayed deletion lifecycle. |
+| Decision                | Choice                                                  | Why                                                                                         |
+| ----------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Deletion semantics      | Soft-delete now, hard-delete after 30 days              | Matches the RODO/GDPR retention requirement while preserving eventual permanent deletion.   |
+| Confirmation UX         | Single browser confirm                                  | Keeps the MVP low-friction and consistent with current server-first destructive actions.    |
+| Post-delete destination | Sign-in page with neutral message                       | Reuses the current public auth surface without adding a goodbye page.                       |
+| Purge mechanism         | Cloudflare scheduled purge                              | Makes the 30-day hard delete automatic rather than checklist-driven.                        |
+| Data during retention   | Retained but inaccessible                               | Preserves data during retention while preventing normal product use after deletion request. |
+| Cancellation            | No cancellation                                         | Avoids expanding into account recovery or broader account management.                       |
+| Confirmation copy       | Explicit disabled-now and deleted-after-30-days wording | Prevents the user from misunderstanding the delayed deletion lifecycle.                     |
 
 ## Scope
 
@@ -52,13 +52,13 @@ The app stores deletion lifecycle state in `public.account_deletion_requests`. T
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. Deletion State Foundation | Migration, types, repository, admin client, env contract | Admin key must stay server-only and optional for runtime fail-closed behavior. |
-| 2. Request Deletion UX and API | Dashboard action, POST route, soft-delete service | Partial failure between request state and Auth Admin call. |
-| 3. Access Blocking and Sign-In Messaging | Pending-deletion users cannot access app; neutral messages render | JWTs may remain valid until expiry unless middleware blocks them. |
-| 4. Scheduled Purge | Cloudflare cron and hard-delete purge service | Custom Worker entrypoint must not break Astro HTTP routes. |
-| 5. Config, Documentation, and Verification | Env/deploy docs and manual checklist | Production setup must include admin secret and Cron Trigger verification. |
+| Phase                                      | What it delivers                                                  | Key risk                                                                       |
+| ------------------------------------------ | ----------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| 1. Deletion State Foundation               | Migration, types, repository, admin client, env contract          | Admin key must stay server-only and optional for runtime fail-closed behavior. |
+| 2. Request Deletion UX and API             | Dashboard action, POST route, soft-delete service                 | Partial failure between request state and Auth Admin call.                     |
+| 3. Access Blocking and Sign-In Messaging   | Pending-deletion users cannot access app; neutral messages render | JWTs may remain valid until expiry unless middleware blocks them.              |
+| 4. Scheduled Purge                         | Cloudflare cron and hard-delete purge service                     | Custom Worker entrypoint must not break Astro HTTP routes.                     |
+| 5. Config, Documentation, and Verification | Env/deploy docs and manual checklist                              | Production setup must include admin secret and Cron Trigger verification.      |
 
 **Prerequisites:** F-01 single-user access gate and S-01 staged grow-log CRUD are already in place. Local/staging verification needs disposable Supabase users and `SUPABASE_ADMIN_KEY`.
 
