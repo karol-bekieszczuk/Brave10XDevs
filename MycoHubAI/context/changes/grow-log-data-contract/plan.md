@@ -222,13 +222,13 @@ This is the first application data migration in the repo. Local and production S
 
 #### Automated
 
-- [x] 1.1 Migration file exists under `supabase/migrations/` and contains the `public.grow_logs` table definition.
-- [x] 1.2 Stage constraint allows only `agar` and `grain`.
-- [x] 1.3 RLS is enabled on `public.grow_logs`.
-- [x] 1.4 Policies cover owner-scoped `select`, `insert`, `update`, and `delete`.
-- [x] 1.5 No `deleted_at` column or diagnosis-specific fields are present in the migration.
-- [x] 1.6 Linting passes: `npm run lint`.
-- [x] 1.7 Build passes: `npm run build`.
+- [x] 1.1 Migration file exists under `supabase/migrations/` and contains the `public.grow_logs` table definition. — c5d393e
+- [x] 1.2 Stage constraint allows only `agar` and `grain`. — c5d393e
+- [x] 1.3 RLS is enabled on `public.grow_logs`. — c5d393e
+- [x] 1.4 Policies cover owner-scoped `select`, `insert`, `update`, and `delete`. — c5d393e
+- [x] 1.5 No `deleted_at` column or diagnosis-specific fields are present in the migration. — c5d393e
+- [x] 1.6 Linting passes: `npm run lint`. — c5d393e
+- [x] 1.7 Build passes: `npm run build`. — c5d393e
 
 #### Manual
 
