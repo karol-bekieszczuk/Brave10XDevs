@@ -186,3 +186,4 @@ None.
 - **F-02: (foundation) Grow-log persistence has the minimum staged text-log contract needed for the single-user MVP.** — Archived 2026-08-29 → `context/archive/2026-05-29-grow-log-data-contract/`. Lesson: —.
 - **F-03: (foundation) Diagnosis quality and safety checks are explicit enough to verify scoped uncertain answers before expanding the flow.** — Archived 2026-08-29 → `context/archive/2026-05-28-diagnosis-quality-rubric/`. Lesson: —.
 - **S-01: user can create, view, edit, and delete their own text grow logs with an agar/grain stage.** — Archived 2026-08-29 → `context/archive/2026-05-29-staged-grow-log-crud/`. Lesson: —.
+- **S-02: user can ask about one selected agar or grain grow log and receive scoped causes, suggested actions, confidence bands with explanatory uncertainty, or a follow-up question.** — Archived 2026-08-29 → `context/archive/2026-06-01-selected-log-diagnosis/`. Lesson: —.

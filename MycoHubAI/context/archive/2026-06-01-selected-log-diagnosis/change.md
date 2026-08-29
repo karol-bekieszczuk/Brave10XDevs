@@ -1,10 +1,10 @@
 ---
 change_id: selected-log-diagnosis
 title: Selected log diagnosis
-status: impl_reviewed
+status: archived
 created: 2026-06-01
-updated: 2026-06-07
-archived_at: null
+updated: 2026-08-29
+archived_at: 2026-08-29T10:37:29Z
 ---
 
 ## Notes

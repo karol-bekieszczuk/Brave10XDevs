@@ -421,10 +421,10 @@ Treat the manual run as passing when:
 
 Use this table when a manual question fails:
 
-| Result | Interpretation | Next check |
-| --- | --- | --- |
-| In-scope `A*` or `G*` returns generic `missing_context` fallback | Retrieval did not return same-stage chunks or the embedding query missed the corpus. | Run `npm run diagnosis:ingest`, confirm local Supabase has `diagnosis_knowledge_chunks`, then retry S1/S2. |
-| In-scope answer has no source labels | Retrieval may be bypassed, empty, or not rendered by the UI. | Check API JSON response and UI source rendering. |
-| Missing-context case gives confident diagnosis | Model/service is over-diagnosing from thin logs. | Check `missing_context` guardrail and prompt behavior. |
-| Mixed/out-of-scope case answers unsupported part | Scope guardrail failed. | Check `scopeStatus`, prompt guardrails, and service pre-checks. |
-| Any answer asks for smell, photos, species ID, saved chat, sharing, or fruiting optimization as a next step | MVP guardrail failed. | Treat as a blocking manual failure. |
+| Result                                                                                                      | Interpretation                                                                       | Next check                                                                                                 |
+| ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| In-scope `A*` or `G*` returns generic `missing_context` fallback                                            | Retrieval did not return same-stage chunks or the embedding query missed the corpus. | Run `npm run diagnosis:ingest`, confirm local Supabase has `diagnosis_knowledge_chunks`, then retry S1/S2. |
+| In-scope answer has no source labels                                                                        | Retrieval may be bypassed, empty, or not rendered by the UI.                         | Check API JSON response and UI source rendering.                                                           |
+| Missing-context case gives confident diagnosis                                                              | Model/service is over-diagnosing from thin logs.                                     | Check `missing_context` guardrail and prompt behavior.                                                     |
+| Mixed/out-of-scope case answers unsupported part                                                            | Scope guardrail failed.                                                              | Check `scopeStatus`, prompt guardrails, and service pre-checks.                                            |
+| Any answer asks for smell, photos, species ID, saved chat, sharing, or fruiting optimization as a next step | MVP guardrail failed.                                                                | Treat as a blocking manual failure.                                                                        |
