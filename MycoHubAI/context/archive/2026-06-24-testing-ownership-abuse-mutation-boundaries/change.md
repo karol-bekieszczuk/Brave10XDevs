@@ -1,10 +1,10 @@
 ---
 change_id: testing-ownership-abuse-mutation-boundaries
 title: Ownership, abuse, and mutation boundary tests
-status: implemented
+status: archived
 created: 2026-06-24
-updated: 2026-08-06
-archived_at: null
+updated: 2026-08-29
+archived_at: 2026-08-29T12:22:52Z
 ---
 
 ## Notes
