@@ -330,8 +330,8 @@ No new database migration is planned. This change must consume the existing `pub
 
 #### Manual
 
-- [x] 1.9 The data-access layer remains limited to the existing F-02 fields and does not introduce diagnosis, image, species, export, sharing, or soft-delete fields.
-- [x] 1.10 The test setup is small and does not add browser/E2E infrastructure.
+- [x] 1.9 The data-access layer remains limited to the existing F-02 fields and does not introduce diagnosis, image, species, export, sharing, or soft-delete fields. — 80c7b3f
+- [x] 1.10 The test setup is small and does not add browser/E2E infrastructure. — 80c7b3f
 
 ### Phase 2: Grow-log Routes, Forms, and Dashboard Entry Point
 
@@ -349,13 +349,13 @@ No new database migration is planned. This change must consume the existing `pub
 
 #### Manual
 
-- [x] 2.10 Owner can open `/dashboard` and navigate to `/grow-logs`.
-- [x] 2.11 Owner can create an `agar` grow log and lands on its detail page.
-- [x] 2.12 Owner can create a `grain` grow log and see it in the list.
-- [x] 2.13 Owner can edit a grow log's stage, title, and body from `/grow-logs/[id]/edit`.
-- [x] 2.14 Owner can delete a grow log only after an explicit confirmation and returns to `/grow-logs`.
-- [x] 2.15 Blank title/body and unsupported stage submissions show a user-facing error and do not create or update rows.
-- [x] 2.16 A missing or non-owned log ID does not expose row contents.
+- [x] 2.10 Owner can open `/dashboard` and navigate to `/grow-logs`. — 80c7b3f
+- [x] 2.11 Owner can create an `agar` grow log and lands on its detail page. — 80c7b3f
+- [x] 2.12 Owner can create a `grain` grow log and see it in the list. — 80c7b3f
+- [x] 2.13 Owner can edit a grow log's stage, title, and body from `/grow-logs/[id]/edit`. — 80c7b3f
+- [x] 2.14 Owner can delete a grow log only after an explicit confirmation and returns to `/grow-logs`. — 80c7b3f
+- [x] 2.15 Blank title/body and unsupported stage submissions show a user-facing error and do not create or update rows. — 80c7b3f
+- [x] 2.16 A missing or non-owned log ID does not expose row contents. — 80c7b3f
 
 ### Phase 3: End-to-End Verification and Scope Audit
 
