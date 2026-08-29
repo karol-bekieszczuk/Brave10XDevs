@@ -16,16 +16,16 @@ The owner can manage logs through dedicated `/grow-logs/*` routes: list, create,
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) |
-| --- | --- | --- |
-| UX surface | Dedicated `/grow-logs/*` routes | Keeps dashboard as entry point while giving CRUD a clean route structure. |
-| Form model | Server-first forms plus `APIRoute` redirects | Matches existing auth route patterns and avoids client-side CRUD state complexity. |
-| Create flow | `/grow-logs/new` | Fits the dedicated route model and keeps list rendering clean. |
-| Detail flow | `/grow-logs/[id]` | Creates the future selected-log anchor for diagnosis. |
-| Edit flow | `/grow-logs/[id]/edit` | Keeps edit validation and navigation simple. |
-| Delete semantics | Hard delete with confirmation | Preserves the F-02 hard-delete contract while reducing accidental loss. |
-| Validation | Shared server validation | Prevents create/update drift and keeps DB errors from becoming the primary UX. |
-| Testing depth | Add unit tests for validation/repository mapping | Gives coverage for the fragile boundary without adding E2E infrastructure. |
+| Decision         | Choice                                           | Why (1 sentence)                                                                   |
+| ---------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| UX surface       | Dedicated `/grow-logs/*` routes                  | Keeps dashboard as entry point while giving CRUD a clean route structure.          |
+| Form model       | Server-first forms plus `APIRoute` redirects     | Matches existing auth route patterns and avoids client-side CRUD state complexity. |
+| Create flow      | `/grow-logs/new`                                 | Fits the dedicated route model and keeps list rendering clean.                     |
+| Detail flow      | `/grow-logs/[id]`                                | Creates the future selected-log anchor for diagnosis.                              |
+| Edit flow        | `/grow-logs/[id]/edit`                           | Keeps edit validation and navigation simple.                                       |
+| Delete semantics | Hard delete with confirmation                    | Preserves the F-02 hard-delete contract while reducing accidental loss.            |
+| Validation       | Shared server validation                         | Prevents create/update drift and keeps DB errors from becoming the primary UX.     |
+| Testing depth    | Add unit tests for validation/repository mapping | Gives coverage for the fragile boundary without adding E2E infrastructure.         |
 
 ## Scope
 
@@ -51,11 +51,11 @@ Use a narrow server-first vertical slice. `src/lib/grow-logs/` owns validation, 
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. Data Access, Validation, and Unit Test Harness | Repository, validation, mapping, and unit tests | Adding test tooling can grow beyond the MVP if not kept minimal. |
+| Phase                                                | What it delivers                                 | Key risk                                                                          |
+| ---------------------------------------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------- |
+| 1. Data Access, Validation, and Unit Test Harness    | Repository, validation, mapping, and unit tests  | Adding test tooling can grow beyond the MVP if not kept minimal.                  |
 | 2. Grow-log Routes, Forms, and Dashboard Entry Point | User-visible list/create/detail/edit/delete flow | Route and form handling must not bypass owner filtering or expand the data model. |
-| 3. End-to-End Verification and Scope Audit | Final automated checks and local smoke evidence | Manual smoke must not be mistaken for production verification. |
+| 3. End-to-End Verification and Scope Audit           | Final automated checks and local smoke evidence  | Manual smoke must not be mistaken for production verification.                    |
 
 **Prerequisites:** Completed `grow-log-data-contract`, local Supabase available for smoke testing, and owner sign-in configured.
 **Estimated effort:** ~2 implementation sessions across 3 phases.
