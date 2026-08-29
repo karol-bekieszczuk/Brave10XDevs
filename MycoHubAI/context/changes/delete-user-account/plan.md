@@ -527,71 +527,71 @@ This change adds one database migration and one optional server-only secret. Exi
 
 #### Automated
 
-- [x] 2.1 Account deletion service calls Supabase Admin delete with soft-delete mode enabled.
-- [x] 2.2 API route requires an authenticated owner from `context.locals.user`.
-- [x] 2.3 API route signs out only after successful deletion request and soft delete.
-- [x] 2.4 Dashboard contains a single-confirm account deletion form and does not add broad account-management UI.
-- [x] 2.5 Unit tests pass: `npm run test:unit`.
-- [x] 2.6 Linting passes: `npm run lint`.
-- [x] 2.7 Production build passes: `npm run build`.
+- [x] 2.1 Account deletion service calls Supabase Admin delete with soft-delete mode enabled. — 4500e26
+- [x] 2.2 API route requires an authenticated owner from `context.locals.user`. — 4500e26
+- [x] 2.3 API route signs out only after successful deletion request and soft delete. — 4500e26
+- [x] 2.4 Dashboard contains a single-confirm account deletion form and does not add broad account-management UI. — 4500e26
+- [x] 2.5 Unit tests pass: `npm run test:unit`. — 4500e26
+- [x] 2.6 Linting passes: `npm run lint`. — 4500e26
+- [x] 2.7 Production build passes: `npm run build`. — 4500e26
 
 #### Manual
 
-- [x] 2.8 As the owner with `SUPABASE_ADMIN_KEY` configured, click the dashboard delete action, accept the confirmation, and confirm redirect to sign-in with a neutral deletion-requested message.
-- [x] 2.9 As the owner with `SUPABASE_ADMIN_KEY` missing, submit the action and confirm no deletion request is completed and the dashboard shows a clear configuration error.
-- [x] 2.10 Inspect Supabase locally and confirm the account has a pending deletion request with `purge_after` 30 days after `requested_at`.
+- [x] 2.8 As the owner with `SUPABASE_ADMIN_KEY` configured, click the dashboard delete action, accept the confirmation, and confirm redirect to sign-in with a neutral deletion-requested message. — 4500e26
+- [x] 2.9 As the owner with `SUPABASE_ADMIN_KEY` missing, submit the action and confirm no deletion request is completed and the dashboard shows a clear configuration error. — 4500e26
+- [x] 2.10 Inspect Supabase locally and confirm the account has a pending deletion request with `purge_after` 30 days after `requested_at`. — 4500e26
 
 ### Phase 3: Access Blocking and Sign-In Messaging
 
 #### Automated
 
-- [x] 3.1 Middleware blocks pending-deletion users and signs out their session. - 75623a6
-- [x] 3.2 Sign-in POST blocks pending-deletion users after successful credential verification. - 75623a6
-- [x] 3.3 Sign-in page supports neutral `message` rendering and keeps `error` rendering separate. - 75623a6
-- [x] 3.4 Non-owner access denial still behaves as before. - 75623a6
-- [x] 3.5 Unit tests pass: `npm run test:unit`. - 75623a6
-- [x] 3.6 Linting passes: `npm run lint`. - 75623a6
-- [x] 3.7 Production build passes: `npm run build`. - 75623a6
+- [x] 3.1 Middleware blocks pending-deletion users and signs out their session. — 75623a6
+- [x] 3.2 Sign-in POST blocks pending-deletion users after successful credential verification. — 75623a6
+- [x] 3.3 Sign-in page supports neutral `message` rendering and keeps `error` rendering separate. — 75623a6
+- [x] 3.4 Non-owner access denial still behaves as before. — 75623a6
+- [x] 3.5 Unit tests pass: `npm run test:unit`. — 75623a6
+- [x] 3.6 Linting passes: `npm run lint`. — 75623a6
+- [x] 3.7 Production build passes: `npm run build`. — 75623a6
 
 #### Manual
 
-- [x] 3.8 With a pending deletion request present, visit `/dashboard`, `/grow-logs`, and a grow-log detail URL; confirm redirect to sign-in and no private page render. - 75623a6
-- [x] 3.9 Try signing in again during the pending-deletion window; confirm the app signs out and shows a neutral pending-deletion message. - 75623a6
-- [x] 3.10 Confirm a normal owner account without pending deletion can still sign in and use `/dashboard`. - 75623a6
+- [x] 3.8 With a pending deletion request present, visit `/dashboard`, `/grow-logs`, and a grow-log detail URL; confirm redirect to sign-in and no private page render. — 75623a6
+- [x] 3.9 Try signing in again during the pending-deletion window; confirm the app signs out and shows a neutral pending-deletion message. — 75623a6
+- [x] 3.10 Confirm a normal owner account without pending deletion can still sign in and use `/dashboard`. — 75623a6
 
 ### Phase 4: Scheduled Purge
 
 #### Automated
 
-- [x] 4.1 Purge service calls Supabase Admin delete with hard-delete mode for due requests. - d861c53
-- [x] 4.2 Purge service records failure metadata without deleting or hiding failed pending requests. - d861c53
-- [x] 4.3 Custom Worker entrypoint preserves the Astro fetch handler contract. - d861c53
-- [x] 4.4 `wrangler.jsonc` includes the cron trigger and custom `main` entrypoint. - d861c53
-- [x] 4.5 Unit tests pass: `npm run test:unit`. - d861c53
-- [x] 4.6 Linting passes: `npm run lint`. - d861c53
-- [x] 4.7 Production build passes: `npm run build`. - d861c53
+- [x] 4.1 Purge service calls Supabase Admin delete with hard-delete mode for due requests. — d861c53
+- [x] 4.2 Purge service records failure metadata without deleting or hiding failed pending requests. — d861c53
+- [x] 4.3 Custom Worker entrypoint preserves the Astro fetch handler contract. — d861c53
+- [x] 4.4 `wrangler.jsonc` includes the cron trigger and custom `main` entrypoint. — d861c53
+- [x] 4.5 Unit tests pass: `npm run test:unit`. — d861c53
+- [x] 4.6 Linting passes: `npm run lint`. — d861c53
+- [x] 4.7 Production build passes: `npm run build`. — d861c53
 
 #### Manual
 
-- [x] 4.8 Run a local or staging purge test with a request whose `purge_after` is moved into the past; confirm the auth user is hard-deleted. - d861c53
-- [x] 4.9 Confirm the related grow-log rows are physically removed through `on delete cascade`. - d861c53
-- [x] 4.10 Confirm normal HTTP routes still render after switching to the custom Worker entrypoint. - d861c53
-- [x] 4.11 Confirm Cloudflare Cron Trigger is visible/configured in the deployed Worker settings after deployment. - d861c53
+- [x] 4.8 Run a local or staging purge test with a request whose `purge_after` is moved into the past; confirm the auth user is hard-deleted. — d861c53
+- [x] 4.9 Confirm the related grow-log rows are physically removed through `on delete cascade`. — d861c53
+- [x] 4.10 Confirm normal HTTP routes still render after switching to the custom Worker entrypoint. — d861c53
+- [x] 4.11 Confirm Cloudflare Cron Trigger is visible/configured in the deployed Worker settings after deployment. — d861c53
 
 ### Phase 5: Config, Documentation, and End-to-End Verification
 
 #### Automated
 
-- [x] 5.1 `.env.example` documents `SUPABASE_ADMIN_KEY` without real secrets. - d861c53
-- [x] 5.2 Deployment docs mention the Cloudflare secret and cron trigger. - d861c53
-- [x] 5.3 Manual verification checklist exists under `context/changes/delete-user-account/`. - d861c53
-- [x] 5.4 Change metadata remains consistent with plan state. - d861c53
-- [x] 5.5 Unit tests pass: `npm run test:unit`. - d861c53
-- [x] 5.6 Linting passes: `npm run lint`. - d861c53
-- [x] 5.7 Production build passes: `npm run build`. - d861c53
+- [x] 5.1 `.env.example` documents `SUPABASE_ADMIN_KEY` without real secrets. — d861c53
+- [x] 5.2 Deployment docs mention the Cloudflare secret and cron trigger. — d861c53
+- [x] 5.3 Manual verification checklist exists under `context/changes/delete-user-account/`. — d861c53
+- [x] 5.4 Change metadata remains consistent with plan state. — d861c53
+- [x] 5.5 Unit tests pass: `npm run test:unit`. — d861c53
+- [x] 5.6 Linting passes: `npm run lint`. — d861c53
+- [x] 5.7 Production build passes: `npm run build`. — d861c53
 
 #### Manual
 
-- [x] 5.8 Follow `context/changes/delete-user-account/manual-verification.md` end to end using disposable local data. - d861c53
-- [x] 5.9 Confirm production setup instructions identify where `SUPABASE_ADMIN_KEY` and the Cron Trigger are configured. - d861c53
-- [x] 5.10 Confirm no user-facing screen offers cancellation or account reactivation. - d861c53
+- [x] 5.8 Follow `context/changes/delete-user-account/manual-verification.md` end to end using disposable local data. — d861c53
+- [x] 5.9 Confirm production setup instructions identify where `SUPABASE_ADMIN_KEY` and the Cron Trigger are configured. — d861c53
+- [x] 5.10 Confirm no user-facing screen offers cancellation or account reactivation. — d861c53
