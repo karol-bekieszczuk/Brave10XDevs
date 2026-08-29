@@ -16,13 +16,13 @@ On `/grow-logs`, the owner can check multiple visible logs, click a bulk delete 
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) |
-| --- | --- | --- |
-| UI shape | Checkbox list mode | It is the smallest change that satisfies selecting multiple existing logs. |
-| Delete safety | Confirmation only | It matches the current hard-delete single-log behavior without adding soft-delete or undo state. |
-| Invalid selection handling | Generic no-op/error | It keeps ownership and row existence private while avoiding complex partial-result UX. |
-| Testing scope | Repository and validation unit tests plus manual UI smoke | It matches the repo's current test depth without adding browser infrastructure for a narrow feature. |
-| Runtime style | Server-first Astro form and POST route | It follows the existing grow-log CRUD convention and avoids unnecessary React state. |
+| Decision                   | Choice                                                    | Why (1 sentence)                                                                                     |
+| -------------------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| UI shape                   | Checkbox list mode                                        | It is the smallest change that satisfies selecting multiple existing logs.                           |
+| Delete safety              | Confirmation only                                         | It matches the current hard-delete single-log behavior without adding soft-delete or undo state.     |
+| Invalid selection handling | Generic no-op/error                                       | It keeps ownership and row existence private while avoiding complex partial-result UX.               |
+| Testing scope              | Repository and validation unit tests plus manual UI smoke | It matches the repo's current test depth without adding browser infrastructure for a narrow feature. |
+| Runtime style              | Server-first Astro form and POST route                    | It follows the existing grow-log CRUD convention and avoids unnecessary React state.                 |
 
 ## Scope
 
@@ -51,12 +51,12 @@ Keep the existing server-first flow: `/grow-logs` renders a POST form around sel
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. Bulk Delete Contract | Parser, repository helper, and unit tests | Malformed or empty IDs must not create unsafe delete calls. |
-| 2. Bulk Delete Route | POST endpoint and redirect feedback | Failure handling must not leak submitted IDs or row ownership. |
-| 3. List Selection UI | Checkbox selection and confirmed bulk action | Hard-delete UX must be clear without implying undo. |
-| 4. Verification and Scope Audit | Automated checks and manual smoke | Scope can creep into recovery, export, or diagnosis if not audited. |
+| Phase                           | What it delivers                             | Key risk                                                            |
+| ------------------------------- | -------------------------------------------- | ------------------------------------------------------------------- |
+| 1. Bulk Delete Contract         | Parser, repository helper, and unit tests    | Malformed or empty IDs must not create unsafe delete calls.         |
+| 2. Bulk Delete Route            | POST endpoint and redirect feedback          | Failure handling must not leak submitted IDs or row ownership.      |
+| 3. List Selection UI            | Checkbox selection and confirmed bulk action | Hard-delete UX must be clear without implying undo.                 |
+| 4. Verification and Scope Audit | Automated checks and manual smoke            | Scope can creep into recovery, export, or diagnosis if not audited. |
 
 **Prerequisites:** Existing S-01 grow-log CRUD, owner sign-in, local Supabase data for manual smoke testing.
 **Estimated effort:** ~1-2 implementation sessions across 4 small phases.

@@ -1,10 +1,10 @@
 ---
 change_id: bulk-grow-log-actions
 title: Bulk grow log actions
-status: implemented
+status: archived
 created: 2026-06-11
-updated: 2026-06-11
-archived_at: null
+updated: 2026-08-29
+archived_at: 2026-08-29T11:53:16Z
 ---
 
 ## Notes

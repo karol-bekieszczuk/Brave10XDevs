@@ -27,15 +27,15 @@ The MVP must stay single-user-first, text-only, and constrained to agar and grai
 
 ## At a glance
 
-| ID   | Change ID                | Outcome (user can ...)                                                                                                          | Prerequisites | PRD refs                               | Status  |
-| ---- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------- | ------------- | -------------------------------------- | ------- |
-| F-01 | single-user-access-gate  | (foundation) only one authorized user can access the MVP and public registration is removed                                     | -             | FR-005, Access Control                 | done    |
-| F-02 | grow-log-data-contract   | (foundation) grow-log persistence has the minimum staged text-log contract needed by the MVP                                    | -             | FR-001, FR-005, Access Control         | done    |
-| F-03 | diagnosis-quality-rubric | (foundation) diagnosis quality and safety checks are explicit enough to verify scoped uncertain answers                         | -             | Success Criteria, NFRs, FR-003, FR-004 | done    |
-| S-01 | staged-grow-log-crud     | user can create, view, edit, and delete their own text grow logs with an agar/grain stage                                       | F-02          | FR-001, FR-005                         | done    |
-| S-02 | selected-log-diagnosis   | user can ask about one selected agar or grain grow log and receive scoped causes, actions, uncertainty, or a follow-up question | S-01, F-03    | US-01, FR-002, FR-003, FR-004          | done    |
-| S-03 | delete-user-account      | user can permanently delete their own account and grow-log data                                                                 | F-01, S-01    | FR-005, Access Control                 | done    |
-| S-04 | bulk-grow-log-actions    | user can select and delete multiple grow logs in one action                                                                     | F-01          | FR-001, FR-005                         | planned |
+| ID   | Change ID                | Outcome (user can ...)                                                                                                          | Prerequisites | PRD refs                               | Status |
+| ---- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------- | ------------- | -------------------------------------- | ------ |
+| F-01 | single-user-access-gate  | (foundation) only one authorized user can access the MVP and public registration is removed                                     | -             | FR-005, Access Control                 | done   |
+| F-02 | grow-log-data-contract   | (foundation) grow-log persistence has the minimum staged text-log contract needed by the MVP                                    | -             | FR-001, FR-005, Access Control         | done   |
+| F-03 | diagnosis-quality-rubric | (foundation) diagnosis quality and safety checks are explicit enough to verify scoped uncertain answers                         | -             | Success Criteria, NFRs, FR-003, FR-004 | done   |
+| S-01 | staged-grow-log-crud     | user can create, view, edit, and delete their own text grow logs with an agar/grain stage                                       | F-02          | FR-001, FR-005                         | done   |
+| S-02 | selected-log-diagnosis   | user can ask about one selected agar or grain grow log and receive scoped causes, actions, uncertainty, or a follow-up question | S-01, F-03    | US-01, FR-002, FR-003, FR-004          | done   |
+| S-03 | delete-user-account      | user can permanently delete their own account and grow-log data                                                                 | F-01, S-01    | FR-005, Access Control                 | done   |
+| S-04 | bulk-grow-log-actions    | user can select and delete multiple grow logs in one action                                                                     | F-01          | FR-001, FR-005                         | done   |
 
 ## Streams
 
@@ -150,7 +150,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** -
 - **Unknowns:** Whether bulk deletion needs undo, confirmation-only deletion, or both.
 - **Risk:** Without bulk actions, cleanup stays repetitive once real grow-log history accumulates.
-- **Status:** planned
+- **Status:** done
 
 ## Backlog Handoff
 
@@ -188,3 +188,4 @@ None.
 - **S-01: user can create, view, edit, and delete their own text grow logs with an agar/grain stage.** — Archived 2026-08-29 → `context/archive/2026-05-29-staged-grow-log-crud/`. Lesson: —.
 - **S-02: user can ask about one selected agar or grain grow log and receive scoped causes, suggested actions, confidence bands with explanatory uncertainty, or a follow-up question.** — Archived 2026-08-29 → `context/archive/2026-06-01-selected-log-diagnosis/`. Lesson: —.
 - **S-03: user can permanently delete their own account and grow-log data.** — Archived 2026-08-29 → `context/archive/2026-06-11-delete-user-account/`. Lesson: —.
+- **S-04: user can select and delete multiple grow logs in one action.** — Archived 2026-08-29 → `context/archive/2026-06-11-bulk-grow-log-actions/`. Lesson: —.
