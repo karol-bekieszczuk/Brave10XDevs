@@ -16,15 +16,15 @@ The repo has a readable rubric at `context/changes/diagnosis-quality-rubric/refe
 
 ## Key Decisions Made
 
-| Decision | Choice | Why |
-| --- | --- | --- |
-| Rubric format | Markdown spec plus machine-readable cases | Humans can review the contract now and future agents can automate against the cases later. |
-| Case count | 10 prepared cases | Small enough for MVP speed but broad enough to cover agar, grain, missing context, out-of-scope, and mixed-scope behavior. |
-| Correctness model | Rubric score threshold | Measures full answer quality instead of only matching one expected phrase. |
-| Missing context | Follow-up when critical stage context is absent | Prevents guessing when the selected log lacks information needed for a responsible diagnosis. |
-| Mixed scope | Answer only the agar/grain portion | Keeps the response useful while preserving the MVP boundary. |
-| Scoring scale | 0/1/2 per criterion plus case threshold | Captures absent, partial, and complete quality without heavyweight weighted scoring. |
-| Runtime scope | Docs and structured cases only | Completes F-03 without prematurely implementing S-02. |
+| Decision          | Choice                                          | Why                                                                                                                        |
+| ----------------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Rubric format     | Markdown spec plus machine-readable cases       | Humans can review the contract now and future agents can automate against the cases later.                                 |
+| Case count        | 10 prepared cases                               | Small enough for MVP speed but broad enough to cover agar, grain, missing context, out-of-scope, and mixed-scope behavior. |
+| Correctness model | Rubric score threshold                          | Measures full answer quality instead of only matching one expected phrase.                                                 |
+| Missing context   | Follow-up when critical stage context is absent | Prevents guessing when the selected log lacks information needed for a responsible diagnosis.                              |
+| Mixed scope       | Answer only the agar/grain portion              | Keeps the response useful while preserving the MVP boundary.                                                               |
+| Scoring scale     | 0/1/2 per criterion plus case threshold         | Captures absent, partial, and complete quality without heavyweight weighted scoring.                                       |
+| Runtime scope     | Docs and structured cases only                  | Completes F-03 without prematurely implementing S-02.                                                                      |
 
 ## Scope
 
@@ -47,12 +47,12 @@ This is a reference-artifact change. The Markdown rubric owns the human-readable
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. Change Scaffolding And Reference Location | Active change identity and `context/changes/diagnosis-quality-rubric/reference/` location | Accidentally treating F-03 as runtime diagnosis work. |
-| 2. Diagnosis Quality Rubric | Human-readable scoring and behavior contract | Rubric could be too vague to guide implementation. |
-| 3. Evaluation Case Set | 10 structured prepared cases | Cases could overfit wording or miss key scope failures. |
-| 4. Handoff And Verification | Discoverability and final foundation checks | Future agents may miss the rubric unless it is registered clearly. |
+| Phase                                        | What it delivers                                                                          | Key risk                                                           |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| 1. Change Scaffolding And Reference Location | Active change identity and `context/changes/diagnosis-quality-rubric/reference/` location | Accidentally treating F-03 as runtime diagnosis work.              |
+| 2. Diagnosis Quality Rubric                  | Human-readable scoring and behavior contract                                              | Rubric could be too vague to guide implementation.                 |
+| 3. Evaluation Case Set                       | 10 structured prepared cases                                                              | Cases could overfit wording or miss key scope failures.            |
+| 4. Handoff And Verification                  | Discoverability and final foundation checks                                               | Future agents may miss the rubric unless it is registered clearly. |
 
 **Prerequisites:** None beyond the existing PRD and roadmap.
 **Estimated effort:** About 1 focused documentation/reference implementation session across 4 phases.

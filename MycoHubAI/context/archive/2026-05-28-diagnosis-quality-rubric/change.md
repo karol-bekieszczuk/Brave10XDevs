@@ -1,10 +1,10 @@
 ---
 change_id: diagnosis-quality-rubric
 title: Diagnosis quality rubric
-status: impl_reviewed
+status: archived
 created: 2026-05-28
-updated: 2026-06-02
-archived_at: null
+updated: 2026-08-29
+archived_at: 2026-08-29T10:10:47Z
 ---
 
 ## Notes

@@ -184,3 +184,4 @@ None.
 
 - **F-01: (foundation) Only one authorized user can access the MVP, public registration is removed, and stale non-owner sessions are denied.** — Archived 2026-08-28 → `context/archive/2026-05-28-single-user-access-gate/`. Lesson: —.
 - **F-02: (foundation) Grow-log persistence has the minimum staged text-log contract needed for the single-user MVP.** — Archived 2026-08-29 → `context/archive/2026-05-29-grow-log-data-contract/`. Lesson: —.
+- **F-03: (foundation) Diagnosis quality and safety checks are explicit enough to verify scoped uncertain answers before expanding the flow.** — Archived 2026-08-29 → `context/archive/2026-05-28-diagnosis-quality-rubric/`. Lesson: —.

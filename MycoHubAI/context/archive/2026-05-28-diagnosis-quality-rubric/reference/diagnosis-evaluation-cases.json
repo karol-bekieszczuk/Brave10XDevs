@@ -58,12 +58,7 @@
         "Avoids claiming a cause",
         "Shows selected-log dependency by explaining what is absent from the selected log"
       ],
-      "critical_missing_context": [
-        "agar appearance",
-        "timing",
-        "growth pattern",
-        "visible contamination signs"
-      ],
+      "critical_missing_context": ["agar appearance", "timing", "growth pattern", "visible contamination signs"],
       "scope_class": "missing_context",
       "counts_toward_prd_accuracy": false,
       "notes": "This is a guardrail case for follow-up behavior, not part of the diagnosis-accuracy denominator."

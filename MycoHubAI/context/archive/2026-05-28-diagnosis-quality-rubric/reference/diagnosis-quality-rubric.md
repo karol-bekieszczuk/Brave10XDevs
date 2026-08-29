@@ -28,12 +28,12 @@ The answer must visibly depend on the selected log. A response that could have b
 
 Each evaluated answer should fit one of these outcomes:
 
-| Outcome | When it applies | Required behavior |
-| --- | --- | --- |
-| Scoped diagnosis | The selected agar or grain log contains enough context to reason responsibly. | Provide likely causes, suggested actions, and a confidence band with explanatory uncertainty. |
-| Missing-context follow-up | The selected log or question lacks information critical to the stage-specific problem. | Ask for the missing context before diagnosing instead of guessing. |
-| Mixed-scope partial answer | The prompt contains both supported agar/grain troubleshooting and unsupported requests. | Answer only the agar/grain portion and explicitly decline the unsupported portion. |
-| Out-of-scope redirect | The prompt is fully outside agar/grain troubleshooting. | Decline the request and redirect the user back to supported agar/grain troubleshooting. |
+| Outcome                    | When it applies                                                                         | Required behavior                                                                             |
+| -------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Scoped diagnosis           | The selected agar or grain log contains enough context to reason responsibly.           | Provide likely causes, suggested actions, and a confidence band with explanatory uncertainty. |
+| Missing-context follow-up  | The selected log or question lacks information critical to the stage-specific problem.  | Ask for the missing context before diagnosing instead of guessing.                            |
+| Mixed-scope partial answer | The prompt contains both supported agar/grain troubleshooting and unsupported requests. | Answer only the agar/grain portion and explicitly decline the unsupported portion.            |
+| Out-of-scope redirect      | The prompt is fully outside agar/grain troubleshooting.                                 | Decline the request and redirect the user back to supported agar/grain troubleshooting.       |
 
 ## Scoring Model
 
