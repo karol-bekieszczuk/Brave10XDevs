@@ -1,10 +1,10 @@
 ---
 change_id: testing-runtime-failure-smoke-layer
 title: Prove controlled runtime and provider failure behavior
-status: implemented
+status: archived
 created: 2026-08-06
-updated: 2026-08-28
-archived_at: null
+updated: 2026-08-29
+archived_at: 2026-08-29T12:28:51Z
 ---
 
 ## Notes
