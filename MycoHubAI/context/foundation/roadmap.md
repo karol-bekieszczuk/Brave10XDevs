@@ -3,7 +3,7 @@ project: MycoHubAI
 version: 1
 status: draft
 created: 2026-05-27
-updated: 2026-08-28
+updated: 2026-08-29
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -30,7 +30,7 @@ The MVP must stay single-user-first, text-only, and constrained to agar and grai
 | ID   | Change ID                | Outcome (user can ...)                                                                                                          | Prerequisites | PRD refs                               | Status   |
 | ---- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------- | ------------- | -------------------------------------- | -------- |
 | F-01 | single-user-access-gate  | (foundation) only one authorized user can access the MVP and public registration is removed                                     | -             | FR-005, Access Control                 | done     |
-| F-02 | grow-log-data-contract   | (foundation) grow-log persistence has the minimum staged text-log contract needed by the MVP                                    | -             | FR-001, FR-005, Access Control         | ready    |
+| F-02 | grow-log-data-contract   | (foundation) grow-log persistence has the minimum staged text-log contract needed by the MVP                                    | -             | FR-001, FR-005, Access Control         | done     |
 | F-03 | diagnosis-quality-rubric | (foundation) diagnosis quality and safety checks are explicit enough to verify scoped uncertain answers                         | -             | Success Criteria, NFRs, FR-003, FR-004 | done     |
 | S-01 | staged-grow-log-crud     | user can create, view, edit, and delete their own text grow logs with an agar/grain stage                                       | F-02          | FR-001, FR-005                         | done     |
 | S-02 | selected-log-diagnosis   | user can ask about one selected agar or grain grow log and receive scoped causes, actions, uncertainty, or a follow-up question | S-01, F-03    | US-01, FR-002, FR-003, FR-004          | done     |
@@ -183,3 +183,4 @@ None.
 (Empty on first generation. `/10x-archive` appends an entry here - and flips that item's `Status` to `done` - when a change whose `Change ID` matches the item is archived.)
 
 - **F-01: (foundation) Only one authorized user can access the MVP, public registration is removed, and stale non-owner sessions are denied.** — Archived 2026-08-28 → `context/archive/2026-05-28-single-user-access-gate/`. Lesson: —.
+- **F-02: (foundation) Grow-log persistence has the minimum staged text-log contract needed for the single-user MVP.** — Archived 2026-08-29 → `context/archive/2026-05-29-grow-log-data-contract/`. Lesson: —.

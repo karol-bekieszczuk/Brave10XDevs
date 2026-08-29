@@ -16,15 +16,15 @@ The repo has one grow-log database migration and one small TypeScript contract m
 
 ## Key Decisions Made
 
-| Decision | Choice | Why |
-| --- | --- | --- |
-| Field scope | Minimal staging contract with `title` | Supports list/detail UX and diagnosis selection without adding diagnosis-specific fields. |
-| Delete behavior | Hard delete | Keeps the MVP contract simple and avoids soft-delete filtering in every future query. |
-| Privacy model | `owner_id = auth.uid()` with RLS | Enforces private grow-log access in Supabase, not only in app code. |
-| Type source | Manual app types now | Gives S-01 a stable TypeScript contract without adding typegen workflow work to F-02. |
-| Stage validation | DB check plus TS union | Keeps the agar/grain invariant enforced in both persistence and application code. |
-| Contract docs | Plan and types only | Avoids creating `context/changes/diagnosis-quality-rubric/reference/contract-surfaces.md` in this change. |
-| Runtime boundary | Contract-only helper | Keeps F-02 as a foundation and leaves CRUD runtime for S-01. |
+| Decision         | Choice                                | Why                                                                                                       |
+| ---------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Field scope      | Minimal staging contract with `title` | Supports list/detail UX and diagnosis selection without adding diagnosis-specific fields.                 |
+| Delete behavior  | Hard delete                           | Keeps the MVP contract simple and avoids soft-delete filtering in every future query.                     |
+| Privacy model    | `owner_id = auth.uid()` with RLS      | Enforces private grow-log access in Supabase, not only in app code.                                       |
+| Type source      | Manual app types now                  | Gives S-01 a stable TypeScript contract without adding typegen workflow work to F-02.                     |
+| Stage validation | DB check plus TS union                | Keeps the agar/grain invariant enforced in both persistence and application code.                         |
+| Contract docs    | Plan and types only                   | Avoids creating `context/changes/diagnosis-quality-rubric/reference/contract-surfaces.md` in this change. |
+| Runtime boundary | Contract-only helper                  | Keeps F-02 as a foundation and leaves CRUD runtime for S-01.                                              |
 
 ## Scope
 
@@ -51,10 +51,10 @@ Use a database-first foundation: one migration creates the table, constraints, t
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. Database Contract | `grow_logs` migration with constraints, indexes, timestamps, and RLS | RLS mistakes could weaken privacy or block valid owner access. |
-| 2. Application Type Contract | Shared stage/row/input TypeScript contract | Manual types can drift from SQL if not reviewed together. |
+| Phase                        | What it delivers                                                     | Key risk                                                       |
+| ---------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------- |
+| 1. Database Contract         | `grow_logs` migration with constraints, indexes, timestamps, and RLS | RLS mistakes could weaken privacy or block valid owner access. |
+| 2. Application Type Contract | Shared stage/row/input TypeScript contract                           | Manual types can drift from SQL if not reviewed together.      |
 
 **Prerequisites:** Local Supabase CLI workflow must be available for migration/RLS verification.
 **Estimated effort:** ~1 implementation session across 2 small phases, plus manual local Supabase checks.
