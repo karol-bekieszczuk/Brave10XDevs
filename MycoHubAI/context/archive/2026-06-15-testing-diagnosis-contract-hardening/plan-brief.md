@@ -17,16 +17,16 @@ The deterministic gate passes through `npm run test:unit`, `npm run lint`, `npm 
 
 ## Key Decisions Made
 
-| Decision | Choice | Why | Source |
-| --- | --- | --- | --- |
-| Baseline cleanup | Remove all stray `runTestPlan` drift under `src` and `scripts` | The full unit gate cannot be trusted while unrelated transform/runtime failures remain | Plan |
-| Runtime validator | Add a minimal post-generation contract validator | Zod catches shape, but not guarantee language, source mismatch, high-confidence misuse, or smell advice | Plan |
-| Guardrail ordering | Scope guardrails run before thin-log `missing_context` | Unsupported prompts should not be reclassified as missing context because the selected log is thin | Plan |
-| Retrieval default | Keep `matchThreshold = 0` for now | The SQL RPC threshold is a `0..1` similarity cutoff; the earlier `20` assumption blocked all live matches and caused false `missing_context` outcomes | Plan / live gate |
-| Test strategy | Keep deterministic tests plus required live-provider checkpoint | Stable gates prove technical contracts; real AI verifies production-like behavior manually | Plan |
-| Live-provider gate | Manual required gate, not CI | Real provider calls need secrets, network, cost control, and failure triage | Plan |
-| Unsupported non-goals | Add deterministic refusals for full F-03 non-goals | This avoids paying provider calls for known unsupported product scope | Plan |
-| API error detail | Detailed response messages only in local/dev; production stays controlled | Debug remains possible without making raw provider details public | Plan |
+| Decision              | Choice                                                                    | Why                                                                                                                                                   | Source           |
+| --------------------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| Baseline cleanup      | Remove all stray `runTestPlan` drift under `src` and `scripts`            | The full unit gate cannot be trusted while unrelated transform/runtime failures remain                                                                | Plan             |
+| Runtime validator     | Add a minimal post-generation contract validator                          | Zod catches shape, but not guarantee language, source mismatch, high-confidence misuse, or smell advice                                               | Plan             |
+| Guardrail ordering    | Scope guardrails run before thin-log `missing_context`                    | Unsupported prompts should not be reclassified as missing context because the selected log is thin                                                    | Plan             |
+| Retrieval default     | Keep `matchThreshold = 0` for now                                         | The SQL RPC threshold is a `0..1` similarity cutoff; the earlier `20` assumption blocked all live matches and caused false `missing_context` outcomes | Plan / live gate |
+| Test strategy         | Keep deterministic tests plus required live-provider checkpoint           | Stable gates prove technical contracts; real AI verifies production-like behavior manually                                                            | Plan             |
+| Live-provider gate    | Manual required gate, not CI                                              | Real provider calls need secrets, network, cost control, and failure triage                                                                           | Plan             |
+| Unsupported non-goals | Add deterministic refusals for full F-03 non-goals                        | This avoids paying provider calls for known unsupported product scope                                                                                 | Plan             |
+| API error detail      | Detailed response messages only in local/dev; production stays controlled | Debug remains possible without making raw provider details public                                                                                     | Plan             |
 
 ## Scope
 
@@ -53,13 +53,13 @@ The plan keeps the existing diagnosis separation: `service.ts` owns orchestratio
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. Restore Diagnosis Test Baseline | Clean transform/runtime drift and align existing tests | Hidden unrelated failures mask diagnosis regressions |
-| 2. Add Runtime Contract Guardrails | Validator plus pre-provider scope/non-goal routing | Over-broad rules could false-positive valid answers |
-| 3. Expand Deterministic Contract Coverage | Stable tests across provider, service, API, UI, and evaluator | Tests could overfit exact prose instead of behavior |
-| 4. Add Live Provider Evaluation Gate | Real OpenRouter manual evaluation command and docs | Live model output can be variable and needs triage |
-| 5. Final Verification And Handoff | Full gate run and rollout artifact sync | Status/docs could claim more than verification proves |
+| Phase                                     | What it delivers                                              | Key risk                                              |
+| ----------------------------------------- | ------------------------------------------------------------- | ----------------------------------------------------- |
+| 1. Restore Diagnosis Test Baseline        | Clean transform/runtime drift and align existing tests        | Hidden unrelated failures mask diagnosis regressions  |
+| 2. Add Runtime Contract Guardrails        | Validator plus pre-provider scope/non-goal routing            | Over-broad rules could false-positive valid answers   |
+| 3. Expand Deterministic Contract Coverage | Stable tests across provider, service, API, UI, and evaluator | Tests could overfit exact prose instead of behavior   |
+| 4. Add Live Provider Evaluation Gate      | Real OpenRouter manual evaluation command and docs            | Live model output can be variable and needs triage    |
+| 5. Final Verification And Handoff         | Full gate run and rollout artifact sync                       | Status/docs could claim more than verification proves |
 
 **Prerequisites:** Local dependencies installed, prepared F-03 cases available, and a real `OPENROUTER_API_KEY` for the live-provider checkpoint.
 
