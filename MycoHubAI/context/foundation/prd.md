@@ -69,9 +69,11 @@ They reach for MycoHubAI when they have a grow-log entry and a concrete troubles
 ### Diagnosis
 
 - FR-002: User can ask a troubleshooting question against one selected grow log. Priority: must-have
+
   > Socratic: Counter-argument considered: one selected log may be limiting because some diagnoses might require comparing multiple grows or prior attempts. Resolution: kept one selected log for MVP, but the chat asks follow-up questions when context is missing.
 
 - FR-003: User can receive possible causes, suggested actions, and confidence bands with explanatory uncertainty based on the selected grow log and internal agar/grain knowledge. Priority: must-have
+
   > Socratic: Counter-argument considered: confidence may mislead and create false certainty for a hobbyist. Resolution: kept confidence, but expressed through confidence bands with explanatory uncertainty rather than guaranteed diagnosis.
 
 - FR-004: User is redirected when asking questions outside agar/grain cultivation scope. Priority: must-have

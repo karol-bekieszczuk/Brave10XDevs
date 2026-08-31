@@ -239,17 +239,17 @@ disposable and loopback-only.
 
 #### Automated
 
-- [ ] 1.1 `npm run format:check` passes and does not modify tracked files.
-- [ ] 1.2 `npm run typecheck` passes with zero diagnostics.
-- [ ] 1.3 `npm run test:unit` passes.
-- [ ] 1.4 `npm run lint` passes with the existing warning policy unchanged.
-- [ ] 1.5 `npm run build` passes using the existing build env contract.
+- [x] 1.1 `npm run format:check` passes and does not modify tracked files.
+- [x] 1.2 `npm run typecheck` passes with zero diagnostics.
+- [x] 1.3 `npm run test:unit` passes.
+- [x] 1.4 `npm run lint` passes with the existing warning policy unchanged.
+- [x] 1.5 `npm run build` passes using the existing build env contract.
 
 #### Manual
 
-- [ ] 1.6 Package/CI diff confirms the static floor and separate E2E topology.
-- [ ] 1.7 Diff contains no secret files, production target, Wrangler hard gate, coverage policy, or `verify` script.
-- [ ] 1.8 `git diff --check` and workflow structure review pass.
+- [x] 1.6 Package/CI diff confirms the static floor and separate E2E topology.
+- [x] 1.7 Diff contains no secret files, production target, Wrangler hard gate, coverage policy, or `verify` script.
+- [x] 1.8 `git diff --check` and workflow structure review pass.
 
 ### Phase 2: Align the Cookbook and Repository Guidance
 

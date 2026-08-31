@@ -20,14 +20,14 @@ Use Workers, not Cloudflare Pages, for this project. Astro's current Cloudflare 
 
 ## Platform Comparison
 
-| Platform | CLI-first | Managed/Serverless | Agent-readable docs | Stable deploy API | MCP / Integration | Total |
-|---|---|---|---|---|---|---|
-| Cloudflare Workers | Pass | Pass | Pass | Pass | Pass | 5/5 |
-| Vercel | Pass | Pass | Pass | Pass | Partial | 4.5/5 |
-| Netlify | Partial | Pass | Pass | Partial | Pass | 4/5 |
-| Railway | Partial | Partial | Pass | Partial | Pass | 3.5/5 |
-| Render | Partial | Partial | Pass | Partial | Pass | 3.5/5 |
-| Fly.io | Pass | Partial | Pass | Partial | Partial | 3.5/5 |
+| Platform           | CLI-first | Managed/Serverless | Agent-readable docs | Stable deploy API | MCP / Integration | Total |
+| ------------------ | --------- | ------------------ | ------------------- | ----------------- | ----------------- | ----- |
+| Cloudflare Workers | Pass      | Pass               | Pass                | Pass              | Pass              | 5/5   |
+| Vercel             | Pass      | Pass               | Pass                | Pass              | Partial           | 4.5/5 |
+| Netlify            | Partial   | Pass               | Pass                | Partial           | Pass              | 4/5   |
+| Railway            | Partial   | Partial            | Pass                | Partial           | Pass              | 3.5/5 |
+| Render             | Partial   | Partial            | Pass                | Partial           | Pass              | 3.5/5 |
+| Fly.io             | Pass      | Partial            | Pass                | Partial           | Partial           | 3.5/5 |
 
 Cloudflare Workers fits the current stack without an adapter swap, has `wrangler` deploy/log/rollback commands, a strong free/low-cost request model, official docs with agent-readable sources, and active Cloudflare MCP/server-side agent tooling. It does not provide a persistent process model, but the MVP does not need one.
 
@@ -93,15 +93,15 @@ Cloudflare Access is the preview protection mechanism for this MVP. It is accept
 
 ## Risk Register
 
-| Risk | Source | Likelihood | Impact | Mitigation |
-|---|---|---|---|---|
-| Unsupported Node API appears in a dependency | Devil's advocate | Medium | High | Keep runtime-facing code Web API compatible, run `npm run build`, and verify deployed Worker behavior before production release. |
-| External Supabase/OpenRouter latency dominates requests | Pre-mortem | Medium | Medium | Pick a Supabase region deliberately, add request timeouts, and keep diagnosis UX tolerant of slow AI responses. |
-| Deployment ownership is inferred incorrectly | Unknown unknowns | Medium | High | Keep Cloudflare Workers Builds as the documented deploy owner and GitHub Actions validation-only; do not add `wrangler deploy` to CI unless the ownership contract changes. |
-| Secret values drift across local and production environments | Devil's advocate | Medium | High | Maintain `.env.example`, `.dev.vars` locally, and Cloudflare Worker secrets with the same required key names; current required keys are `SUPABASE_URL` and `SUPABASE_KEY`. |
-| Secret rotation silently creates a new production Worker version | Devil's advocate | Medium | High | Treat secret rotation as a production deployment. Prefer `npx wrangler versions secret put <KEY>` followed by an intentional `npx wrangler versions deploy` instead of an immediate `npx wrangler secret put <KEY>` on production secrets. |
-| Rollback restores code but not external state | Pre-mortem | Medium | High | Record migration, prompt, model, and secret changes in deployment notes; avoid bundling risky external-state changes with routine code deploys. |
-| Cloudflare MCP/agent tooling is over-trusted | Research finding | Low | Medium | Start with audited CLI commands; add MCP only for repeated read-only discovery or structured logs/state queries. |
+| Risk                                                             | Source           | Likelihood | Impact | Mitigation                                                                                                                                                                                                                                 |
+| ---------------------------------------------------------------- | ---------------- | ---------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Unsupported Node API appears in a dependency                     | Devil's advocate | Medium     | High   | Keep runtime-facing code Web API compatible, run `npm run build`, and verify deployed Worker behavior before production release.                                                                                                           |
+| External Supabase/OpenRouter latency dominates requests          | Pre-mortem       | Medium     | Medium | Pick a Supabase region deliberately, add request timeouts, and keep diagnosis UX tolerant of slow AI responses.                                                                                                                            |
+| Deployment ownership is inferred incorrectly                     | Unknown unknowns | Medium     | High   | Keep Cloudflare Workers Builds as the documented deploy owner and GitHub Actions validation-only; do not add `wrangler deploy` to CI unless the ownership contract changes.                                                                |
+| Secret values drift across local and production environments     | Devil's advocate | Medium     | High   | Maintain `.env.example`, `.dev.vars` locally, and Cloudflare Worker secrets with the same required key names; current required keys are `SUPABASE_URL` and `SUPABASE_KEY`.                                                                 |
+| Secret rotation silently creates a new production Worker version | Devil's advocate | Medium     | High   | Treat secret rotation as a production deployment. Prefer `npx wrangler versions secret put <KEY>` followed by an intentional `npx wrangler versions deploy` instead of an immediate `npx wrangler secret put <KEY>` on production secrets. |
+| Rollback restores code but not external state                    | Pre-mortem       | Medium     | High   | Record migration, prompt, model, and secret changes in deployment notes; avoid bundling risky external-state changes with routine code deploys.                                                                                            |
+| Cloudflare MCP/agent tooling is over-trusted                     | Research finding | Low        | Medium | Start with audited CLI commands; add MCP only for repeated read-only discovery or structured logs/state queries.                                                                                                                           |
 
 ## Getting Started
 
