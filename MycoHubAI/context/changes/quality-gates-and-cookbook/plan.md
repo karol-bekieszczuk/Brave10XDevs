@@ -255,16 +255,16 @@ disposable and loopback-only.
 
 #### Automated
 
-- [x] 2.1 `npm run format:check` passes after documentation edits.
-- [x] 2.2 `npm run typecheck` passes with zero diagnostics.
-- [x] 2.3 `npm run test:unit` passes.
-- [x] 2.4 `npm run lint` passes with no warning-policy change.
-- [x] 2.5 `npm run build` passes.
-- [x] 2.6 `git diff --check` passes.
+- [x] 2.1 `npm run format:check` passes after documentation edits. — eeac4c4
+- [x] 2.2 `npm run typecheck` passes with zero diagnostics. — eeac4c4
+- [x] 2.3 `npm run test:unit` passes. — eeac4c4
+- [x] 2.4 `npm run lint` passes with no warning-policy change. — eeac4c4
+- [x] 2.5 `npm run build` passes. — eeac4c4
+- [x] 2.6 `git diff --check` passes. — eeac4c4
 
 #### Manual
 
-- [x] 2.7 `test-plan.md` §6 is actionable and preserves proof boundaries.
-- [x] 2.8 Freshness ledger and package-version references match the checkout.
-- [x] 2.9 `README.md` and `CLAUDE.md` describe the actual CI floor.
-- [x] 2.10 Final documentation review confirms MVP scope and no extra environment or secret handling.
+- [x] 2.7 `test-plan.md` §6 is actionable and preserves proof boundaries. — eeac4c4
+- [x] 2.8 Freshness ledger and package-version references match the checkout. — eeac4c4
+- [x] 2.9 `README.md` and `CLAUDE.md` describe the actual CI floor. — eeac4c4
+- [x] 2.10 Final documentation review confirms MVP scope and no extra environment or secret handling. — eeac4c4
