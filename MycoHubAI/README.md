@@ -4,7 +4,7 @@ Private single-user grow-log workspace for agar and grain troubleshooting.
 
 ## Tech Stack
 
-- [Astro](https://astro.build/) v6 - server-first web framework
+- [Astro](https://astro.build/) v7 - server-first web framework
 - [React](https://react.dev/) v19 - interactive islands
 - [TypeScript](https://www.typescriptlang.org/) v5 - type-safe JavaScript
 - [Tailwind CSS](https://tailwindcss.com/) v4 - utility-first CSS
@@ -47,6 +47,10 @@ npm run dev
 - `npm run lint` - Run ESLint
 - `npm run lint:fix` - Auto-fix ESLint issues
 - `npm run format` - Run Prettier
+- `npm run format:check` - Check repository formatting without modifying files
+- `npm run typecheck` - Run Astro/TypeScript checks
+- `npm run test:unit` - Run unit and integration tests
+- `npm run test:e2e` - Run the reviewed browser suite against disposable local infrastructure
 - `npm run diagnosis:evaluate` - Run the deterministic offline diagnosis contract checks
 - `npm run diagnosis:evaluate:live` - Run the live-provider diagnosis checkpoint against real retrieval/RPC
 
@@ -142,7 +146,7 @@ npx wrangler deploy
 
 ## CI
 
-GitHub Actions runs lint and build on every push and pull request to `master`. Configure `SUPABASE_URL`, `SUPABASE_KEY`, and `AUTHORIZED_USER_ID` as repository secrets so the validation build can satisfy Astro's required server env schema.
+GitHub Actions runs `npx astro sync`, `format:check`, `typecheck`, unit tests, lint, and build on every push and pull request to `master`. The separate E2E job uses disposable loopback Supabase and Chromium. CI is validation-only; these checks do not prove hosted/production behavior, deployed Cloudflare configuration, RLS, or provider availability. Configure `SUPABASE_URL`, `SUPABASE_KEY`, and `AUTHORIZED_USER_ID` as repository secrets so the validation build can satisfy Astro's required server env schema.
 
 ## License
 

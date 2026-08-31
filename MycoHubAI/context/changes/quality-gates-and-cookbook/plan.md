@@ -239,32 +239,32 @@ disposable and loopback-only.
 
 #### Automated
 
-- [x] 1.1 `npm run format:check` passes and does not modify tracked files.
-- [x] 1.2 `npm run typecheck` passes with zero diagnostics.
-- [x] 1.3 `npm run test:unit` passes.
-- [x] 1.4 `npm run lint` passes with the existing warning policy unchanged.
-- [x] 1.5 `npm run build` passes using the existing build env contract.
+- [x] 1.1 `npm run format:check` passes and does not modify tracked files. — 7507b7a
+- [x] 1.2 `npm run typecheck` passes with zero diagnostics. — 7507b7a
+- [x] 1.3 `npm run test:unit` passes. — 7507b7a
+- [x] 1.4 `npm run lint` passes with the existing warning policy unchanged. — 7507b7a
+- [x] 1.5 `npm run build` passes using the existing build env contract. — 7507b7a
 
 #### Manual
 
-- [x] 1.6 Package/CI diff confirms the static floor and separate E2E topology.
-- [x] 1.7 Diff contains no secret files, production target, Wrangler hard gate, coverage policy, or `verify` script.
-- [x] 1.8 `git diff --check` and workflow structure review pass.
+- [x] 1.6 Package/CI diff confirms the static floor and separate E2E topology. — 7507b7a
+- [x] 1.7 Diff contains no secret files, production target, Wrangler hard gate, coverage policy, or `verify` script. — 7507b7a
+- [x] 1.8 `git diff --check` and workflow structure review pass. — 7507b7a
 
 ### Phase 2: Align the Cookbook and Repository Guidance
 
 #### Automated
 
-- [ ] 2.1 `npm run format:check` passes after documentation edits.
-- [ ] 2.2 `npm run typecheck` passes with zero diagnostics.
-- [ ] 2.3 `npm run test:unit` passes.
-- [ ] 2.4 `npm run lint` passes with no warning-policy change.
-- [ ] 2.5 `npm run build` passes.
-- [ ] 2.6 `git diff --check` passes.
+- [x] 2.1 `npm run format:check` passes after documentation edits.
+- [x] 2.2 `npm run typecheck` passes with zero diagnostics.
+- [x] 2.3 `npm run test:unit` passes.
+- [x] 2.4 `npm run lint` passes with no warning-policy change.
+- [x] 2.5 `npm run build` passes.
+- [x] 2.6 `git diff --check` passes.
 
 #### Manual
 
-- [ ] 2.7 `test-plan.md` §6 is actionable and preserves proof boundaries.
-- [ ] 2.8 Freshness ledger and package-version references match the checkout.
-- [ ] 2.9 `README.md` and `CLAUDE.md` describe the actual CI floor.
-- [ ] 2.10 Final documentation review confirms MVP scope and no extra environment or secret handling.
+- [x] 2.7 `test-plan.md` §6 is actionable and preserves proof boundaries.
+- [x] 2.8 Freshness ledger and package-version references match the checkout.
+- [x] 2.9 `README.md` and `CLAUDE.md` describe the actual CI floor.
+- [x] 2.10 Final documentation review confirms MVP scope and no extra environment or secret handling.

@@ -6,7 +6,7 @@
 >
 > Refresh: re-run `/10x-test-plan --refresh` when stale (see §8).
 >
-> Last updated: 2026-08-28
+> Last updated: 2026-08-31
 
 ## 1. Strategy
 
@@ -138,9 +138,8 @@ phase lands; before that, the gate is `planned`.
 
 ## 6. Cookbook Patterns
 
-How to add new tests in this project. Each sub-section is filled in once
-the relevant rollout phase ships; before that, the sub-section reads
-"TBD - see §3 Phase <N>".
+How to add new tests in this project. Each sub-section names the smallest
+local proof for the risk and the boundary it does not prove.
 
 ### 6.1 Adding a unit test
 
@@ -156,7 +155,7 @@ the relevant rollout phase ships; before that, the sub-section reads
 - **Persisted-state policy**: when the claim is a database constraint, RLS decision, atomic admission, or selected-row/survivor outcome, use the loopback-only local Supabase smoke. Static SQL text and fluent query mocks are drift signals, not persisted-state/RLS proof.
 - **Reference tests**: `src/pages/api/diagnosis/selected-log.test.ts` for request/response ordering and `scripts/smoke-ownership-rls.ts` for persisted database behavior.
 - **Run locally**: `npm run test:unit`; after an explicit disposable local reset, provide the smoke's required credentials through its process environment and use `npm run test:rls` for database claims. Standard Astro/Cloudflare commands may load `.dev.vars` normally.
-- **Current guidance checked**: 2026-07-30 (Vitest and Supabase CLI).
+- **Current guidance checked**: 2026-08-31 (`package.json`, `package-lock.json`, and local Supabase smoke scripts).
 
 ### 6.3 Adding an e2e test
 
@@ -177,7 +176,7 @@ the relevant rollout phase ships; before that, the sub-section reads
 - **HTTP redaction oracle**: put sentinel grow-log, secret, provider-error, and stack values into controlled failures, then assert none appear in the production-shaped response. Keep missing and non-owner resources publicly indistinguishable where required.
 - **Reference tests**: `src/pages/api/grow-logs/[id]/delete.test.ts`, `src/pages/api/account/delete.test.ts`, and `src/pages/api/diagnosis/selected-log.test.ts`.
 - **When to add e2e instead**: only if the endpoint's failure mode requires the full deployed shape and integration cannot catch the risk cheaply.
-- **Current guidance checked**: 2026-07-30 (Vitest).
+- **Current guidance checked**: 2026-08-31 (`package.json`, `package-lock.json`, and API test fixtures).
 
 ### 6.5 Adding an abuse/security test
 
@@ -189,11 +188,14 @@ the relevant rollout phase ships; before that, the sub-section reads
 - **Required checks**: ownership/resource ID, application and database input bounds, persisted survivor state, owner-only pending-deletion visibility without authenticated mutation, HTTP redaction, provider-call ordering, durable rate/concurrency/deduplication, and privileged-work idempotency.
 - **Anti-patterns**: do not use a happy-path authenticated request, static migration text, repository query shape, or a browser-only CRUD flow as proof of ownership/RLS or bounded provider cost.
 - **Run locally**: `npm run test:unit`; for persisted RLS/admission proof, use `npm run test:rls` after the explicit local reset.
-- **Current guidance checked**: 2026-07-30 (Vitest, Supabase CLI, and AI SDK output bounds).
+- **Current guidance checked**: 2026-08-31 (Vitest 4.1.7, Supabase CLI 2.23.4, and AI SDK output bounds).
 
 ### 6.6 Adding a test for a new content-build rule
 
-- TBD - see §3 Phase 1.
+- **Scope**: test deterministic application-owned content and build contracts only: generated routes/assets, Astro/TypeScript diagnostics, and repository formatting. Do not turn a content-build check into a visual, provider, hosted, or production smoke test.
+- **Pattern**: assert stable output or command status from committed inputs; keep timestamps, network calls, secrets, and machine-specific paths out of the oracle. When a generated artifact is framework-owned, prefer the framework's check over snapshotting implementation details.
+- **Run locally**: `npm run format:check`, `npm run typecheck`, and `npm run build`.
+- **Proof boundary**: these commands prove reproducible local build/static contracts only. They do not prove deployed Cloudflare bindings, hosted Supabase behavior, RLS, provider availability, or browser/runtime wiring.
 
 ### 6.7 Per-rollout-phase notes
 
@@ -202,11 +204,12 @@ the relevant rollout phase ships; before that, the sub-section reads
 
 ### 6.8 Running the static quality gate
 
-- **Canonical command**: `npm run typecheck`.
-- **Contract**: The command is non-mutating and runs `astro check` to reject Astro/TypeScript diagnostics.
-- **Enforcement**: Run locally before a phase closes; the Husky pre-commit hook and CI both invoke the same package command. Worker declaration generation is a separate explicit operation: use `npm run types:generate`, review any diff, and rerun the gate.
-- **Current guidance checked**: 2026-08-06 (`package.json`, Husky, and CI workflow).
-- **Rollout boundary**: This static contract does not by itself complete the broader Quality Gates And Cookbook rollout.
+- **Canonical commands**: `npm run format:check`, `npm run typecheck`, `npm run test:unit`, `npm run lint`, and `npm run build`.
+- **Contract**: all five commands are non-mutating validation gates. `format:check` runs Prettier in check mode; `typecheck` runs `astro check`; unit tests, ESLint, and the build validate their existing contracts. The lint warning policy remains unchanged.
+- **Enforcement**: CI runs `npx astro sync` followed by the five static commands. Run the same sequence locally before a phase closes. The Husky pre-commit hook invokes lint-staged and the canonical typecheck; it may apply its existing fixes to staged files.
+- **Separate proof layers**: use `npm run test:rls`, `npm run test:runtime:provider-failure`, `npm run test:worker-runtime`, and `npm run test:e2e` for their documented persisted, runtime, and browser risks. These are not promoted into the static gate. Worker declaration generation remains separate: use `npm run types:generate`, review any diff, and rerun the gate.
+- **Current guidance checked**: 2026-08-31 (`package.json`, `package-lock.json`, Husky, CI workflow, and smoke/E2E assets). Checked versions include Astro 7.0.2, Vitest 4.1.7, Prettier 3.8.3, Playwright 1.61.0, Supabase CLI 2.23.4, and Node 24.15.0.
+- **Rollout status**: Quality Gates And Cookbook documentation is complete. Static CI remains validation-only; it does not prove RLS, hosted/production behavior, provider availability, deployed Cloudflare configuration, or production readiness.
 
 ## 7. What We Deliberately Don't Test
 
@@ -220,9 +223,9 @@ contributors should respect these unless the underlying assumption changes.
 
 ## 8. Freshness Ledger
 
-- Strategy (§1–§5) last reviewed: 2026-06-15
-- Stack versions last verified: 2026-06-15
-- AI-native tool references last verified: 2026-06-15
+- Strategy (§1–§5) last reviewed: 2026-08-31
+- Stack versions last verified: 2026-08-31 (`package.json`, `package-lock.json`, `.nvmrc`)
+- AI-native tool references last verified: 2026-08-31 (repository-local commands and checked-in E2E assets)
 
 Refresh (`/10x-test-plan --refresh`) when:
 

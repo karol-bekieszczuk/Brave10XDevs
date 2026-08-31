@@ -10,12 +10,16 @@ This file provides guidance to AI Agent when working with code in this repositor
 - `npm run lint` — ESLint with type-checked rules
 - `npm run lint:fix` — auto-fix lint issues
 - `npm run format` — Prettier (includes prettier-plugin-astro + prettier-plugin-tailwindcss)
+- `npm run format:check` — non-mutating Prettier check
+- `npm run typecheck` — canonical Astro/TypeScript check
+- `npm run test:unit` — unit and integration tests
+- `npm run test:e2e` — reviewed browser suite with disposable local infrastructure
 
 Pre-commit hooks: husky + lint-staged runs `eslint --fix` on `*.{ts,tsx,astro}` and `prettier --write` on `*.{json,css,md}`.
 
 ## Architecture
 
-**Astro 6 SSR app** with React 19 islands, Tailwind 4, Supabase auth, and shadcn/ui components. Deployed to Cloudflare Workers.
+**Astro 7 SSR app** with React 19 islands, Tailwind 4, Supabase auth, and shadcn/ui components. Deployed to Cloudflare Workers.
 
 ### Rendering mode
 
@@ -51,4 +55,4 @@ Full server-side rendering (`output: "server"` in astro.config.mjs). All pages a
 
 ## CI
 
-GitHub Actions workflow (`.github/workflows/ci.yml`) runs lint + build on every push and PR to master. Requires `SUPABASE_URL` and `SUPABASE_KEY` repository secrets for the build step.
+GitHub Actions workflow (`.github/workflows/ci.yml`) runs Astro sync, `format:check`, `typecheck`, unit tests, lint, and build on every push and PR to master. A separate job runs the reviewed E2E suite against disposable local Supabase. CI is validation-only and does not establish production readiness, hosted behavior, RLS, or provider availability. Requires `SUPABASE_URL`, `SUPABASE_KEY`, and `AUTHORIZED_USER_ID` repository secrets for the build step.
