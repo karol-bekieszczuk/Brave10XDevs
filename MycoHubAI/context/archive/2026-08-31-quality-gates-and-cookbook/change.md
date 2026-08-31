@@ -1,10 +1,10 @@
 ---
 change_id: quality-gates-and-cookbook
 title: Quality gates and cookbook
-status: implemented
+status: archived
 created: 2026-08-31
 updated: 2026-08-31
-archived_at: null
+archived_at: 2026-08-31T16:15:27Z
 ---
 
 ## Notes
