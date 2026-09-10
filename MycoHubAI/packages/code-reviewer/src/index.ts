@@ -11,20 +11,11 @@ const environmentSchema = z.object({
 
 export type Environment = z.infer<typeof environmentSchema>;
 
-const SYSTEM_PROMPT = `
-You are a code reviewer.
-
-Review the provided git diff.
-
-Focus on:
-- implementation correctness,
-- code quality,
-- unnecessary complexity,
-- potential bugs,
-- security issues.
-
-Explain any problems you find and provide a short final assessment.
-`.trim();
+const SYSTEM_PROMPT = `Jesteś precyzyjnym, konstruktywnym recenzentem kodu oceniającym pull request.
+Oceń podany diff w pięciu kryteriach w skali 1-10 (1 = poważne braki, 10 = wzorowo):
+poprawność implementacji, idiomatyczność, złożoność, pokrycie testami względem ryzyka, bezpieczeństwo.
+Następnie wydaj wiążący werdykt (pass/fail) dla całej zmiany i dołącz krótkie podsumowanie (2-3 zdania)
+w Markdown, na podstawie którego autor PR-a będzie mógł działać.`.trim();
 
 export function readEnvironment(environment: NodeJS.ProcessEnv = process.env): Environment {
   return environmentSchema.parse(environment);
@@ -37,11 +28,13 @@ export async function reviewCode(diff: string, environment: NodeJS.ProcessEnv = 
     apiKey: config.OPENROUTER_API_KEY,
   });
 
-  const { text } = await generateText({
+  const { text, usage } = await generateText({
     model: openrouter(config.OPENROUTER_MODEL),
     system: SYSTEM_PROMPT,
     prompt: `Review the following diff:\n\n${diff}`,
   });
+
+  console.log(`Tokens: ${usage.inputTokens} input / ${usage.outputTokens} output / ${usage.totalTokens} total`);
 
   return text;
 }
