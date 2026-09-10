@@ -290,15 +290,15 @@ No database, persisted-data, deployment, or environment migration is required. `
 
 #### Automated
 
-- [ ] 1.1 Contract, prompt, and environment tests pass
-- [ ] 1.2 Repository tool tests pass, including traversal and symlink escape cases
-- [ ] 1.3 Package type checking passes
-- [ ] 1.4 Clean dependency installation succeeds from the synchronized lockfile
+- [x] 1.1 Contract, prompt, and environment tests pass
+- [x] 1.2 Repository tool tests pass, including traversal and symlink escape cases
+- [x] 1.3 Package type checking passes
+- [x] 1.4 Clean dependency installation succeeds from the synchronized lockfile
 
 #### Manual
 
-- [ ] 1.5 Review the schema and prompt exports and confirm they express the selected severity, location, empty-result, and two-step behavior without adding a verdict or summary
-- [ ] 1.6 Review representative tool results and rejection messages to confirm they are useful to the model without exposing content outside the supplied repository root
+- [x] 1.5 Review the schema and prompt exports and confirm they express the selected severity, location, empty-result, and two-step behavior without adding a verdict or summary
+- [x] 1.6 Review representative tool results and rejection messages to confirm they are useful to the model without exposing content outside the supplied repository root
 
 ### Phase 2: Build the Reusable Reviewer API
 
