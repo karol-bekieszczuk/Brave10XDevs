@@ -319,15 +319,15 @@ No database, persisted-data, deployment, or environment migration is required. `
 
 #### Automated
 
-- [x] 3.1 CLI tests pass for argv/default prompt selection, JSON serialization, and controlled failure exit behavior
-- [x] 3.2 Public barrel import-safety and named-export tests pass
-- [x] 3.3 Full package tests pass
-- [x] 3.4 Package type checking passes
-- [x] 3.5 A clean package install and repeated verification pass
-- [x] 3.6 Git diff contains no Promptfoo configuration, dependency, dataset, script, or environment addition
+- [x] 3.1 CLI tests pass for argv/default prompt selection, JSON serialization, and controlled failure exit behavior — 9fa60cc
+- [x] 3.2 Public barrel import-safety and named-export tests pass — 9fa60cc
+- [x] 3.3 Full package tests pass — 9fa60cc
+- [x] 3.4 Package type checking passes — 9fa60cc
+- [x] 3.5 A clean package install and repeated verification pass — 9fa60cc
+- [x] 3.6 Git diff contains no Promptfoo configuration, dependency, dataset, script, or environment addition — 9fa60cc
 
 #### Manual
 
-- [x] 3.7 With `OPENROUTER_API_KEY` set only in the shell, run the CLI and confirm it emits valid JSON matching `codeReviewResultSchema`
-- [x] 3.8 Run the CLI from a small disposable repository and confirm every reported `filePath` is relative to that repository and every supplied line is evidence-backed
-- [x] 3.9 Import `reviewer` and `createReviewer` from `src/index.ts` in a small TypeScript consumer and confirm no CLI output or secret validation occurs at import time
+- [x] 3.7 With `OPENROUTER_API_KEY` set only in the shell, run the CLI and confirm it emits valid JSON matching `codeReviewResultSchema` — 9fa60cc
+- [x] 3.8 Run the CLI from a small disposable repository and confirm every reported `filePath` is relative to that repository and every supplied line is evidence-backed — 9fa60cc
+- [x] 3.9 Import `reviewer` and `createReviewer` from `src/index.ts` in a small TypeScript consumer and confirm no CLI output or secret validation occurs at import time — 9fa60cc

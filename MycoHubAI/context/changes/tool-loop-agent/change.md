@@ -1,7 +1,7 @@
 ---
 change_id: tool-loop-agent
 title: Modular ToolLoopAgent code reviewer
-status: implementing
+status: implemented
 created: 2026-09-09
 updated: 2026-09-10
 archived_at: null
