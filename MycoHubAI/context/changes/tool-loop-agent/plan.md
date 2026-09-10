@@ -290,30 +290,30 @@ No database, persisted-data, deployment, or environment migration is required. `
 
 #### Automated
 
-- [x] 1.1 Contract, prompt, and environment tests pass
-- [x] 1.2 Repository tool tests pass, including traversal and symlink escape cases
-- [x] 1.3 Package type checking passes
-- [x] 1.4 Clean dependency installation succeeds from the synchronized lockfile
+- [x] 1.1 Contract, prompt, and environment tests pass — 5c9c6b4
+- [x] 1.2 Repository tool tests pass, including traversal and symlink escape cases — 5c9c6b4
+- [x] 1.3 Package type checking passes — 5c9c6b4
+- [x] 1.4 Clean dependency installation succeeds from the synchronized lockfile — 5c9c6b4
 
 #### Manual
 
-- [x] 1.5 Review the schema and prompt exports and confirm they express the selected severity, location, empty-result, and two-step behavior without adding a verdict or summary
-- [x] 1.6 Review representative tool results and rejection messages to confirm they are useful to the model without exposing content outside the supplied repository root
+- [x] 1.5 Review the schema and prompt exports and confirm they express the selected severity, location, empty-result, and two-step behavior without adding a verdict or summary — 5c9c6b4
+- [x] 1.6 Review representative tool results and rejection messages to confirm they are useful to the model without exposing content outside the supplied repository root — 5c9c6b4
 
 ### Phase 2: Build the Reusable Reviewer API
 
 #### Automated
 
-- [ ] 2.1 Reviewer and adapter unit tests pass without credentials or network access
-- [ ] 2.2 Tests prove one evidence-gathering round can produce validated structured findings within the two-step ceiling
-- [ ] 2.3 Tests prove invalid structured output and attempts to exceed the two-step budget fail rather than returning unchecked data
-- [ ] 2.4 Full package tests pass
-- [ ] 2.5 Package type checking passes
+- [x] 2.1 Reviewer and adapter unit tests pass without credentials or network access
+- [x] 2.2 Tests prove one evidence-gathering round can produce validated structured findings within the two-step ceiling
+- [x] 2.3 Tests prove invalid structured output and attempts to exceed the two-step budget fail rather than returning unchecked data
+- [x] 2.4 Full package tests pass
+- [x] 2.5 Package type checking passes
 
 #### Manual
 
-- [ ] 2.6 Inspect the exported API from a consumer's perspective and confirm `reviewer` is convenient for normal use while `createReviewer(model)` is sufficient for a future Promptfoo adapter
-- [ ] 2.7 Confirm importing the reviewer with `OPENROUTER_API_KEY` absent does not throw, perform I/O, or start a model request
+- [x] 2.6 Inspect the exported API from a consumer's perspective and confirm `reviewer` is convenient for normal use while `createReviewer(model)` is sufficient for a future Promptfoo adapter
+- [x] 2.7 Confirm importing the reviewer with `OPENROUTER_API_KEY` absent does not throw, perform I/O, or start a model request
 
 ### Phase 3: Separate CLI and Finalize the Public Surface
 
