@@ -8,6 +8,10 @@ describe("reviewer prompts", () => {
     expect(CODE_REVIEWER_INSTRUCTIONS).toContain("Never invent or estimate line numbers");
   });
 
+  it("requires changed hunks to be inspected before returning an empty review", () => {
+    expect(CODE_REVIEWER_INSTRUCTIONS).toContain("inspect every changed hunk");
+  });
+
   it("defines the severity rubric and clean-review representation", () => {
     expect(CODE_REVIEWER_INSTRUCTIONS).toContain("error for behavior that is broken or unsafe");
     expect(CODE_REVIEWER_INSTRUCTIONS).toContain("warning for a concrete risk");
@@ -15,9 +19,9 @@ describe("reviewer prompts", () => {
     expect(CODE_REVIEWER_INSTRUCTIONS).toContain("empty findings array");
   });
 
-  it("reserves the two-step budget for one parallel tool round and structured output", () => {
+  it("reserves one tool round and the remaining steps for structured output", () => {
     expect(CODE_REVIEWER_INSTRUCTIONS).toContain("at most one parallel tool-call round");
-    expect(CODE_REVIEWER_INSTRUCTIONS).toContain("second and final step");
+    expect(CODE_REVIEWER_INSTRUCTIONS).toContain("Tools are unavailable after that round");
     expect(CODE_REVIEWER_INSTRUCTIONS).toContain("structured result");
   });
 

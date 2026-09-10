@@ -23,7 +23,8 @@ function createToolLoopAgent(model: LanguageModel, repositoryRoot: string) {
       searchText: { repositoryRoot },
     },
     output: Output.object({ schema: providerCodeReviewResultSchema }),
-    stopWhen: isStepCount(2),
+    prepareStep: ({ stepNumber }) => (stepNumber === 0 ? undefined : { activeTools: [] }),
+    stopWhen: isStepCount(3),
     maxRetries: 2,
   });
 }

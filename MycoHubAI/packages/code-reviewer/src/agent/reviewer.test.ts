@@ -94,7 +94,7 @@ describe("reviewer agent", () => {
     ).rejects.toThrow();
   });
 
-  it("stops after two tool-calling steps instead of accepting a third round", async () => {
+  it("fails closed after the three-step budget when no structured result is produced", async () => {
     const toolCall = {
       content: [{ type: "tool-call" as const, toolCallId: "search-1", toolName: "searchText", input: '{"query":"x"}' }],
       finishReason: { unified: "tool-calls" as const, raw: undefined },
@@ -108,7 +108,7 @@ describe("reviewer agent", () => {
     await expect(
       createReviewer(model).generate({ prompt: "Keep searching.", repositoryRoot: process.cwd() }),
     ).rejects.toThrow();
-    expect(model.doGenerateCalls).toHaveLength(2);
+    expect(model.doGenerateCalls).toHaveLength(3);
   });
 
   it("imports the default reviewer without an API key or model request", async () => {

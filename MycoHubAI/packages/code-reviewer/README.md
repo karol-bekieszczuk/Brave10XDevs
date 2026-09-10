@@ -12,11 +12,21 @@ An empty `findings` array means the reviewer found no actionable, evidence-backe
 
 Export `OPENROUTER_API_KEY` in the shell or process environment. Optionally set `OPENROUTER_MODEL`; it defaults to `openai/gpt-4o`.
 
+From the root of the repository you want to review, invoke the package-local `tsx` binary directly. This preserves that repository as the CLI's `process.cwd()` and therefore as the root available to review tools:
+
 ```powershell
-npm run start -- "Review this repository for actionable correctness issues"
+$env:OPENROUTER_API_KEY = "..."
+& .\packages\code-reviewer\node_modules\.bin\tsx.cmd .\packages\code-reviewer\src\cli.ts "Review this repository for actionable correctness issues"
 ```
 
-The command serializes the structured result as pretty JSON. It supplies the current working directory as the repository root, so every tool-reported `filePath` is relative to the directory where the command was run. Errors go to stderr and produce a non-zero exit status.
+To review a specific small diff, supply it in the request and require a repository read before the final result:
+
+```powershell
+$diff = git diff -- src/lib/utils.ts | Out-String
+& .\packages\code-reviewer\node_modules\.bin\tsx.cmd .\packages\code-reviewer\src\cli.ts "Review this diff. First inspect src/lib/utils.ts, then report any actionable regression as structured JSON.`n`n$diff"
+```
+
+The command serializes the structured result as pretty JSON. Every tool-reported `filePath` is relative to the directory where the command was run. Errors go to stderr and produce a non-zero exit status. `npm run start` remains useful when your current directory is `packages/code-reviewer` itself; it will review that package rather than its parent repository.
 
 ## Programmatic use
 
