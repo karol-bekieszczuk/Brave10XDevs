@@ -2,7 +2,11 @@ import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { isStepCount, Output, ToolLoopAgent, type LanguageModel } from "ai";
 import { DEFAULT_OPENROUTER_MODEL } from "../config/environment.js";
 import { CODE_REVIEWER_INSTRUCTIONS } from "../prompts/code-review.js";
-import { codeReviewResultSchema, type CodeReviewResult } from "../schemas/code-review.js";
+import {
+  normalizeProviderCodeReviewResult,
+  providerCodeReviewResultSchema,
+  type CodeReviewResult,
+} from "../schemas/code-review.js";
 import { repositoryTools } from "../tools/repository.js";
 
 export interface Reviewer {
@@ -18,7 +22,7 @@ function createToolLoopAgent(model: LanguageModel, repositoryRoot: string) {
       readFile: { repositoryRoot },
       searchText: { repositoryRoot },
     },
-    output: Output.object({ schema: codeReviewResultSchema }),
+    output: Output.object({ schema: providerCodeReviewResultSchema }),
     stopWhen: isStepCount(2),
     maxRetries: 2,
   });
@@ -29,7 +33,7 @@ class RepositoryScopedReviewer implements Reviewer {
 
   async generate({ prompt, repositoryRoot }: { prompt: string; repositoryRoot: string }): Promise<CodeReviewResult> {
     const result = await createToolLoopAgent(this.model, repositoryRoot).generate({ prompt });
-    return result.output;
+    return normalizeProviderCodeReviewResult(result.output);
   }
 }
 

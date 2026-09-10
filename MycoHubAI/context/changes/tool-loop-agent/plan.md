@@ -304,30 +304,30 @@ No database, persisted-data, deployment, or environment migration is required. `
 
 #### Automated
 
-- [x] 2.1 Reviewer and adapter unit tests pass without credentials or network access
-- [x] 2.2 Tests prove one evidence-gathering round can produce validated structured findings within the two-step ceiling
-- [x] 2.3 Tests prove invalid structured output and attempts to exceed the two-step budget fail rather than returning unchecked data
-- [x] 2.4 Full package tests pass
-- [x] 2.5 Package type checking passes
+- [x] 2.1 Reviewer and adapter unit tests pass without credentials or network access — 7690e23
+- [x] 2.2 Tests prove one evidence-gathering round can produce validated structured findings within the two-step ceiling — 7690e23
+- [x] 2.3 Tests prove invalid structured output and attempts to exceed the two-step budget fail rather than returning unchecked data — 7690e23
+- [x] 2.4 Full package tests pass — 7690e23
+- [x] 2.5 Package type checking passes — 7690e23
 
 #### Manual
 
-- [x] 2.6 Inspect the exported API from a consumer's perspective and confirm `reviewer` is convenient for normal use while `createReviewer(model)` is sufficient for a future Promptfoo adapter
-- [x] 2.7 Confirm importing the reviewer with `OPENROUTER_API_KEY` absent does not throw, perform I/O, or start a model request
+- [x] 2.6 Inspect the exported API from a consumer's perspective and confirm `reviewer` is convenient for normal use while `createReviewer(model)` is sufficient for a future Promptfoo adapter — 7690e23
+- [x] 2.7 Confirm importing the reviewer with `OPENROUTER_API_KEY` absent does not throw, perform I/O, or start a model request — 7690e23
 
 ### Phase 3: Separate CLI and Finalize the Public Surface
 
 #### Automated
 
-- [ ] 3.1 CLI tests pass for argv/default prompt selection, JSON serialization, and controlled failure exit behavior
-- [ ] 3.2 Public barrel import-safety and named-export tests pass
-- [ ] 3.3 Full package tests pass
-- [ ] 3.4 Package type checking passes
-- [ ] 3.5 A clean package install and repeated verification pass
-- [ ] 3.6 Git diff contains no Promptfoo configuration, dependency, dataset, script, or environment addition
+- [x] 3.1 CLI tests pass for argv/default prompt selection, JSON serialization, and controlled failure exit behavior
+- [x] 3.2 Public barrel import-safety and named-export tests pass
+- [x] 3.3 Full package tests pass
+- [x] 3.4 Package type checking passes
+- [x] 3.5 A clean package install and repeated verification pass
+- [x] 3.6 Git diff contains no Promptfoo configuration, dependency, dataset, script, or environment addition
 
 #### Manual
 
-- [ ] 3.7 With `OPENROUTER_API_KEY` set only in the shell, run the CLI and confirm it emits valid JSON matching `codeReviewResultSchema`
-- [ ] 3.8 Run the CLI from a small disposable repository and confirm every reported `filePath` is relative to that repository and every supplied line is evidence-backed
-- [ ] 3.9 Import `reviewer` and `createReviewer` from `src/index.ts` in a small TypeScript consumer and confirm no CLI output or secret validation occurs at import time
+- [x] 3.7 With `OPENROUTER_API_KEY` set only in the shell, run the CLI and confirm it emits valid JSON matching `codeReviewResultSchema`
+- [x] 3.8 Run the CLI from a small disposable repository and confirm every reported `filePath` is relative to that repository and every supplied line is evidence-backed
+- [x] 3.9 Import `reviewer` and `createReviewer` from `src/index.ts` in a small TypeScript consumer and confirm no CLI output or secret validation occurs at import time

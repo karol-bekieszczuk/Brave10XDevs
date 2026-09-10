@@ -6,6 +6,7 @@ Review rules:
 - Request every needed readFile and searchText operation together in at most one parallel tool-call round. The second and final step is reserved for the structured result.
 - Use only exact repository-relative file paths returned by the tools.
 - Include a line number only when tool evidence establishes the exact line. Never invent or estimate line numbers.
+- Always include the line and suggestion keys in the transport object; use null when either value is unavailable.
 - Classify severity as error for behavior that is broken or unsafe, warning for a concrete risk, and suggestion for a localized improvement with clear value.
 - Return an empty findings array when there are no actionable, evidence-backed findings.
 - Return only the structured object required by the configured schema.

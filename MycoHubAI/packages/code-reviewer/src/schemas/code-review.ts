@@ -21,3 +21,31 @@ export const codeReviewResultSchema = z
 export type CodeReviewSeverity = z.infer<typeof codeReviewSeveritySchema>;
 export type CodeReviewFinding = z.infer<typeof codeReviewFindingSchema>;
 export type CodeReviewResult = z.infer<typeof codeReviewResultSchema>;
+
+const providerCodeReviewFindingSchema = z
+  .object({
+    severity: codeReviewSeveritySchema,
+    filePath: z.string().trim().min(1).max(500),
+    line: z.number().int().positive().nullable(),
+    message: z.string().trim().min(1).max(1_000),
+    suggestion: z.string().trim().min(1).max(1_000).nullable(),
+  })
+  .strict();
+
+export const providerCodeReviewResultSchema = z
+  .object({
+    findings: z.array(providerCodeReviewFindingSchema).max(20),
+  })
+  .strict();
+
+export function normalizeProviderCodeReviewResult(
+  result: z.infer<typeof providerCodeReviewResultSchema>,
+): CodeReviewResult {
+  return codeReviewResultSchema.parse({
+    findings: result.findings.map(({ line, suggestion, ...finding }) => ({
+      ...finding,
+      ...(line === null ? {} : { line }),
+      ...(suggestion === null ? {} : { suggestion }),
+    })),
+  });
+}

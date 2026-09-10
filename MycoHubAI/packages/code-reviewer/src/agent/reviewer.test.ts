@@ -34,7 +34,7 @@ describe("reviewer agent", () => {
   it("returns a schema-validated direct structured result with an injected model", async () => {
     const model = new MockLanguageModelV4({
       doGenerate: textResult(
-        '{"findings":[{"severity":"warning","filePath":"src/example.ts","line":2,"message":"The error is ignored."}]}',
+        '{"findings":[{"severity":"warning","filePath":"src/example.ts","line":2,"message":"The error is ignored.","suggestion":null}]}',
       ),
     });
 
@@ -75,7 +75,7 @@ describe("reviewer agent", () => {
           warnings: [],
         },
         textResult(
-          '{"findings":[{"severity":"error","filePath":"src/example.ts","line":1,"message":"The known error is ignored."}]}',
+          '{"findings":[{"severity":"error","filePath":"src/example.ts","line":1,"message":"The known error is ignored.","suggestion":null}]}',
         ),
       ],
     });

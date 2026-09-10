@@ -3,6 +3,8 @@ import {
   codeReviewFindingSchema,
   codeReviewResultSchema,
   codeReviewSeveritySchema,
+  normalizeProviderCodeReviewResult,
+  providerCodeReviewResultSchema,
   type CodeReviewResult,
 } from "./code-review.js";
 
@@ -79,5 +81,29 @@ describe("code review schemas", () => {
 
   it("rejects root fields other than findings", () => {
     expect(codeReviewResultSchema.safeParse({ findings: [], summary: "Looks good" }).success).toBe(false);
+  });
+
+  it("normalizes provider-required nullable fields to the public optional contract", () => {
+    const providerResult = providerCodeReviewResultSchema.parse({
+      findings: [
+        {
+          severity: "warning",
+          filePath: "src/example.ts",
+          line: null,
+          message: "The fallback hides a failed operation.",
+          suggestion: null,
+        },
+      ],
+    });
+
+    expect(normalizeProviderCodeReviewResult(providerResult)).toEqual({
+      findings: [
+        {
+          severity: "warning",
+          filePath: "src/example.ts",
+          message: "The fallback hides a failed operation.",
+        },
+      ],
+    });
   });
 });
