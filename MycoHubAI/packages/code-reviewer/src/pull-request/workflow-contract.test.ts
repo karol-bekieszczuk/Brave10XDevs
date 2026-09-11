@@ -22,6 +22,10 @@ function strings(value: unknown): string[] {
   return value as string[];
 }
 
+function normalizeWhitespace(value: unknown): string {
+  return String(value).replace(/\s+/gu, " ").trim();
+}
+
 describe("repository-root AI review workflow contract", () => {
   it("defines the approved trigger, scope, permissions, and concurrency policy", async () => {
     const workflow = record(parse(await readFile(workflowPath, "utf8")));
@@ -44,12 +48,12 @@ describe("repository-root AI review workflow contract", () => {
   it("skips untrusted PRs and accepts only the approved retry label event", async () => {
     const workflow = record(parse(await readFile(workflowPath, "utf8")));
     const reviewJob = record(record(workflow.jobs).review);
-    const condition = String(reviewJob.if);
 
-    expect(condition).toContain("github.event.pull_request.head.repo.full_name == github.repository");
-    expect(condition).toContain("github.event.pull_request.user.login != 'dependabot[bot]'");
-    expect(condition).toContain("github.event.action != 'labeled'");
-    expect(condition).toContain("github.event.label.name == 'ai-cr:review'");
+    expect(normalizeWhitespace(reviewJob.if)).toBe(
+      "github.event.pull_request.head.repo.full_name == github.repository && " +
+        "github.event.pull_request.user.login != 'dependabot[bot]' && " +
+        "(github.event.action != 'labeled' || github.event.label.name == 'ai-cr:review')",
+    );
   });
 
   it("separates trusted base automation from the data-only head checkout", async () => {
@@ -103,8 +107,24 @@ describe("repository-root AI review workflow contract", () => {
     });
     expect(source).not.toContain("secrets.");
     expect(source).not.toContain("dist/review.js");
+    const setupNodeStep = steps.find((step) => String(step.uses).startsWith("actions/setup-node@"));
+    expect(setupNodeStep).toMatchObject({
+      uses: "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+      with: { "node-version": "24.15.0" },
+    });
+    const installStep = steps.find((step) => step.name === "Install the trusted reviewer package");
+    expect(normalizeWhitespace(installStep?.run)).toBe(
+      'npm ci --prefix "$AUTOMATION_PATH/MycoHubAI/packages/code-reviewer"',
+    );
     const reviewStep = steps.find((step) => step.id === "review");
     expect(reviewStep).toBeDefined();
+    const reviewRun = String(reviewStep?.run);
+    expect(reviewRun).toContain(
+      'npm --silent --prefix "$AUTOMATION_PATH/MycoHubAI/packages/code-reviewer" run review:pr',
+    );
+    expect(reviewRun).toContain("echo 'result<<MYCOHUB_AI_REVIEW_RESULT'");
+    expect(reviewRun).toContain('echo "$result"');
+    expect(reviewRun).toContain('} >> "$GITHUB_OUTPUT"');
     expect(record(reviewStep?.env)).toEqual({
       AUTOMATION_PATH: "${{ inputs.automation-path }}",
       REPOSITORY_ROOT: "${{ inputs.target-repository-path }}",

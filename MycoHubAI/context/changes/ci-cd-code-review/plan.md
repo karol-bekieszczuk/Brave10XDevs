@@ -409,7 +409,7 @@ Rollback consists of disabling/removing the repository-root review workflow and 
 
 - [x] 3.5 Inspect the workflow checkout paths and confirm only base-SHA automation receives the provider secret and write-capable token; no head-controlled script or action is executed — 9ecd853
 - [x] 3.6 Confirm a fork PR, a Dependabot PR, and a non-`ai-cr:review` label event are visibly skipped by job conditions without attempting a provider call — 9ecd853
-- [x] 3.7 Confirm GitHub recognizes `../.github/workflows/review.yml` from the actual repository root and no nested duplicate workflow/action remains — 9ecd853
+- [ ] 3.7 Confirm GitHub recognizes `../.github/workflows/review.yml` from the actual repository root and no nested duplicate workflow/action remains
 
 ### Phase 4: Document Operations and Prove the Live Integration
 
