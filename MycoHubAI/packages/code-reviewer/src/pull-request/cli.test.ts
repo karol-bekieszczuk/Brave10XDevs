@@ -87,6 +87,19 @@ describe("PR CLI", () => {
     expect(writeOutput).toHaveBeenCalledWith(JSON.stringify({ status: "passed", exitCode: 0 }));
   });
 
+  it("uses the action-provided target repository path without exposing it as PR-controlled shell source", async () => {
+    const environment = {
+      REPOSITORY_ROOT: "target/MycoHubAI",
+      OPENROUTER_API_KEY: "provider-secret",
+    };
+
+    await expect(runPullRequestCli({ eventPath: "event.json", token: "github-secret", environment })).resolves.toBe(0);
+
+    expect(mocks.runPullRequestOrchestrator).toHaveBeenCalledWith(
+      expect.objectContaining({ repositoryRoot: "target/MycoHubAI" }),
+    );
+  });
+
   it("returns a categorized numeric failure when PR identity cannot be parsed", async () => {
     const writeOutput = vi.fn();
     mocks.createPullRequestIdentity.mockRejectedValue(

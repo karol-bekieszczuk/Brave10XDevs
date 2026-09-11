@@ -1,0 +1,64 @@
+name: AI Reviewer
+description: Run the trusted MycoHubAI pull request review agent
+
+inputs:
+  openrouter-api-key:
+    description: OpenRouter provider token
+    required: true
+  github-token:
+    description: GitHub token used for the pull request comment and labels
+    required: true
+  automation-path:
+    description: Absolute path to the base-SHA trusted automation checkout
+    required: true
+  target-repository-path:
+    description: Absolute path to the data-only MycoHubAI head checkout
+    required: true
+  event-path:
+    description: Absolute path to the GitHub pull request event payload
+    required: true
+
+outputs:
+  result:
+    description: Serialized PR review orchestration result
+    value: ${{ steps.review.outputs.result }}
+
+runs:
+  using: composite
+  steps:
+    # actions/setup-node v4.4.0
+    - name: Set up Node.js
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+      with:
+        node-version: 24.15.0
+        cache: npm
+        cache-dependency-path: ${{ inputs.automation-path }}/MycoHubAI/packages/code-reviewer/package-lock.json
+
+    - name: Install the trusted reviewer package
+      shell: bash
+      env:
+        AUTOMATION_PATH: ${{ inputs.automation-path }}
+      run: npm ci --prefix "$AUTOMATION_PATH/MycoHubAI/packages/code-reviewer"
+
+    - name: Run the trusted PR reviewer
+      id: review
+      shell: bash
+      env:
+        AUTOMATION_PATH: ${{ inputs.automation-path }}
+        REPOSITORY_ROOT: ${{ inputs.target-repository-path }}
+        GITHUB_EVENT_PATH: ${{ inputs.event-path }}
+        OPENROUTER_API_KEY: ${{ inputs.openrouter-api-key }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+      run: |
+        set +e
+        result="$(npm --silent --prefix "$AUTOMATION_PATH/MycoHubAI/packages/code-reviewer" run review:pr)"
+        exit_code=$?
+        set -e
+
+        {
+          echo 'result<<MYCOHUB_AI_REVIEW_RESULT'
+          echo "$result"
+          echo 'MYCOHUB_AI_REVIEW_RESULT'
+        } >> "$GITHUB_OUTPUT"
+        printf '%s\n' "$result"
+        exit "$exit_code"

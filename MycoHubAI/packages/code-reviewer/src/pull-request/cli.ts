@@ -14,14 +14,14 @@ export async function runPullRequestCli(
     writeOutput?: (message: string) => void;
   } = {},
 ): Promise<number> {
-  const eventPath = input.eventPath ?? process.env.GITHUB_EVENT_PATH;
-  const repositoryRoot = input.repositoryRoot ?? process.cwd();
-  const token = input.token ?? process.env.GITHUB_TOKEN;
+  const environment = input.environment ?? process.env;
+  const eventPath = input.eventPath ?? environment.GITHUB_EVENT_PATH;
+  const repositoryRoot = input.repositoryRoot ?? environment.REPOSITORY_ROOT ?? process.cwd();
+  const token = input.token ?? environment.GITHUB_TOKEN;
   if (!eventPath || !token) {
     input.writeOutput?.("Missing GITHUB_EVENT_PATH or GITHUB_TOKEN.");
     return 1;
   }
-  const environment = input.environment ?? process.env;
   let identity: Awaited<ReturnType<typeof createPullRequestIdentity>>;
   try {
     identity = await createPullRequestIdentity(eventPath);
@@ -56,7 +56,7 @@ export async function runPullRequestCli(
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url))
-  void runPullRequestCli()
+  void runPullRequestCli({ writeOutput: (message) => process.stdout.write(`${message}\n`) })
     .then((code) => {
       process.exitCode = code;
     })
