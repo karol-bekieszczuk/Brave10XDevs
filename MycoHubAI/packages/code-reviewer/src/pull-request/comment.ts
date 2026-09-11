@@ -13,6 +13,22 @@ export type PullRequestCommentStatus = PullRequestReviewDecision["verdict"] | "e
 function text(value: string): string {
   return value.replace(/[<>]/gu, (character) => (character === "<" ? "&lt;" : "&gt;"));
 }
+
+function renderCriterionEvidence(
+  label: string,
+  criterion: PullRequestReviewResult["criteria"]["documentation"],
+): string[] {
+  return [
+    `#### ${label} — ${criterion.score}/10`,
+    `Rationale: ${text(criterion.rationale)}`,
+    "",
+    ...criterion.evidence.map(
+      (evidence) =>
+        `- \`${text(evidence.filePath)}${evidence.line === undefined ? "" : `:${evidence.line}`}\` — ${text(evidence.description)}`,
+    ),
+  ];
+}
+
 export function renderPullRequestComment(input: {
   status: PullRequestCommentStatus;
   result?: PullRequestReviewResult;
@@ -59,6 +75,16 @@ export function renderPullRequestComment(input: {
   lines.push(
     "",
     `Average: ${decision.averageScore.toFixed(2)}/10 (pass: average >= ${PASSING_AVERAGE_SCORE}, each criterion >= ${MINIMUM_CRITERION_SCORE}, and no error finding).`,
+  );
+  lines.push(
+    "",
+    "### Criterion evidence",
+    "",
+    ...renderCriterionEvidence("Documentation", result.criteria.documentation),
+    "",
+    ...renderCriterionEvidence("Test coverage", result.criteria.testCoverage),
+    "",
+    ...renderCriterionEvidence("Test quality and reliability", result.criteria.testQuality),
   );
   lines.push("", "### Findings");
   if (result.findings.length === 0) lines.push("No actionable findings.");
