@@ -5,6 +5,7 @@ import {
   type PullRequestReviewDecision,
 } from "./policy.js";
 import type { PullRequestReviewResult } from "./schema.js";
+import { OPERATIONAL_FAILURE_SUMMARIES, type OperationalFailure } from "./operational-error.js";
 
 export const PULL_REQUEST_COMMENT_MARKER = "<!-- mycohub-ai-pr-review -->";
 export type PullRequestCommentStatus = PullRequestReviewDecision["verdict"] | "error";
@@ -12,27 +13,35 @@ export type PullRequestCommentStatus = PullRequestReviewDecision["verdict"] | "e
 function text(value: string): string {
   return value.replace(/[<>]/gu, (character) => (character === "<" ? "&lt;" : "&gt;"));
 }
-function redact(value: string): string {
-  return value.replace(/(?:token|secret|authorization)\s*[:=]\s*\S+/giu, "[redacted]");
-}
-
 export function renderPullRequestComment(input: {
   status: PullRequestCommentStatus;
   result?: PullRequestReviewResult;
-  errorCategory?: string;
+  operationalFailure?: OperationalFailure;
   changedFileCount?: number;
+  headSha?: string;
+  runUrl?: string;
 }): string {
-  const { status, result, errorCategory, changedFileCount } = input;
+  const { status, result, operationalFailure, changedFileCount, headSha, runUrl } = input;
   const heading =
     status === "passed" ? "Passed (advisory)" : status === "failed" ? "Needs attention (advisory)" : "Automation error";
   const lines = [PULL_REQUEST_COMMENT_MARKER, `## AI PR review: ${heading}`];
-  if (!result)
-    return [
-      ...lines,
-      "",
-      `The review could not complete: ${text(redact(errorCategory ?? "operational failure"))}.`,
-      "Re-add `ai-cr:review` to retry.",
-    ].join("\n");
+  if (!result) {
+    const failure = operationalFailure ?? { code: "INTERNAL_ERROR" as const, stage: "orchestration" as const };
+    const details = [
+      `Error code: \`${failure.code}\``,
+      `Stage: \`${failure.stage}\``,
+      `What happened: ${OPERATIONAL_FAILURE_SUMMARIES[failure.code]}`,
+      ...(failure.httpStatus === undefined ? [] : [`HTTP status: ${failure.httpStatus}`]),
+      ...(failure.attempts === undefined ? [] : [`Attempts: ${failure.attempts}`]),
+      ...(failure.actualBytes === undefined ? [] : [`Actual size: ${failure.actualBytes} bytes`]),
+      ...(failure.limitBytes === undefined ? [] : [`Supported limit: ${failure.limitBytes} bytes`]),
+      ...(failure.operation === undefined ? [] : [`Operation: \`${failure.operation}\``]),
+      ...(headSha === undefined ? [] : [`Reviewed head: \`${text(headSha)}\``]),
+      ...(changedFileCount === undefined ? [] : [`Changed files: ${changedFileCount}`]),
+      ...(runUrl === undefined ? [] : [`Diagnostics: ${text(runUrl)}`]),
+    ];
+    return [...lines, "", ...details, "Re-add `ai-cr:review` to retry."].join("\n");
+  }
   const decision = evaluatePullRequestReview(result);
   lines.push(
     "",

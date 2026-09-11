@@ -8,6 +8,7 @@ import {
   type PullRequestReviewRequest,
   type PullRequestReviewResult,
 } from "./schema.js";
+import { OperationalError } from "./operational-error.js";
 
 export interface PullRequestReviewer {
   generate(input: { request: PullRequestReviewRequest; repositoryRoot: string }): Promise<PullRequestReviewResult>;
@@ -46,7 +47,10 @@ class RepositoryScopedPullRequestReviewer implements PullRequestReviewer {
 
     const normalizedResult = normalizeProviderPullRequestReviewResult(result.output);
     if (normalizedResult.reviewedCommitSha !== validatedRequest.headSha) {
-      throw new Error("Reviewer output does not match the requested head commit.");
+      throw new OperationalError(
+        { code: "REVIEW_SHA_MISMATCH", stage: "provider-response-validation" },
+        { internalMessage: "Reviewer output does not match the requested head commit." },
+      );
     }
 
     return normalizedResult;

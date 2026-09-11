@@ -4,12 +4,14 @@ import { evaluatePullRequestReview } from "./policy.js";
 import type { PullRequestGitHubClient } from "./github-client.js";
 import type { PullRequestReviewer } from "./reviewer.js";
 import type { PullRequestReviewRequest } from "./schema.js";
+import { toOperationalFailure } from "./operational-error.js";
 
 export interface PullRequestOrchestratorDependencies {
   acquireRequest(): Promise<PullRequestReviewRequest>;
   reviewer: PullRequestReviewer;
   github: PullRequestGitHubClient;
   repositoryRoot: string;
+  runUrl?: string;
 }
 export interface PullRequestOrchestrationResult {
   status: PullRequestCommentStatus;
@@ -22,13 +24,16 @@ async function publish(
   status: PullRequestCommentStatus,
   request: PullRequestReviewRequest,
   result?: Awaited<ReturnType<PullRequestReviewer["generate"]>>,
-  errorCategory?: string,
+  operationalFailure?: ReturnType<typeof toOperationalFailure>,
+  runUrl?: string,
 ) {
   const comment = renderPullRequestComment({
     status,
     result,
-    errorCategory,
+    operationalFailure,
     changedFileCount: request.changedFiles.length,
+    headSha: request.headSha,
+    runUrl,
   });
   const existing = await github.findMarkedComment(PULL_REQUEST_COMMENT_MARKER);
   if (existing) await github.updateComment(existing.id, comment);
@@ -54,18 +59,12 @@ export async function runPullRequestOrchestrator(
     if ((await dependencies.github.getCurrentHeadSha()) !== request.headSha)
       return { status: "error", exitCode: 0, stale: true };
     const status = evaluatePullRequestReview(result).verdict;
-    await publish(dependencies.github, status, request, result);
+    await publish(dependencies.github, status, request, result, undefined, dependencies.runUrl);
     return { status, exitCode: 0 };
   } catch (error) {
     if (!request) return { status: "error", exitCode: 1 };
     try {
-      await publish(
-        dependencies.github,
-        "error",
-        request,
-        undefined,
-        error instanceof Error ? error.message : "unknown failure",
-      );
+      await publish(dependencies.github, "error", request, undefined, toOperationalFailure(error), dependencies.runUrl);
     } catch {
       /* Preserve the operational failure exit status. */
     }

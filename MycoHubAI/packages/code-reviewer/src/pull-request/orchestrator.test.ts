@@ -77,12 +77,20 @@ describe("PR orchestrator", () => {
   });
   it("returns a non-zero error for a reviewer failure", async () => {
     const client = github();
+    const secrets = 'Bearer top-secret token=also-secret {"apiKey":"third-secret"}';
     const output = await runPullRequestOrchestrator({
       acquireRequest: () => Promise.resolve(request),
-      reviewer: { generate: () => Promise.reject(new Error("provider unavailable")) },
+      reviewer: { generate: () => Promise.reject(new Error(secrets)) },
       github: client,
       repositoryRoot: "repo",
+      runUrl: "https://github.com/Brave10XDevs/MycoHubAI/actions/runs/123",
     });
     expect(output).toEqual({ status: "error", exitCode: 1 });
+    const comment = client.createComment.mock.calls[0]?.[0] as string;
+    expect(comment).toContain("`INTERNAL_ERROR`");
+    expect(comment).toContain("actions/runs/123");
+    expect(comment).not.toContain("top-secret");
+    expect(comment).not.toContain("also-secret");
+    expect(comment).not.toContain("third-secret");
   });
 });

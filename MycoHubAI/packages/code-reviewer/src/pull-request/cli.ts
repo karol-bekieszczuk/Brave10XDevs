@@ -21,6 +21,13 @@ export async function runPullRequestCli(
     return 1;
   }
   const request = await createPullRequestReviewRequest(eventPath, repositoryRoot);
+  const environment = input.environment ?? process.env;
+  const serverUrl = environment.GITHUB_SERVER_URL;
+  const runId = environment.GITHUB_RUN_ID;
+  const runUrl =
+    serverUrl && serverUrl.startsWith("https://") && runId && /^\d+$/u.test(runId)
+      ? `${serverUrl.replace(/\/$/u, "")}/${request.repository}/actions/runs/${runId}`
+      : undefined;
   const github = new GitHubClient({
     token,
     repository: request.repository,
@@ -29,11 +36,11 @@ export async function runPullRequestCli(
   const result = await runPullRequestOrchestrator({
     acquireRequest: () => Promise.resolve(request),
     reviewer: {
-      generate: (value) =>
-        generatePullRequestReview(value.request, input.environment ?? process.env, value.repositoryRoot),
+      generate: (value) => generatePullRequestReview(value.request, environment, value.repositoryRoot),
     },
     github,
     repositoryRoot,
+    runUrl,
   });
   input.writeOutput?.(JSON.stringify(result));
   return result.exitCode;

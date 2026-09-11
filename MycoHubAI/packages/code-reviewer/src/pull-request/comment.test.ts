@@ -20,9 +20,16 @@ describe("PR comments", () => {
     expect(comment).toContain("Re-add `ai-cr:review` to request a new review.");
   });
   it("renders a redacted operational error and retry guidance", () => {
-    const comment = renderPullRequestComment({ status: "error", errorCategory: "token=secret" });
-    expect(comment).toContain("[redacted]");
-    expect(comment).not.toContain("secret");
+    const comment = renderPullRequestComment({
+      status: "error",
+      operationalFailure: { code: "PROVIDER_AUTH_FAILED", stage: "provider-request", httpStatus: 401 },
+      headSha: "b".repeat(40),
+      runUrl: "https://github.com/Brave10XDevs/MycoHubAI/actions/runs/123",
+    });
+    expect(comment).toContain("`PROVIDER_AUTH_FAILED`");
+    expect(comment).toContain("HTTP status: 401");
+    expect(comment).toContain("Reviewed head:");
+    expect(comment).toContain("actions/runs/123");
     expect(comment).toContain("Re-add `ai-cr:review` to retry.");
   });
 });
