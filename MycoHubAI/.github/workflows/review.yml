@@ -4,24 +4,13 @@ name: AI Code Review
 on:
   pull_request:
     branches: [master]
-  workflow_dispatch:
 
 jobs:
   review:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Configure node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - id: review
+        uses: twoj-zespol/ai-reviewer@<sha>
         with:
-          node-version-file: '.nvmrc'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run agent
-        run: npm run review
-        env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
