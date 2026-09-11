@@ -123,7 +123,7 @@
 - **Location**: packages/code-reviewer/src/pull-request/github-client.ts:71
 - **Detail**: Two PR runs can both observe a missing repository-global label and race to create it. Per-PR concurrency does not serialize different PRs, so one run can fail on GitHub's already-exists response.
 - **Fix**: Preserve HTTP status/error identity and treat the specific already-exists conflict as success, or re-read the label after that conflict.
-- **Decision**: PENDING
+- **Decision**: SKIPPED
 
 ### F9 — Phase 2 adds an undocumented public API expansion
 
@@ -133,4 +133,4 @@
 - **Location**: packages/code-reviewer/src/index.ts:9
 - **Detail**: Phase 2 adds public barrel exports for the orchestrator, input adapter, comment renderer, and marker although `src/index.ts` is not listed in the phase's planned files. The exports are related and low-risk, but they expand the supported package surface without a stated consumer or contract.
 - **Fix**: Remove the exports until a public consumer requires them, or document the barrel expansion in the phase plan before retaining it.
-- **Decision**: PENDING
+- **Decision**: SKIPPED
