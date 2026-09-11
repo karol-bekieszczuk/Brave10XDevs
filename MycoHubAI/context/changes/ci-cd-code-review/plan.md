@@ -370,31 +370,31 @@ Rollback consists of disabling/removing the repository-root review workflow and 
 
 #### Automated
 
-- [x] 1.1 PR schema boundary and normalization tests pass
-- [x] 1.2 Prompt and injected-reviewer tests pass without credentials or network access
-- [x] 1.3 Verdict tests cover score averages, minimum-score boundaries, and error-finding override
-- [x] 1.4 Existing generic reviewer tests remain unchanged and pass
-- [x] 1.5 Package type checking passes
+- [x] 1.1 PR schema boundary and normalization tests pass — b792763
+- [x] 1.2 Prompt and injected-reviewer tests pass without credentials or network access — b792763
+- [x] 1.3 Verdict tests cover score averages, minimum-score boundaries, and error-finding override — b792763
+- [x] 1.4 Existing generic reviewer tests remain unchanged and pass — b792763
+- [x] 1.5 Package type checking passes — b792763
 
 #### Manual
 
-- [x] 1.6 Confirm the PR-specific schema expresses only the three approved criteria and does not modify the generic `{ findings }` API
-- [x] 1.7 Review representative prompts containing Markdown, shell-looking text, and prompt-injection text and confirm all PR-controlled content remains visibly delimited as data
+- [x] 1.6 Confirm the PR-specific schema expresses only the three approved criteria and does not modify the generic `{ findings }` API — b792763
+- [x] 1.7 Review representative prompts containing Markdown, shell-looking text, and prompt-injection text and confirm all PR-controlled content remains visibly delimited as data — b792763
 
 ### Phase 2: Implement Idempotent GitHub Orchestration
 
 #### Automated
 
-- [ ] 2.1 Event and diff tests cover normal, empty, binary, deleted, submodule, force-pushed, malformed, and oversized inputs
-- [ ] 2.2 Comment and label tests prove stable-marker upsert and convergence to one result label
-- [ ] 2.3 GitHub client tests cover pagination, create/update, label creation, redacted errors, and API failures
-- [ ] 2.4 Orchestrator and CLI tests cover pass, fail, malformed model output, provider failure, GitHub failure, retry consumption, irrelevant labels, idempotent rerun, and stale-head rejection
-- [ ] 2.5 Full package tests and type checking pass
+- [x] 2.1 Event and diff tests cover normal, empty, binary, deleted, submodule, force-pushed, malformed, and oversized inputs
+- [x] 2.2 Comment and label tests prove stable-marker upsert and convergence to one result label
+- [x] 2.3 GitHub client tests cover pagination, create/update, label creation, redacted errors, and API failures
+- [x] 2.4 Orchestrator and CLI tests cover pass, fail, malformed model output, provider failure, GitHub failure, retry consumption, irrelevant labels, idempotent rerun, and stale-head rejection
+- [x] 2.5 Full package tests and type checking pass
 
 #### Manual
 
-- [ ] 2.6 Inspect rendered fixtures for passed, failed, and error outcomes and confirm the status, reviewed SHA, scores, findings, and retry guidance are unambiguous
-- [ ] 2.7 Review fake-client call traces and confirm human comments and unrelated labels are never mutated and no secret-like value appears in output
+- [x] 2.6 Inspect rendered fixtures for passed, failed, and error outcomes and confirm the status, reviewed SHA, scores, findings, and retry guidance are unambiguous
+- [x] 2.7 Review fake-client call traces and confirm human comments and unrelated labels are never mutated and no secret-like value appears in output
 
 ### Phase 3: Wire the Trusted Composite Action and Repository-Root Workflow
 
