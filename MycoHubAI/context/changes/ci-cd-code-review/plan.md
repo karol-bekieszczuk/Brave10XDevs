@@ -400,16 +400,16 @@ Rollback consists of disabling/removing the repository-root review workflow and 
 
 #### Automated
 
-- [x] 3.1 Workflow contract tests confirm the required triggers, filters, permissions, concurrency, paths, and trusted checkout layout
-- [x] 3.2 Contract tests prove `twoj-zespol/ai-reviewer@<sha>` and `dist/review.js` are absent and the local action inputs/outputs are wired consistently
-- [x] 3.3 Clean package installation, full package tests, and package type checking pass
-- [x] 3.4 Repository formatting and diff hygiene pass
+- [x] 3.1 Workflow contract tests confirm the required triggers, filters, permissions, concurrency, paths, and trusted checkout layout — 9ecd853
+- [x] 3.2 Contract tests prove `twoj-zespol/ai-reviewer@<sha>` and `dist/review.js` are absent and the local action inputs/outputs are wired consistently — 9ecd853
+- [x] 3.3 Clean package installation, full package tests, and package type checking pass — 9ecd853
+- [x] 3.4 Repository formatting and diff hygiene pass — 9ecd853
 
 #### Manual
 
-- [x] 3.5 Inspect the workflow checkout paths and confirm only base-SHA automation receives the provider secret and write-capable token; no head-controlled script or action is executed
-- [x] 3.6 Confirm a fork PR, a Dependabot PR, and a non-`ai-cr:review` label event are visibly skipped by job conditions without attempting a provider call
-- [x] 3.7 Confirm GitHub recognizes `../.github/workflows/review.yml` from the actual repository root and no nested duplicate workflow/action remains
+- [x] 3.5 Inspect the workflow checkout paths and confirm only base-SHA automation receives the provider secret and write-capable token; no head-controlled script or action is executed — 9ecd853
+- [x] 3.6 Confirm a fork PR, a Dependabot PR, and a non-`ai-cr:review` label event are visibly skipped by job conditions without attempting a provider call — 9ecd853
+- [x] 3.7 Confirm GitHub recognizes `../.github/workflows/review.yml` from the actual repository root and no nested duplicate workflow/action remains — 9ecd853
 
 ### Phase 4: Document Operations and Prove the Live Integration
 
