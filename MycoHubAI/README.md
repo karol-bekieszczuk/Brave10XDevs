@@ -54,6 +54,10 @@ npm run dev
 - `npm run diagnosis:evaluate` - Run the deterministic offline diagnosis contract checks
 - `npm run diagnosis:evaluate:live` - Run the live-provider diagnosis checkpoint against real retrieval/RPC
 
+## Grow-log presentation
+
+Grow-log cards display an `Agar` or `Grain` stage label and limit the body preview to 160 Unicode characters, including the trailing ellipsis. The shared presentation helpers live in `src/lib/grow-logs/presentation.ts`; their boundary and Unicode behavior is covered by `presentation.test.ts` and can be checked with `npm run test:unit`.
+
 ## Supabase Configuration
 
 This project uses Supabase Auth as the credential provider, but MycoHubAI authorizes exactly one configured owner account. Environment variables are declared through Astro's server-only env schema and are never exposed to client code.
