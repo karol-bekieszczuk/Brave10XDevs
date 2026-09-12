@@ -348,16 +348,16 @@ Rollback consists of removing the Promptfoo scripts/dependency, the `evals/` tre
 
 #### Automated
 
-- [ ] 1.1 Clean package installation succeeds
-- [ ] 1.2 Provider and barrel tests pass without a provider credential or network call
-- [ ] 1.3 Full package tests pass
-- [ ] 1.4 Package type checking covers source and maintained eval TypeScript
-- [ ] 1.5 Repository diff hygiene passes
+- [x] 1.1 Clean package installation succeeds
+- [x] 1.2 Provider and barrel tests pass without a provider credential or network call
+- [x] 1.3 Full package tests pass
+- [x] 1.4 Package type checking covers source and maintained eval TypeScript
+- [x] 1.5 Repository diff hygiene passes
 
 #### Manual
 
-- [ ] 1.6 Confirm the generic reviewer API remains unchanged and the public barrel adds only required PR evaluation contracts
-- [ ] 1.7 Confirm adapter errors and metadata cannot expose credentials or raw secret-bearing provider errors
+- [x] 1.6 Confirm the generic reviewer API remains unchanged and the public barrel adds only required PR evaluation contracts
+- [x] 1.7 Confirm adapter errors and metadata cannot expose credentials or raw secret-bearing provider errors
 
 ### Phase 2: Build the React Migration Fixture and Assertions
 

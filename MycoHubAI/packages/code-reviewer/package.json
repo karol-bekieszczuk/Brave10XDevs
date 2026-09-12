@@ -7,11 +7,13 @@
     "dev": "tsx src/cli.ts",
     "start": "tsx src/cli.ts",
     "review:pr": "tsx src/pull-request/cli.ts",
+    "eval": "promptfoo eval --config evals/promptfooconfig.yaml --output evals/output/eval.json --no-share",
+    "eval:stability": "promptfoo eval --config evals/promptfooconfig.yaml --repeat 3 --no-cache --output evals/output/stability.json --no-share",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=22.22.0"
   },
   "dependencies": {
     "@openrouter/ai-sdk-provider": "^3.0.0",
@@ -20,6 +22,7 @@
   },
   "devDependencies": {
     "@types/node": "^26.5.0",
+    "promptfoo": "0.123.0",
     "tsx": "^4.23.13",
     "typescript": "^7.0.2",
     "vitest": "^4.1.0",
