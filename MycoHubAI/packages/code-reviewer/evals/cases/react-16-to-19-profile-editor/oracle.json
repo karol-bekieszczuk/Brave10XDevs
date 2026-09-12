@@ -1,0 +1,32 @@
+{
+  "caseId": "react-16-to-19-profile-editor",
+  "defects": [
+    {
+      "id": "profile-prop-sync",
+      "path": "src/UserProfileEditor.tsx",
+      "acceptableRange": { "start": 25, "end": 27 },
+      "severity": "error",
+      "consequence": "A new profile prop leaves the form populated with the initially selected profile.",
+      "repairSignals": ["include profile in the effect dependencies", "reset the draft when profile changes"],
+      "forbiddenConflations": ["hook-state-replacement", "listener-cleanup-identity"]
+    },
+    {
+      "id": "hook-state-replacement",
+      "path": "src/UserProfileEditor.tsx",
+      "acceptableRange": { "start": 56, "end": 66 },
+      "severity": "error",
+      "consequence": "Editing either input removes the sibling draft field because a Hook setter replaces the object.",
+      "repairSignals": ["use a functional setter", "spread the previous editor state"],
+      "forbiddenConflations": ["profile-prop-sync", "listener-cleanup-identity"]
+    },
+    {
+      "id": "listener-cleanup-identity",
+      "path": "src/UserProfileEditor.tsx",
+      "acceptableRange": { "start": 29, "end": 41 },
+      "severity": "error",
+      "consequence": "The online listener survives cleanup and can fire after rerender or unmount.",
+      "repairSignals": ["reuse one callback reference", "remove the exact registered listener"],
+      "forbiddenConflations": ["profile-prop-sync", "hook-state-replacement"]
+    }
+  ]
+}

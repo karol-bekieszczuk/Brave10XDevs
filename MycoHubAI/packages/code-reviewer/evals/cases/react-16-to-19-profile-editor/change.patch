@@ -1,0 +1,115 @@
+diff --git a/src/UserProfileEditor.tsx b/src/UserProfileEditor.tsx
+index 61585a7..6603cf7 100644
+--- a/src/UserProfileEditor.tsx
++++ b/src/UserProfileEditor.tsx
+@@ -1 +1 @@
+-import React from "react";
++import { useEffect, useState, type FormEvent } from "react";
+@@ -17,6 +17,3 @@ type EditorDraft = Partial<Pick<UserProfile, "name" | "email">>;
+-export class UserProfileEditor extends React.Component<UserProfileEditorProps, EditorDraft & { isOnline: boolean }> {
+-  state = {
+-    name: this.props.profile.name,
+-    email: this.props.profile.email,
+-    isOnline: false,
+-  };
++function draftFromProfile(profile: UserProfile): EditorDraft {
++  return { name: profile.name, email: profile.email };
++}
+@@ -24,3 +21,3 @@ export class UserProfileEditor extends React.Component<UserProfileEditorProps, E
+-  componentDidMount() {
+-    window.addEventListener("online", this.handleOnline);
+-  }
++export function UserProfileEditor({ profile, onSave, onReconnect }: UserProfileEditorProps) {
++  const [editor, setEditor] = useState<EditorDraft>(() => draftFromProfile(profile));
++  const [isOnline, setIsOnline] = useState(false);
+@@ -28,8 +25,3 @@ export class UserProfileEditor extends React.Component<UserProfileEditorProps, E
+-  componentDidUpdate(previousProps: UserProfileEditorProps) {
+-    if (previousProps.profile !== this.props.profile) {
+-      this.setState({
+-        name: this.props.profile.name,
+-        email: this.props.profile.email,
+-      });
+-    }
+-  }
++  useEffect(() => {
++    setEditor(draftFromProfile(profile));
++  }, []);
+@@ -37,3 +29,5 @@ export class UserProfileEditor extends React.Component<UserProfileEditorProps, E
+-  componentWillUnmount() {
+-    window.removeEventListener("online", this.handleOnline);
+-  }
++  useEffect(() => {
++    window.addEventListener("online", () => {
++      setIsOnline(true);
++      onReconnect();
++    });
+@@ -41,4 +35,7 @@ export class UserProfileEditor extends React.Component<UserProfileEditorProps, E
+-  private handleOnline = () => {
+-    this.setState({ isOnline: true });
+-    this.props.onReconnect();
+-  };
++    return () => {
++      window.removeEventListener("online", () => {
++        setIsOnline(true);
++        onReconnect();
++      });
++    };
++  }, [onReconnect]);
+@@ -46 +43 @@ export class UserProfileEditor extends React.Component<UserProfileEditorProps, E
+-  private handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
++  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+@@ -48,4 +45,4 @@ export class UserProfileEditor extends React.Component<UserProfileEditorProps, E
+-    this.props.onSave({
+-      ...this.props.profile,
+-      name: this.state.name ?? "",
+-      email: this.state.email ?? "",
++    onSave({
++      ...profile,
++      name: editor.name ?? "",
++      email: editor.email ?? "",
+@@ -53 +50 @@ export class UserProfileEditor extends React.Component<UserProfileEditorProps, E
+-  };
++  }
+@@ -55,9 +52,8 @@ export class UserProfileEditor extends React.Component<UserProfileEditorProps, E
+-  render() {
+-    return (
+-      <form aria-label="Profile editor" onSubmit={this.handleSubmit}>
+-        <label htmlFor="profile-name">Name</label>
+-        <input
+-          id="profile-name"
+-          value={this.state.name ?? ""}
+-          onChange={(event) => this.setState({ name: event.currentTarget.value })}
+-        />
++  return (
++    <form aria-label="Profile editor" onSubmit={handleSubmit}>
++      <label htmlFor="profile-name">Name</label>
++      <input
++        id="profile-name"
++        value={editor.name ?? ""}
++        onChange={(event) => setEditor({ name: event.currentTarget.value })}
++      />
+@@ -65,7 +61,7 @@ export class UserProfileEditor extends React.Component<UserProfileEditorProps, E
+-        <label htmlFor="profile-email">Email</label>
+-        <input
+-          id="profile-email"
+-          type="email"
+-          value={this.state.email ?? ""}
+-          onChange={(event) => this.setState({ email: event.currentTarget.value })}
+-        />
++      <label htmlFor="profile-email">Email</label>
++      <input
++        id="profile-email"
++        type="email"
++        value={editor.email ?? ""}
++        onChange={(event) => setEditor({ email: event.currentTarget.value })}
++      />
+@@ -73,5 +69,4 @@ export class UserProfileEditor extends React.Component<UserProfileEditorProps, E
+-        <p role="status">{this.state.isOnline ? "Online" : "Waiting for connection"}</p>
+-        <button type="submit">Save profile</button>
+-      </form>
+-    );
+-  }
++      <p role="status">{isOnline ? "Online" : "Waiting for connection"}</p>
++      <button type="submit">Save profile</button>
++    </form>
++  );

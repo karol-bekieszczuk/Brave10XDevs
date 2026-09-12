@@ -8,6 +8,6 @@ export default defineConfig({
     },
   },
   test: {
-    exclude: [...configDefaults.exclude, "**/.stryker-tmp/**", "**/tests/e2e/**"],
+    exclude: [...configDefaults.exclude, "**/.stryker-tmp/**", "**/tests/e2e/**", "**/evals/cases/**/repository/**"],
   },
 });

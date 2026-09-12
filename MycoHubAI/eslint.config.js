@@ -72,7 +72,11 @@ const astroConfig = tseslint.config({
 export default tseslint.config(
   includeIgnoreFile(gitignorePath),
   {
-    ignores: [".codex/**"],
+    ignores: [
+      ".codex/**",
+      "packages/code-reviewer/evals/cases/**/base/**",
+      "packages/code-reviewer/evals/cases/**/repository/**",
+    ],
   },
   baseConfig,
   reactConfig,

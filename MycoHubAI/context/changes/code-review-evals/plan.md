@@ -348,32 +348,32 @@ Rollback consists of removing the Promptfoo scripts/dependency, the `evals/` tre
 
 #### Automated
 
-- [x] 1.1 Clean package installation succeeds
-- [x] 1.2 Provider and barrel tests pass without a provider credential or network call
-- [x] 1.3 Full package tests pass
-- [x] 1.4 Package type checking covers source and maintained eval TypeScript
-- [x] 1.5 Repository diff hygiene passes
+- [x] 1.1 Clean package installation succeeds — 0849183
+- [x] 1.2 Provider and barrel tests pass without a provider credential or network call — 0849183
+- [x] 1.3 Full package tests pass — 0849183
+- [x] 1.4 Package type checking covers source and maintained eval TypeScript — 0849183
+- [x] 1.5 Repository diff hygiene passes — 0849183
 
 #### Manual
 
-- [x] 1.6 Confirm the generic reviewer API remains unchanged and the public barrel adds only required PR evaluation contracts
-- [x] 1.7 Confirm adapter errors and metadata cannot expose credentials or raw secret-bearing provider errors
+- [x] 1.6 Confirm the generic reviewer API remains unchanged and the public barrel adds only required PR evaluation contracts — 0849183
+- [x] 1.7 Confirm adapter errors and metadata cannot expose credentials or raw secret-bearing provider errors — 0849183
 
 ### Phase 2: Build the React Migration Fixture and Assertions
 
 #### Automated
 
-- [ ] 2.1 Fixture and assertion tests pass without a provider credential or network call
-- [ ] 2.2 Static assertions reject reviews that do not produce a deterministic failed verdict
-- [ ] 2.3 Fixture contract proves patch synchronization and exactly three unique oracle defects
-- [ ] 2.4 Full package tests pass
-- [ ] 2.5 Package type checking passes
-- [ ] 2.6 Repository diff hygiene passes
+- [x] 2.1 Fixture and assertion tests pass without a provider credential or network call
+- [x] 2.2 Static assertions reject reviews that do not produce a deterministic failed verdict
+- [x] 2.3 Fixture contract proves patch synchronization and exactly three unique oracle defects
+- [x] 2.4 Full package tests pass
+- [x] 2.5 Package type checking passes
+- [x] 2.6 Repository diff hygiene passes
 
 #### Manual
 
-- [ ] 2.7 Confirm the migration contains exactly the three approved impactful flaws and no distracting fourth flaw
-- [ ] 2.8 Confirm the oracle is unavailable to reviewer tools and absent from the production prompt
+- [x] 2.7 Confirm the migration contains exactly the three approved impactful flaws and no distracting fourth flaw
+- [x] 2.8 Confirm the oracle is unavailable to reviewer tools and absent from the production prompt
 
 ### Phase 3: Configure and Calibrate the Live Three-Model Evaluation
 
