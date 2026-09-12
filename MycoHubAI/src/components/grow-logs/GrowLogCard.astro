@@ -1,5 +1,6 @@
 ---
 import type { GrowLogRow } from "@/lib/grow-logs/types";
+import { createGrowLogPreview, formatGrowLogStage } from "@/lib/grow-logs/presentation";
 import { BULK_DELETE_SELECTED_IDS_FIELD } from "@/lib/grow-logs/validation";
 
 interface Props {
@@ -7,7 +8,8 @@ interface Props {
 }
 
 const { log } = Astro.props;
-const preview = log.body.length > 160 ? `${log.body.slice(0, 157)}...` : log.body;
+const preview = createGrowLogPreview(log.body);
+const stageLabel = formatGrowLogStage(log.stage);
 const updatedAt = new Date(log.updatedAt).toLocaleString("en-US", {
   dateStyle: "medium",
   timeStyle: "short",
@@ -27,7 +29,7 @@ const checkboxId = `grow-log-select-${log.id}`;
           class="h-4 w-4 rounded border border-white/20 bg-slate-950 text-cyan-300 focus:ring-2 focus:ring-cyan-300"
         />
       </div>
-      <p class="text-xs font-semibold tracking-[0.3em] text-cyan-200 uppercase">{log.stage}</p>
+      <p class="text-xs font-semibold tracking-[0.3em] text-cyan-200 uppercase">{stageLabel}</p>
       <div>
         <label for={checkboxId} class="text-xs font-medium text-blue-100/80">
           Select {log.title}
