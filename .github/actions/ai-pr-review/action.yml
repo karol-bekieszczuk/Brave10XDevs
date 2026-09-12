@@ -40,6 +40,8 @@ runs:
         AUTOMATION_PATH: ${{ inputs.automation-path }}
       run: npm ci --prefix "$AUTOMATION_PATH/MycoHubAI/packages/code-reviewer"
 
+    # Credentials exist only in this base-SHA-controlled process. PR metadata comes from the event file,
+    # and Git is invoked with argument arrays against the separate data-only target checkout.
     - name: Run the trusted PR reviewer
       id: review
       shell: bash

@@ -148,6 +148,47 @@ npx wrangler deploy
 
 GitHub Actions runs `npx astro sync`, `format:check`, `typecheck`, unit tests, lint, and build on every push and pull request to `master`. The separate E2E job uses disposable loopback Supabase and Chromium. CI is validation-only; these checks do not prove hosted/production behavior, deployed Cloudflare configuration, RLS, or provider availability. Configure `SUPABASE_URL`, `SUPABASE_KEY`, and `AUTHORIZED_USER_ID` as repository secrets so the validation build can satisfy Astro's required server env schema.
 
+### AI pull request review
+
+The repository-root `.github/workflows/review.yml` runs an advisory AI review for same-repository pull requests to `master` when they are opened, reopened, marked ready for review, updated, or given the `ai-cr:review` label. It runs only when the pull request changes `MycoHubAI/**` or the review workflow/action. Fork and Dependabot pull requests are intentionally skipped because they must not receive the provider secret or a write-capable token.
+
+In GitHub, open **Settings -> Secrets and variables -> Actions -> Repository secrets** and create a repository secret named `OPENROUTER_API_KEY`. Store the value only in GitHub; do not add it to the checkout, a comment, or workflow output. Each eligible run can make a paid provider request. Automated tests use injected models and do not make paid calls.
+
+Configure these repository labels before live acceptance. The reviewer creates a missing result label when possible, but `ai-cr:review` is an operator command and should be created explicitly.
+
+| Label          | Color     | Meaning                                             |
+| -------------- | --------- | --------------------------------------------------- |
+| `ai-cr:passed` | `#0E8A16` | The advisory review passed the score policy.        |
+| `ai-cr:failed` | `#D93F0B` | The advisory review found issues needing attention. |
+| `ai-cr:error`  | `#B60205` | The review automation failed operationally.         |
+| `ai-cr:review` | `#1D76DB` | Request an on-demand retry.                         |
+
+The pull request body is included up to 8,000 characters. A textual diff larger than 100 KiB, an empty diff, or an unreadable diff fails closed instead of sending an incomplete review. The comment reports Documentation, Test coverage, and Test quality and reliability on a 1-10 scale. A review passes only when the three-score average is at least 7, every score is at least 5, and there is no `error` finding. Both `ai-cr:passed` and `ai-cr:failed` are advisory outcomes and leave the workflow successful; only an operational error fails the workflow.
+
+Runs are serialized per pull request and a newer run cancels an in-progress one. Immediately before publication, the reviewer checks the current head SHA and refuses to publish stale comment or label state. The marked bot comment is updated in place, unrelated labels and human comments are left unchanged, and exactly one result label is retained.
+
+To retry, add `ai-cr:review` to the pull request. The workflow consumes the command label when the retry begins, updates the existing marked comment, and reconciles the result labels. Re-add the label after fixing an operational problem; do not expose or copy the provider secret while troubleshooting.
+
+#### AI review troubleshooting
+
+- Open the failed **AI Code Review** run and inspect the trusted reviewer step. The marked comment and `ai-cr:error` identify a redacted failure category when GitHub publication is still available.
+- Provider authentication, rate-limit, timeout, or availability failures: verify that the repository secret is present and usable in **Settings -> Secrets and variables -> Actions**, then re-add `ai-cr:review`. Do not print, copy into the repository, or rotate the value merely to inspect it.
+- Malformed model output: look for `MODEL_OUTPUT_INVALID`, then retry. Repeated failures require a schema/provider investigation; do not treat them as a negative code-review verdict.
+- Permission failures: verify that repository or organization Actions policy permits the workflow's declared `contents: read`, `pull-requests: write`, and `issues: write` permissions.
+- Label failures: verify the four names, colors, and descriptions above, and confirm Actions may write issue labels. Correct the label configuration and re-add `ai-cr:review`.
+- Comment failures: verify pull-request write permission and GitHub API availability. The workflow cannot guarantee an `ai-cr:error` label or comment when GitHub itself rejects publication, so use the run log as the source of truth.
+- Empty or over-limit diffs: push a small, reviewable in-scope change. The reviewer does not partially score an empty patch or a patch over 100 KiB.
+
+From `MycoHubAI`, run the deterministic reviewer checks with:
+
+```bash
+npm.cmd --prefix packages/code-reviewer ci
+npm.cmd --prefix packages/code-reviewer test
+npm.cmd --prefix packages/code-reviewer run typecheck
+```
+
+These checks prove package behavior with controlled doubles; only a same-repository test pull request proves the live OpenRouter and GitHub comment/label integration. This workflow does not deploy the application. Production deployment remains owned by Cloudflare Workers Builds / Git integration as described above.
+
 ## License
 
 MIT

@@ -20,12 +20,16 @@ concurrency:
 
 jobs:
   review:
+    # Secret-backed review is limited to trusted same-repository authorship.
+    # Fork and Dependabot heads are data we intentionally do not process with secrets or write access.
     if: >-
       github.event.pull_request.head.repo.full_name == github.repository &&
       github.event.pull_request.user.login != 'dependabot[bot]' &&
       (github.event.action != 'labeled' || github.event.label.name == 'ai-cr:review')
     runs-on: ubuntu-latest
     steps:
+      # Keep executable automation at the base SHA and the untrusted review target in a separate path.
+      # Only the base checkout supplies the local action and TypeScript process that receive credentials.
       # actions/checkout v4.4.0
       - name: Check out trusted automation from the PR base
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -34,7 +38,7 @@ jobs:
           path: automation
           persist-credentials: false
 
-      # The PR head is data-only. No script or action from this checkout is executed.
+      # The PR head is data-only. The reviewer reads its files and Git diff but executes none of its code.
       # actions/checkout v4.4.0
       - name: Check out the PR head as the review target
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
