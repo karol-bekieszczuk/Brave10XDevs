@@ -409,21 +409,21 @@ Rollback consists of disabling/removing the repository-root review workflow and 
 
 - [x] 3.5 Inspect the workflow checkout paths and confirm only base-SHA automation receives the provider secret and write-capable token; no head-controlled script or action is executed — 9ecd853
 - [x] 3.6 Confirm a fork PR, a Dependabot PR, and a non-`ai-cr:review` label event are visibly skipped by job conditions without attempting a provider call — 9ecd853
-- [x] 3.7 Confirm GitHub recognizes `../.github/workflows/review.yml` from the actual repository root and no nested duplicate workflow/action remains
+- [x] 3.7 Confirm GitHub recognizes `../.github/workflows/review.yml` from the actual repository root and no nested duplicate workflow/action remains — 9af06d9
 
 ### Phase 4: Document Operations and Prove the Live Integration
 
 #### Automated
 
-- [x] 4.1 Root static quality gates pass
-- [x] 4.2 Clean package installation and package-local gates pass
-- [x] 4.3 Documentation and YAML contain no secret values, deprecated placeholder action, nested duplicate workflow, or deployment command
-- [x] 4.4 Final repository diff passes `git diff --check` and contains only the approved change scope
+- [x] 4.1 Root static quality gates pass — 9af06d9
+- [x] 4.2 Clean package installation and package-local gates pass — 9af06d9
+- [x] 4.3 Documentation and YAML contain no secret values, deprecated placeholder action, nested duplicate workflow, or deployment command — 9af06d9
+- [x] 4.4 Final repository diff passes `git diff --check` and contains only the approved change scope — 9af06d9
 
 #### Manual
 
-- [x] 4.5 A same-repository test PR to `master` automatically produces one marked comment for the current head SHA and exactly one correct `ai-cr:passed` or `ai-cr:failed` label
-- [x] 4.6 Adding `ai-cr:review` removes the command label, reruns review, updates the same comment instead of duplicating it, and leaves one result label
-- [x] 4.7 A negative review remains advisory and the workflow succeeds; a controlled operational failure produces `ai-cr:error` and a failed workflow without exposing credentials
-- [x] 4.8 Rapid updates or retry cannot leave an older head's result as the current comment/label state, and the live logs contain no provider or GitHub token
-- [x] 4.9 Confirm Cloudflare deployment configuration and behavior were not changed by this workflow
+- [x] 4.5 A same-repository test PR to `master` automatically produces one marked comment for the current head SHA and exactly one correct `ai-cr:passed` or `ai-cr:failed` label — 9af06d9
+- [x] 4.6 Adding `ai-cr:review` removes the command label, reruns review, updates the same comment instead of duplicating it, and leaves one result label — 9af06d9
+- [x] 4.7 A negative review remains advisory and the workflow succeeds; a controlled operational failure produces `ai-cr:error` and a failed workflow without exposing credentials — 9af06d9
+- [x] 4.8 Rapid updates or retry cannot leave an older head's result as the current comment/label state, and the live logs contain no provider or GitHub token — 9af06d9
+- [x] 4.9 Confirm Cloudflare deployment configuration and behavior were not changed by this workflow — 9af06d9
